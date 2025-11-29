@@ -1,0 +1,1716 @@
+GAS LISTING /tmp/ccVMFa3H.s 			page 1
+
+
+   1              		.file	"MemoryAllocator.cpp"
+   2              		.option pic
+   3              		.option norelax
+   4              		.text
+   5              	.Ltext0:
+   6              		.align	2
+   7              		.globl	_ZN15MemoryAllocator16initializeMemoryEv
+   9              	_ZN15MemoryAllocator16initializeMemoryEv:
+  10              	.LFB0:
+  11              		.file 1 "src/MemoryAllocator.cpp"
+   1:src/MemoryAllocator.cpp **** //
+   2:src/MemoryAllocator.cpp **** // Created by os on 11/29/25.
+   3:src/MemoryAllocator.cpp **** //
+   4:src/MemoryAllocator.cpp **** 
+   5:src/MemoryAllocator.cpp **** #include "../h/MemoryAllocator.hpp"
+   6:src/MemoryAllocator.cpp **** 
+   7:src/MemoryAllocator.cpp **** uint8 MemoryAllocator::flagSystemInitialize = 0;
+   8:src/MemoryAllocator.cpp **** size_t MemoryAllocator::NUM_OF_BLOCKS = 0;
+   9:src/MemoryAllocator.cpp **** size_t MemoryAllocator::numOfFreeBlocks = 0;
+  10:src/MemoryAllocator.cpp **** MemoryAllocator::FreeBlock* MemoryAllocator::firstFreeBlock = nullptr;
+  11:src/MemoryAllocator.cpp **** 
+  12:src/MemoryAllocator.cpp **** void MemoryAllocator::initializeMemory()
+  13:src/MemoryAllocator.cpp **** {
+  12              		.loc 1 13 1
+  13              		.cfi_startproc
+  14 0000 130101FF 		addi	sp,sp,-16
+  15              		.cfi_def_cfa_offset 16
+  16 0004 23348100 		sd	s0,8(sp)
+  17              		.cfi_offset 8, -8
+  18 0008 13040101 		addi	s0,sp,16
+  19              		.cfi_def_cfa 8, 0
+  14:src/MemoryAllocator.cpp **** 
+  15:src/MemoryAllocator.cpp ****     NUM_OF_BLOCKS = ((uint8*)HEAP_END_ADDR - (uint8*)HEAP_START_ADDR) / MEM_BLOCK_SIZE;
+  20              		.loc 1 15 5
+  21              		.loc 1 15 22 is_stmt 0
+  22 000c 97070000 		la	a5,HEAP_END_ADDR
+  22      83B70700 
+  23 0014 03B70700 		ld	a4,0(a5)
+  24              		.loc 1 15 46
+  25 0018 97070000 		la	a5,HEAP_START_ADDR
+  25      83B70700 
+  26 0020 83B60700 		ld	a3,0(a5)
+  27              		.loc 1 15 44
+  28 0024 3307D740 		sub	a4,a4,a3
+  29              		.loc 1 15 71
+  30 0028 13576700 		srli	a4,a4,6
+  31              		.loc 1 15 19
+  32 002c 97070000 		lla	a5,.LANCHOR0
+  32      93870700 
+  33 0034 23B0E700 		sd	a4,0(a5)
+  16:src/MemoryAllocator.cpp ****     numOfFreeBlocks = NUM_OF_BLOCKS;
+  34              		.loc 1 16 5 is_stmt 1
+  35              		.loc 1 16 21 is_stmt 0
+  36 0038 23B4E700 		sd	a4,8(a5)
+  17:src/MemoryAllocator.cpp **** 
+  18:src/MemoryAllocator.cpp ****     firstFreeBlock = (FreeBlock*)(HEAP_START_ADDR);
+  37              		.loc 1 18 5 is_stmt 1
+GAS LISTING /tmp/ccVMFa3H.s 			page 2
+
+
+  38              		.loc 1 18 20 is_stmt 0
+  39 003c 23B8D700 		sd	a3,16(a5)
+  19:src/MemoryAllocator.cpp **** 
+  20:src/MemoryAllocator.cpp ****     firstFreeBlock->flagFree = true;
+  40              		.loc 1 20 5 is_stmt 1
+  41              		.loc 1 20 30 is_stmt 0
+  42 0040 13061000 		li	a2,1
+  43 0044 2380C600 		sb	a2,0(a3)
+  21:src/MemoryAllocator.cpp ****     firstFreeBlock->numOfBlocks = NUM_OF_BLOCKS;
+  44              		.loc 1 21 5 is_stmt 1
+  45              		.loc 1 21 21 is_stmt 0
+  46 0048 03B70701 		ld	a4,16(a5)
+  47              		.loc 1 21 33
+  48 004c 83B60700 		ld	a3,0(a5)
+  49 0050 2334D700 		sd	a3,8(a4)
+  22:src/MemoryAllocator.cpp ****     firstFreeBlock->nextBlock = nullptr;
+  50              		.loc 1 22 5 is_stmt 1
+  51              		.loc 1 22 31 is_stmt 0
+  52 0054 23380700 		sd	zero,16(a4)
+  23:src/MemoryAllocator.cpp ****     firstFreeBlock->previousBlock = nullptr;
+  53              		.loc 1 23 5 is_stmt 1
+  54              		.loc 1 23 35 is_stmt 0
+  55 0058 233C0700 		sd	zero,24(a4)
+  24:src/MemoryAllocator.cpp ****     flagSystemInitialize = 1;
+  56              		.loc 1 24 5 is_stmt 1
+  57              		.loc 1 24 26 is_stmt 0
+  58 005c 238CC700 		sb	a2,24(a5)
+  25:src/MemoryAllocator.cpp **** }
+  59              		.loc 1 25 1
+  60 0060 03348100 		ld	s0,8(sp)
+  61              		.cfi_restore 8
+  62              		.cfi_def_cfa 2, 16
+  63 0064 13010101 		addi	sp,sp,16
+  64              		.cfi_def_cfa_offset 0
+  65 0068 67800000 		jr	ra
+  66              		.cfi_endproc
+  67              	.LFE0:
+  69              		.align	2
+  70              		.globl	_ZN15MemoryAllocator11remapMemoryEPPNS_9FreeBlockES1_m
+  72              	_ZN15MemoryAllocator11remapMemoryEPPNS_9FreeBlockES1_m:
+  73              	.LFB3:
+  26:src/MemoryAllocator.cpp **** 
+  27:src/MemoryAllocator.cpp **** void* MemoryAllocator::allocateMemory(size_t blocksToAllocate)
+  28:src/MemoryAllocator.cpp **** {
+  29:src/MemoryAllocator.cpp **** 
+  30:src/MemoryAllocator.cpp **** 
+  31:src/MemoryAllocator.cpp ****     if(!flagSystemInitialize)
+  32:src/MemoryAllocator.cpp ****     {
+  33:src/MemoryAllocator.cpp ****         initializeMemory();
+  34:src/MemoryAllocator.cpp ****     }
+  35:src/MemoryAllocator.cpp ****     if(numOfFreeBlocks < blocksToAllocate)
+  36:src/MemoryAllocator.cpp ****     {
+  37:src/MemoryAllocator.cpp ****         return nullptr;
+  38:src/MemoryAllocator.cpp ****     }
+  39:src/MemoryAllocator.cpp ****     return findBestFit(&firstFreeBlock, blocksToAllocate);
+  40:src/MemoryAllocator.cpp **** 
+  41:src/MemoryAllocator.cpp **** }
+GAS LISTING /tmp/ccVMFa3H.s 			page 3
+
+
+  42:src/MemoryAllocator.cpp **** 
+  43:src/MemoryAllocator.cpp **** void* MemoryAllocator::findBestFit(FreeBlock **head, size_t blocksToAllocate)
+  44:src/MemoryAllocator.cpp **** {
+  45:src/MemoryAllocator.cpp ****     FreeBlock* bestBlock = *head;
+  46:src/MemoryAllocator.cpp **** 
+  47:src/MemoryAllocator.cpp ****     for(FreeBlock* curr = (*head)->nextBlock; curr; curr = curr->nextBlock)
+  48:src/MemoryAllocator.cpp ****     {
+  49:src/MemoryAllocator.cpp ****         if(curr->numOfBlocks > blocksToAllocate)
+  50:src/MemoryAllocator.cpp ****         {
+  51:src/MemoryAllocator.cpp ****             if(bestBlock->numOfBlocks > curr->numOfBlocks)
+  52:src/MemoryAllocator.cpp ****             {
+  53:src/MemoryAllocator.cpp ****                 bestBlock = curr;
+  54:src/MemoryAllocator.cpp ****             }
+  55:src/MemoryAllocator.cpp ****         }
+  56:src/MemoryAllocator.cpp ****     }
+  57:src/MemoryAllocator.cpp **** 
+  58:src/MemoryAllocator.cpp ****     numOfFreeBlocks -= blocksToAllocate;
+  59:src/MemoryAllocator.cpp ****     bestBlock->numOfBlocks -= blocksToAllocate;
+  60:src/MemoryAllocator.cpp ****     remapMemory(head, bestBlock, blocksToAllocate);
+  61:src/MemoryAllocator.cpp **** 
+  62:src/MemoryAllocator.cpp ****     OccupiedBlock* occupiedBlock = (OccupiedBlock*)bestBlock;
+  63:src/MemoryAllocator.cpp ****     occupiedBlock->flagFree = false;
+  64:src/MemoryAllocator.cpp ****     occupiedBlock->numOfBlocks = blocksToAllocate;
+  65:src/MemoryAllocator.cpp ****     occupiedBlock++;
+  66:src/MemoryAllocator.cpp ****     return occupiedBlock;
+  67:src/MemoryAllocator.cpp **** }
+  68:src/MemoryAllocator.cpp **** 
+  69:src/MemoryAllocator.cpp **** void MemoryAllocator::remapMemory(FreeBlock **head, FreeBlock *allocatedBlocks, size_t blocksToAllo
+  70:src/MemoryAllocator.cpp **** {
+  74              		.loc 1 70 1 is_stmt 1
+  75              		.cfi_startproc
+  76              	.LVL0:
+  77 006c 130101FF 		addi	sp,sp,-16
+  78              		.cfi_def_cfa_offset 16
+  79 0070 23348100 		sd	s0,8(sp)
+  80              		.cfi_offset 8, -8
+  81 0074 13040101 		addi	s0,sp,16
+  82              		.cfi_def_cfa 8, 0
+  71:src/MemoryAllocator.cpp **** 
+  72:src/MemoryAllocator.cpp ****     if(allocatedBlocks->numOfBlocks == 0)
+  83              		.loc 1 72 5
+  84              	.LBB2:
+  85              		.loc 1 72 25 is_stmt 0
+  86 0078 83B78500 		ld	a5,8(a1)
+  87              		.loc 1 72 5
+  88 007c 63920704 		bnez	a5,.L4
+  73:src/MemoryAllocator.cpp ****     {
+  74:src/MemoryAllocator.cpp **** 
+  75:src/MemoryAllocator.cpp ****         if(allocatedBlocks->previousBlock)
+  89              		.loc 1 75 9 is_stmt 1
+  90              		.loc 1 75 29 is_stmt 0
+  91 0080 83B78501 		ld	a5,24(a1)
+  92              		.loc 1 75 9
+  93 0084 63860700 		beqz	a5,.L5
+  76:src/MemoryAllocator.cpp ****         {
+  77:src/MemoryAllocator.cpp ****             allocatedBlocks->previousBlock->nextBlock = allocatedBlocks->nextBlock;
+  94              		.loc 1 77 13 is_stmt 1
+GAS LISTING /tmp/ccVMFa3H.s 			page 4
+
+
+  95              		.loc 1 77 74 is_stmt 0
+  96 0088 03B70501 		ld	a4,16(a1)
+  97              		.loc 1 77 55
+  98 008c 23B8E700 		sd	a4,16(a5)
+  99              	.L5:
+  78:src/MemoryAllocator.cpp ****         }
+  79:src/MemoryAllocator.cpp **** 
+  80:src/MemoryAllocator.cpp ****         if(allocatedBlocks->nextBlock)
+ 100              		.loc 1 80 9 is_stmt 1
+ 101              		.loc 1 80 29 is_stmt 0
+ 102 0090 83B70501 		ld	a5,16(a1)
+ 103              		.loc 1 80 9
+ 104 0094 63860700 		beqz	a5,.L6
+  81:src/MemoryAllocator.cpp ****         {
+  82:src/MemoryAllocator.cpp ****             allocatedBlocks->nextBlock->previousBlock = allocatedBlocks->previousBlock;
+ 105              		.loc 1 82 13 is_stmt 1
+ 106              		.loc 1 82 74 is_stmt 0
+ 107 0098 03B78501 		ld	a4,24(a1)
+ 108              		.loc 1 82 55
+ 109 009c 23BCE700 		sd	a4,24(a5)
+ 110              	.L6:
+  83:src/MemoryAllocator.cpp ****         }
+  84:src/MemoryAllocator.cpp **** 
+  85:src/MemoryAllocator.cpp ****         if(*head == allocatedBlocks)
+ 111              		.loc 1 85 9 is_stmt 1
+ 112              		.loc 1 85 12 is_stmt 0
+ 113 00a0 83370500 		ld	a5,0(a0)
+ 114              		.loc 1 85 9
+ 115 00a4 6388B700 		beq	a5,a1,.L10
+ 116              	.LVL1:
+ 117              	.L3:
+ 118              	.LBE2:
+  86:src/MemoryAllocator.cpp ****         {
+  87:src/MemoryAllocator.cpp ****             *head = allocatedBlocks->nextBlock;
+  88:src/MemoryAllocator.cpp ****         }
+  89:src/MemoryAllocator.cpp ****     }
+  90:src/MemoryAllocator.cpp ****     else
+  91:src/MemoryAllocator.cpp ****     {
+  92:src/MemoryAllocator.cpp ****         FreeBlock* newFreeBlock = (FreeBlock*)((uint8*)allocatedBlocks + blocksToAllocate * MEM_BLO
+  93:src/MemoryAllocator.cpp ****         newFreeBlock->flagFree = true;
+  94:src/MemoryAllocator.cpp ****         newFreeBlock->numOfBlocks = allocatedBlocks->numOfBlocks;
+  95:src/MemoryAllocator.cpp **** 
+  96:src/MemoryAllocator.cpp ****         if(allocatedBlocks->previousBlock)
+  97:src/MemoryAllocator.cpp ****         {
+  98:src/MemoryAllocator.cpp ****             allocatedBlocks->previousBlock->nextBlock = newFreeBlock;
+  99:src/MemoryAllocator.cpp ****         }
+ 100:src/MemoryAllocator.cpp **** 
+ 101:src/MemoryAllocator.cpp ****         newFreeBlock->nextBlock = allocatedBlocks->nextBlock;
+ 102:src/MemoryAllocator.cpp ****         if(*head == allocatedBlocks)
+ 103:src/MemoryAllocator.cpp ****         {
+ 104:src/MemoryAllocator.cpp ****             *head = newFreeBlock;
+ 105:src/MemoryAllocator.cpp ****         }
+ 106:src/MemoryAllocator.cpp ****     }
+ 107:src/MemoryAllocator.cpp **** 
+ 108:src/MemoryAllocator.cpp **** }
+ 119              		.loc 1 108 1
+ 120 00a8 03348100 		ld	s0,8(sp)
+GAS LISTING /tmp/ccVMFa3H.s 			page 5
+
+
+ 121              		.cfi_remember_state
+ 122              		.cfi_restore 8
+ 123              		.cfi_def_cfa 2, 16
+ 124 00ac 13010101 		addi	sp,sp,16
+ 125              		.cfi_def_cfa_offset 0
+ 126 00b0 67800000 		jr	ra
+ 127              	.LVL2:
+ 128              	.L10:
+ 129              		.cfi_restore_state
+ 130              	.LBB4:
+  87:src/MemoryAllocator.cpp ****         }
+ 131              		.loc 1 87 13 is_stmt 1
+  87:src/MemoryAllocator.cpp ****         }
+ 132              		.loc 1 87 38 is_stmt 0
+ 133 00b4 83B70501 		ld	a5,16(a1)
+  87:src/MemoryAllocator.cpp ****         }
+ 134              		.loc 1 87 19
+ 135 00b8 2330F500 		sd	a5,0(a0)
+ 136 00bc 6FF0DFFE 		j	.L3
+ 137              	.L4:
+ 138              	.LBB3:
+  92:src/MemoryAllocator.cpp ****         newFreeBlock->flagFree = true;
+ 139              		.loc 1 92 9 is_stmt 1
+  92:src/MemoryAllocator.cpp ****         newFreeBlock->flagFree = true;
+ 140              		.loc 1 92 91 is_stmt 0
+ 141 00c0 13166600 		slli	a2,a2,6
+ 142              	.LVL3:
+  92:src/MemoryAllocator.cpp ****         newFreeBlock->flagFree = true;
+ 143              		.loc 1 92 20
+ 144 00c4 3386C500 		add	a2,a1,a2
+ 145              	.LVL4:
+  93:src/MemoryAllocator.cpp ****         newFreeBlock->numOfBlocks = allocatedBlocks->numOfBlocks;
+ 146              		.loc 1 93 9 is_stmt 1
+  93:src/MemoryAllocator.cpp ****         newFreeBlock->numOfBlocks = allocatedBlocks->numOfBlocks;
+ 147              		.loc 1 93 32 is_stmt 0
+ 148 00c8 93071000 		li	a5,1
+ 149 00cc 2300F600 		sb	a5,0(a2)
+  94:src/MemoryAllocator.cpp **** 
+ 150              		.loc 1 94 9 is_stmt 1
+  94:src/MemoryAllocator.cpp **** 
+ 151              		.loc 1 94 54 is_stmt 0
+ 152 00d0 83B78500 		ld	a5,8(a1)
+  94:src/MemoryAllocator.cpp **** 
+ 153              		.loc 1 94 35
+ 154 00d4 2334F600 		sd	a5,8(a2)
+  96:src/MemoryAllocator.cpp ****         {
+ 155              		.loc 1 96 9 is_stmt 1
+  96:src/MemoryAllocator.cpp ****         {
+ 156              		.loc 1 96 29 is_stmt 0
+ 157 00d8 83B78501 		ld	a5,24(a1)
+  96:src/MemoryAllocator.cpp ****         {
+ 158              		.loc 1 96 9
+ 159 00dc 63840700 		beqz	a5,.L8
+  98:src/MemoryAllocator.cpp ****         }
+ 160              		.loc 1 98 13 is_stmt 1
+  98:src/MemoryAllocator.cpp ****         }
+ 161              		.loc 1 98 55 is_stmt 0
+GAS LISTING /tmp/ccVMFa3H.s 			page 6
+
+
+ 162 00e0 23B8C700 		sd	a2,16(a5)
+ 163              	.L8:
+ 101:src/MemoryAllocator.cpp ****         if(*head == allocatedBlocks)
+ 164              		.loc 1 101 9 is_stmt 1
+ 101:src/MemoryAllocator.cpp ****         if(*head == allocatedBlocks)
+ 165              		.loc 1 101 52 is_stmt 0
+ 166 00e4 83B70501 		ld	a5,16(a1)
+ 101:src/MemoryAllocator.cpp ****         if(*head == allocatedBlocks)
+ 167              		.loc 1 101 33
+ 168 00e8 2338F600 		sd	a5,16(a2)
+ 102:src/MemoryAllocator.cpp ****         {
+ 169              		.loc 1 102 9 is_stmt 1
+ 102:src/MemoryAllocator.cpp ****         {
+ 170              		.loc 1 102 12 is_stmt 0
+ 171 00ec 83370500 		ld	a5,0(a0)
+ 102:src/MemoryAllocator.cpp ****         {
+ 172              		.loc 1 102 9
+ 173 00f0 E39CB7FA 		bne	a5,a1,.L3
+ 104:src/MemoryAllocator.cpp ****         }
+ 174              		.loc 1 104 13 is_stmt 1
+ 104:src/MemoryAllocator.cpp ****         }
+ 175              		.loc 1 104 19 is_stmt 0
+ 176 00f4 2330C500 		sd	a2,0(a0)
+ 177              	.LBE3:
+ 178              	.LBE4:
+ 179              		.loc 1 108 1
+ 180 00f8 6FF01FFB 		j	.L3
+ 181              		.cfi_endproc
+ 182              	.LFE3:
+ 184              		.align	2
+ 185              		.globl	_ZN15MemoryAllocator11findBestFitEPPNS_9FreeBlockEm
+ 187              	_ZN15MemoryAllocator11findBestFitEPPNS_9FreeBlockEm:
+ 188              	.LFB2:
+  44:src/MemoryAllocator.cpp ****     FreeBlock* bestBlock = *head;
+ 189              		.loc 1 44 1 is_stmt 1
+ 190              		.cfi_startproc
+ 191              	.LVL5:
+ 192 00fc 130101FE 		addi	sp,sp,-32
+ 193              		.cfi_def_cfa_offset 32
+ 194 0100 233C1100 		sd	ra,24(sp)
+ 195 0104 23388100 		sd	s0,16(sp)
+ 196 0108 23349100 		sd	s1,8(sp)
+ 197 010c 23302101 		sd	s2,0(sp)
+ 198              		.cfi_offset 1, -8
+ 199              		.cfi_offset 8, -16
+ 200              		.cfi_offset 9, -24
+ 201              		.cfi_offset 18, -32
+ 202 0110 13040102 		addi	s0,sp,32
+ 203              		.cfi_def_cfa 8, 0
+ 204 0114 93840500 		mv	s1,a1
+  45:src/MemoryAllocator.cpp **** 
+ 205              		.loc 1 45 5
+  45:src/MemoryAllocator.cpp **** 
+ 206              		.loc 1 45 16 is_stmt 0
+ 207 0118 03390500 		ld	s2,0(a0)
+ 208              	.LVL6:
+  47:src/MemoryAllocator.cpp ****     {
+GAS LISTING /tmp/ccVMFa3H.s 			page 7
+
+
+ 209              		.loc 1 47 5 is_stmt 1
+ 210              	.LBB5:
+  47:src/MemoryAllocator.cpp ****     {
+ 211              		.loc 1 47 20 is_stmt 0
+ 212 011c 83370901 		ld	a5,16(s2)
+ 213              	.LVL7:
+ 214 0120 6F008000 		j	.L14
+ 215              	.LVL8:
+ 216              	.L13:
+  47:src/MemoryAllocator.cpp ****     {
+ 217              		.loc 1 47 5 is_stmt 1 discriminator 2
+  47:src/MemoryAllocator.cpp ****     {
+ 218              		.loc 1 47 58 is_stmt 0 discriminator 2
+ 219 0124 83B70701 		ld	a5,16(a5)
+ 220              	.LVL9:
+ 221              	.L14:
+  47:src/MemoryAllocator.cpp ****     {
+ 222              		.loc 1 47 47 is_stmt 1 discriminator 1
+ 223 0128 638E0700 		beqz	a5,.L12
+  49:src/MemoryAllocator.cpp ****         {
+ 224              		.loc 1 49 9
+  49:src/MemoryAllocator.cpp ****         {
+ 225              		.loc 1 49 18 is_stmt 0
+ 226 012c 03B78700 		ld	a4,8(a5)
+  49:src/MemoryAllocator.cpp ****         {
+ 227              		.loc 1 49 9
+ 228 0130 E3FAE4FE 		bleu	a4,s1,.L13
+  51:src/MemoryAllocator.cpp ****             {
+ 229              		.loc 1 51 13 is_stmt 1
+  51:src/MemoryAllocator.cpp ****             {
+ 230              		.loc 1 51 27 is_stmt 0
+ 231 0134 83368900 		ld	a3,8(s2)
+  51:src/MemoryAllocator.cpp ****             {
+ 232              		.loc 1 51 13
+ 233 0138 E376D7FE 		bgeu	a4,a3,.L13
+  53:src/MemoryAllocator.cpp ****             }
+ 234              		.loc 1 53 27
+ 235 013c 13890700 		mv	s2,a5
+ 236              	.LVL10:
+ 237 0140 6FF05FFE 		j	.L13
+ 238              	.LVL11:
+ 239              	.L12:
+ 240              	.LBE5:
+  58:src/MemoryAllocator.cpp ****     bestBlock->numOfBlocks -= blocksToAllocate;
+ 241              		.loc 1 58 5 is_stmt 1
+  58:src/MemoryAllocator.cpp ****     bestBlock->numOfBlocks -= blocksToAllocate;
+ 242              		.loc 1 58 21 is_stmt 0
+ 243 0144 17070000 		lla	a4,.LANCHOR0
+ 243      13070700 
+ 244 014c 83378700 		ld	a5,8(a4)
+ 245              	.LVL12:
+ 246 0150 B3879740 		sub	a5,a5,s1
+ 247 0154 2334F700 		sd	a5,8(a4)
+  59:src/MemoryAllocator.cpp ****     remapMemory(head, bestBlock, blocksToAllocate);
+ 248              		.loc 1 59 5 is_stmt 1
+  59:src/MemoryAllocator.cpp ****     remapMemory(head, bestBlock, blocksToAllocate);
+ 249              		.loc 1 59 28 is_stmt 0
+GAS LISTING /tmp/ccVMFa3H.s 			page 8
+
+
+ 250 0158 83378900 		ld	a5,8(s2)
+ 251 015c B3879740 		sub	a5,a5,s1
+ 252 0160 2334F900 		sd	a5,8(s2)
+  60:src/MemoryAllocator.cpp **** 
+ 253              		.loc 1 60 5 is_stmt 1
+  60:src/MemoryAllocator.cpp **** 
+ 254              		.loc 1 60 16 is_stmt 0
+ 255 0164 13860400 		mv	a2,s1
+ 256 0168 93050900 		mv	a1,s2
+ 257              	.LVL13:
+ 258 016c 97000000 		call	_ZN15MemoryAllocator11remapMemoryEPPNS_9FreeBlockES1_m
+ 258      E7800000 
+ 259              	.LVL14:
+  62:src/MemoryAllocator.cpp ****     occupiedBlock->flagFree = false;
+ 260              		.loc 1 62 5 is_stmt 1
+  63:src/MemoryAllocator.cpp ****     occupiedBlock->numOfBlocks = blocksToAllocate;
+ 261              		.loc 1 63 5
+  63:src/MemoryAllocator.cpp ****     occupiedBlock->numOfBlocks = blocksToAllocate;
+ 262              		.loc 1 63 29 is_stmt 0
+ 263 0174 23000900 		sb	zero,0(s2)
+  64:src/MemoryAllocator.cpp ****     occupiedBlock++;
+ 264              		.loc 1 64 5 is_stmt 1
+  64:src/MemoryAllocator.cpp ****     occupiedBlock++;
+ 265              		.loc 1 64 32 is_stmt 0
+ 266 0178 23349900 		sd	s1,8(s2)
+  65:src/MemoryAllocator.cpp ****     return occupiedBlock;
+ 267              		.loc 1 65 5 is_stmt 1
+ 268              	.LVL15:
+  66:src/MemoryAllocator.cpp **** }
+ 269              		.loc 1 66 5
+  67:src/MemoryAllocator.cpp **** 
+ 270              		.loc 1 67 1 is_stmt 0
+ 271 017c 13050901 		addi	a0,s2,16
+ 272              	.LVL16:
+ 273 0180 83308101 		ld	ra,24(sp)
+ 274              		.cfi_restore 1
+ 275 0184 03340101 		ld	s0,16(sp)
+ 276              		.cfi_restore 8
+ 277              		.cfi_def_cfa 2, 32
+ 278 0188 83348100 		ld	s1,8(sp)
+ 279              		.cfi_restore 9
+ 280              	.LVL17:
+ 281 018c 03390100 		ld	s2,0(sp)
+ 282              		.cfi_restore 18
+ 283              	.LVL18:
+ 284 0190 13010102 		addi	sp,sp,32
+ 285              		.cfi_def_cfa_offset 0
+ 286 0194 67800000 		jr	ra
+ 287              		.cfi_endproc
+ 288              	.LFE2:
+ 290              		.align	2
+ 291              		.globl	_ZN15MemoryAllocator14allocateMemoryEm
+ 293              	_ZN15MemoryAllocator14allocateMemoryEm:
+ 294              	.LFB1:
+  28:src/MemoryAllocator.cpp **** 
+ 295              		.loc 1 28 1 is_stmt 1
+ 296              		.cfi_startproc
+GAS LISTING /tmp/ccVMFa3H.s 			page 9
+
+
+ 297              	.LVL19:
+ 298 0198 130101FE 		addi	sp,sp,-32
+ 299              		.cfi_def_cfa_offset 32
+ 300 019c 233C1100 		sd	ra,24(sp)
+ 301 01a0 23388100 		sd	s0,16(sp)
+ 302 01a4 23349100 		sd	s1,8(sp)
+ 303              		.cfi_offset 1, -8
+ 304              		.cfi_offset 8, -16
+ 305              		.cfi_offset 9, -24
+ 306 01a8 13040102 		addi	s0,sp,32
+ 307              		.cfi_def_cfa 8, 0
+ 308 01ac 93040500 		mv	s1,a0
+  31:src/MemoryAllocator.cpp ****     {
+ 309              		.loc 1 31 5
+  31:src/MemoryAllocator.cpp ****     {
+ 310              		.loc 1 31 8 is_stmt 0
+ 311 01b0 97070000 		lbu	a5,.LANCHOR0+24
+ 311      83C70700 
+  31:src/MemoryAllocator.cpp ****     {
+ 312              		.loc 1 31 5
+ 313 01b8 638C0702 		beqz	a5,.L22
+ 314              	.LVL20:
+ 315              	.L18:
+  35:src/MemoryAllocator.cpp ****     {
+ 316              		.loc 1 35 5 is_stmt 1
+  35:src/MemoryAllocator.cpp ****     {
+ 317              		.loc 1 35 24 is_stmt 0
+ 318 01bc 97070000 		ld	a5,.LANCHOR0+8
+ 318      83B70700 
+  35:src/MemoryAllocator.cpp ****     {
+ 319              		.loc 1 35 5
+ 320 01c4 63EC9702 		bltu	a5,s1,.L20
+  39:src/MemoryAllocator.cpp **** 
+ 321              		.loc 1 39 5 is_stmt 1
+  39:src/MemoryAllocator.cpp **** 
+ 322              		.loc 1 39 23 is_stmt 0
+ 323 01c8 93850400 		mv	a1,s1
+ 324 01cc 17050000 		lla	a0,.LANCHOR0+16
+ 324      13050500 
+ 325 01d4 97000000 		call	_ZN15MemoryAllocator11findBestFitEPPNS_9FreeBlockEm
+ 325      E7800000 
+ 326              	.LVL21:
+ 327              	.L17:
+  41:src/MemoryAllocator.cpp **** 
+ 328              		.loc 1 41 1
+ 329 01dc 83308101 		ld	ra,24(sp)
+ 330              		.cfi_remember_state
+ 331              		.cfi_restore 1
+ 332 01e0 03340101 		ld	s0,16(sp)
+ 333              		.cfi_restore 8
+ 334              		.cfi_def_cfa 2, 32
+ 335 01e4 83348100 		ld	s1,8(sp)
+ 336              		.cfi_restore 9
+ 337              	.LVL22:
+ 338 01e8 13010102 		addi	sp,sp,32
+ 339              		.cfi_def_cfa_offset 0
+ 340 01ec 67800000 		jr	ra
+GAS LISTING /tmp/ccVMFa3H.s 			page 10
+
+
+ 341              	.LVL23:
+ 342              	.L22:
+ 343              		.cfi_restore_state
+  33:src/MemoryAllocator.cpp ****     }
+ 344              		.loc 1 33 9 is_stmt 1
+  33:src/MemoryAllocator.cpp ****     }
+ 345              		.loc 1 33 25 is_stmt 0
+ 346 01f0 97000000 		call	_ZN15MemoryAllocator16initializeMemoryEv
+ 346      E7800000 
+ 347              	.LVL24:
+ 348 01f8 6FF05FFC 		j	.L18
+ 349              	.L20:
+  37:src/MemoryAllocator.cpp ****     }
+ 350              		.loc 1 37 16
+ 351 01fc 13050000 		li	a0,0
+ 352 0200 6FF0DFFD 		j	.L17
+ 353              		.cfi_endproc
+ 354              	.LFE1:
+ 356              		.align	2
+ 357              		.globl	_ZN15MemoryAllocator17findNextFreeBlockEPNS_9FreeBlockE
+ 359              	_ZN15MemoryAllocator17findNextFreeBlockEPNS_9FreeBlockE:
+ 360              	.LFB4:
+ 109:src/MemoryAllocator.cpp **** MemoryAllocator::FreeBlock* MemoryAllocator::findNextFreeBlock(FreeBlock* memoryToFree)
+ 110:src/MemoryAllocator.cpp **** {
+ 361              		.loc 1 110 1 is_stmt 1
+ 362              		.cfi_startproc
+ 363              	.LVL25:
+ 364 0204 130101FF 		addi	sp,sp,-16
+ 365              		.cfi_def_cfa_offset 16
+ 366 0208 23348100 		sd	s0,8(sp)
+ 367              		.cfi_offset 8, -8
+ 368 020c 13040101 		addi	s0,sp,16
+ 369              		.cfi_def_cfa 8, 0
+ 370 0210 93070500 		mv	a5,a0
+ 111:src/MemoryAllocator.cpp ****     for(uint8* i = (uint8*)memoryToFree; i + MEM_BLOCK_SIZE <= (uint8*)HEAP_END_ADDR; i+= MEM_BLOCK
+ 371              		.loc 1 111 5
+ 372              	.LVL26:
+ 373              	.L25:
+ 374              	.LBB6:
+ 375              		.loc 1 111 61 discriminator 1
+ 376 0214 13850700 		mv	a0,a5
+ 377              		.loc 1 111 44 is_stmt 0 discriminator 1
+ 378 0218 93870704 		addi	a5,a5,64
+ 379              	.LVL27:
+ 380              		.loc 1 111 64 discriminator 1
+ 381 021c 17070000 		la	a4,HEAP_END_ADDR
+ 381      03370700 
+ 382 0224 03370700 		ld	a4,0(a4)
+ 383              		.loc 1 111 61 discriminator 1
+ 384 0228 6368F700 		bgtu	a5,a4,.L26
+ 112:src/MemoryAllocator.cpp ****     {
+ 113:src/MemoryAllocator.cpp ****         if(((FreeBlock*)i)->flagFree)
+ 385              		.loc 1 113 9 is_stmt 1
+ 386              		.loc 1 113 29 is_stmt 0
+ 387 022c 03470500 		lbu	a4,0(a0)
+ 388              		.loc 1 113 9
+ 389 0230 E30207FE 		beqz	a4,.L25
+GAS LISTING /tmp/ccVMFa3H.s 			page 11
+
+
+ 390 0234 6F008000 		j	.L23
+ 391              	.L26:
+ 392              	.LBE6:
+ 114:src/MemoryAllocator.cpp ****         {
+ 115:src/MemoryAllocator.cpp ****             return (FreeBlock*)i;
+ 116:src/MemoryAllocator.cpp ****         }
+ 117:src/MemoryAllocator.cpp ****     }
+ 118:src/MemoryAllocator.cpp ****     return nullptr;
+ 393              		.loc 1 118 12
+ 394 0238 13050000 		li	a0,0
+ 395              	.LVL28:
+ 396              	.L23:
+ 119:src/MemoryAllocator.cpp **** }
+ 397              		.loc 1 119 1
+ 398 023c 03348100 		ld	s0,8(sp)
+ 399              		.cfi_restore 8
+ 400              		.cfi_def_cfa 2, 16
+ 401 0240 13010101 		addi	sp,sp,16
+ 402              		.cfi_def_cfa_offset 0
+ 403 0244 67800000 		jr	ra
+ 404              		.cfi_endproc
+ 405              	.LFE4:
+ 407              		.align	2
+ 408              		.globl	_ZN15MemoryAllocator21findPreviousFreeBlockEPNS_9FreeBlockES1_
+ 410              	_ZN15MemoryAllocator21findPreviousFreeBlockEPNS_9FreeBlockES1_:
+ 411              	.LFB5:
+ 120:src/MemoryAllocator.cpp **** 
+ 121:src/MemoryAllocator.cpp **** MemoryAllocator::FreeBlock* MemoryAllocator::findPreviousFreeBlock(FreeBlock* head, FreeBlock* memo
+ 122:src/MemoryAllocator.cpp **** {
+ 412              		.loc 1 122 1 is_stmt 1
+ 413              		.cfi_startproc
+ 414              	.LVL29:
+ 415 0248 130101FF 		addi	sp,sp,-16
+ 416              		.cfi_def_cfa_offset 16
+ 417 024c 23348100 		sd	s0,8(sp)
+ 418              		.cfi_offset 8, -8
+ 419 0250 13040101 		addi	s0,sp,16
+ 420              		.cfi_def_cfa 8, 0
+ 421              	.LVL30:
+ 422              	.L30:
+ 123:src/MemoryAllocator.cpp ****     FreeBlock* temp = head;
+ 124:src/MemoryAllocator.cpp ****     for(; temp && temp <= memoryToFree; temp = temp->nextBlock){}
+ 423              		.loc 1 124 5 discriminator 3
+ 424              		.loc 1 124 16 discriminator 3
+ 425 0254 63080500 		beqz	a0,.L29
+ 426              		.loc 1 124 16 is_stmt 0 discriminator 1
+ 427 0258 63E6A500 		bgtu	a0,a1,.L29
+ 428              		.loc 1 124 5 is_stmt 1 discriminator 2
+ 429              		.loc 1 124 46 is_stmt 0 discriminator 2
+ 430 025c 03350501 		ld	a0,16(a0)
+ 431              	.LVL31:
+ 432              		.loc 1 124 5 discriminator 2
+ 433 0260 6FF05FFF 		j	.L30
+ 434              	.L29:
+ 125:src/MemoryAllocator.cpp ****     return temp;
+ 435              		.loc 1 125 5 is_stmt 1
+ 126:src/MemoryAllocator.cpp **** }
+GAS LISTING /tmp/ccVMFa3H.s 			page 12
+
+
+ 436              		.loc 1 126 1 is_stmt 0
+ 437 0264 03348100 		ld	s0,8(sp)
+ 438              		.cfi_restore 8
+ 439              		.cfi_def_cfa 2, 16
+ 440 0268 13010101 		addi	sp,sp,16
+ 441              		.cfi_def_cfa_offset 0
+ 442 026c 67800000 		jr	ra
+ 443              		.cfi_endproc
+ 444              	.LFE5:
+ 446              		.align	2
+ 447              		.globl	_ZN15MemoryAllocator21connectAdjacentBlocksEPNS_9FreeBlockES1_
+ 449              	_ZN15MemoryAllocator21connectAdjacentBlocksEPNS_9FreeBlockES1_:
+ 450              	.LFB7:
+ 127:src/MemoryAllocator.cpp **** int MemoryAllocator::freeMemory(void *addressToFree)
+ 128:src/MemoryAllocator.cpp **** {
+ 129:src/MemoryAllocator.cpp ****     if(!addressToFree)
+ 130:src/MemoryAllocator.cpp ****     {
+ 131:src/MemoryAllocator.cpp ****         return -1;
+ 132:src/MemoryAllocator.cpp ****     }
+ 133:src/MemoryAllocator.cpp ****     OccupiedBlock* tempAddress = (OccupiedBlock*)addressToFree;
+ 134:src/MemoryAllocator.cpp ****     tempAddress--;
+ 135:src/MemoryAllocator.cpp ****     int numOfTakenBlocks = tempAddress->numOfBlocks;
+ 136:src/MemoryAllocator.cpp ****     FreeBlock* newFreeBlock = (FreeBlock*)tempAddress;
+ 137:src/MemoryAllocator.cpp **** 
+ 138:src/MemoryAllocator.cpp ****     numOfFreeBlocks += numOfTakenBlocks;
+ 139:src/MemoryAllocator.cpp ****     FreeBlock* nextFreeBlock = findNextFreeBlock(newFreeBlock);
+ 140:src/MemoryAllocator.cpp ****     FreeBlock* previousFreeBlock = findPreviousFreeBlock(firstFreeBlock, newFreeBlock);
+ 141:src/MemoryAllocator.cpp **** 
+ 142:src/MemoryAllocator.cpp ****     newFreeBlock->flagFree = true;
+ 143:src/MemoryAllocator.cpp ****     newFreeBlock->numOfBlocks = numOfTakenBlocks;
+ 144:src/MemoryAllocator.cpp ****     newFreeBlock->nextBlock = nullptr;
+ 145:src/MemoryAllocator.cpp ****     newFreeBlock->previousBlock = nullptr;
+ 146:src/MemoryAllocator.cpp **** 
+ 147:src/MemoryAllocator.cpp ****     connectAdjacentBlocks(newFreeBlock, nextFreeBlock);
+ 148:src/MemoryAllocator.cpp ****     if(previousFreeBlock)
+ 149:src/MemoryAllocator.cpp ****     {
+ 150:src/MemoryAllocator.cpp ****         connectAdjacentBlocks(previousFreeBlock, newFreeBlock);
+ 151:src/MemoryAllocator.cpp ****     }
+ 152:src/MemoryAllocator.cpp ****     else
+ 153:src/MemoryAllocator.cpp ****     {
+ 154:src/MemoryAllocator.cpp ****         firstFreeBlock = newFreeBlock;
+ 155:src/MemoryAllocator.cpp ****     }
+ 156:src/MemoryAllocator.cpp **** 
+ 157:src/MemoryAllocator.cpp **** 
+ 158:src/MemoryAllocator.cpp ****     return 0;
+ 159:src/MemoryAllocator.cpp **** }
+ 160:src/MemoryAllocator.cpp **** 
+ 161:src/MemoryAllocator.cpp **** void MemoryAllocator::connectAdjacentBlocks(FreeBlock* previousBlock, FreeBlock* adjacentBlock)
+ 162:src/MemoryAllocator.cpp **** {
+ 451              		.loc 1 162 1 is_stmt 1
+ 452              		.cfi_startproc
+ 453              	.LVL32:
+ 454 0270 130101FF 		addi	sp,sp,-16
+ 455              		.cfi_def_cfa_offset 16
+ 456 0274 23348100 		sd	s0,8(sp)
+ 457              		.cfi_offset 8, -8
+ 458 0278 13040101 		addi	s0,sp,16
+GAS LISTING /tmp/ccVMFa3H.s 			page 13
+
+
+ 459              		.cfi_def_cfa 8, 0
+ 163:src/MemoryAllocator.cpp **** 
+ 164:src/MemoryAllocator.cpp **** 
+ 165:src/MemoryAllocator.cpp ****     if(adjacentBlock == (FreeBlock*)((uint8 *)previousBlock + previousBlock->numOfBlocks * MEM_BLOC
+ 460              		.loc 1 165 5
+ 461              		.loc 1 165 78 is_stmt 0
+ 462 027c 03378500 		ld	a4,8(a0)
+ 463              		.loc 1 165 90
+ 464 0280 93176700 		slli	a5,a4,6
+ 465              		.loc 1 165 25
+ 466 0284 B307F500 		add	a5,a0,a5
+ 467              		.loc 1 165 5
+ 468 0288 638EB700 		beq	a5,a1,.L36
+ 166:src/MemoryAllocator.cpp ****     {
+ 167:src/MemoryAllocator.cpp ****         previousBlock->numOfBlocks += adjacentBlock->numOfBlocks;
+ 168:src/MemoryAllocator.cpp ****         previousBlock->nextBlock = adjacentBlock->nextBlock;
+ 169:src/MemoryAllocator.cpp ****         previousBlock->previousBlock = adjacentBlock->previousBlock;
+ 170:src/MemoryAllocator.cpp ****     }
+ 171:src/MemoryAllocator.cpp ****     else
+ 172:src/MemoryAllocator.cpp ****     {
+ 173:src/MemoryAllocator.cpp ****         previousBlock->nextBlock = adjacentBlock;
+ 469              		.loc 1 173 9 is_stmt 1
+ 470              		.loc 1 173 34 is_stmt 0
+ 471 028c 2338B500 		sd	a1,16(a0)
+ 174:src/MemoryAllocator.cpp ****         if(adjacentBlock)
+ 472              		.loc 1 174 9 is_stmt 1
+ 473 0290 63840500 		beqz	a1,.L32
+ 175:src/MemoryAllocator.cpp ****         {
+ 176:src/MemoryAllocator.cpp ****             adjacentBlock->previousBlock = previousBlock;
+ 474              		.loc 1 176 13
+ 475              		.loc 1 176 42 is_stmt 0
+ 476 0294 23BCA500 		sd	a0,24(a1)
+ 477              	.L32:
+ 177:src/MemoryAllocator.cpp ****         }
+ 178:src/MemoryAllocator.cpp **** 
+ 179:src/MemoryAllocator.cpp ****     }
+ 180:src/MemoryAllocator.cpp **** }
+ 478              		.loc 1 180 1
+ 479 0298 03348100 		ld	s0,8(sp)
+ 480              		.cfi_remember_state
+ 481              		.cfi_restore 8
+ 482              		.cfi_def_cfa 2, 16
+ 483 029c 13010101 		addi	sp,sp,16
+ 484              		.cfi_def_cfa_offset 0
+ 485 02a0 67800000 		jr	ra
+ 486              	.L36:
+ 487              		.cfi_restore_state
+ 167:src/MemoryAllocator.cpp ****         previousBlock->nextBlock = adjacentBlock->nextBlock;
+ 488              		.loc 1 167 9 is_stmt 1
+ 167:src/MemoryAllocator.cpp ****         previousBlock->nextBlock = adjacentBlock->nextBlock;
+ 489              		.loc 1 167 54 is_stmt 0
+ 490 02a4 83B78500 		ld	a5,8(a1)
+ 167:src/MemoryAllocator.cpp ****         previousBlock->nextBlock = adjacentBlock->nextBlock;
+ 491              		.loc 1 167 36
+ 492 02a8 3307F700 		add	a4,a4,a5
+ 493 02ac 2334E500 		sd	a4,8(a0)
+ 168:src/MemoryAllocator.cpp ****         previousBlock->previousBlock = adjacentBlock->previousBlock;
+GAS LISTING /tmp/ccVMFa3H.s 			page 14
+
+
+ 494              		.loc 1 168 9 is_stmt 1
+ 168:src/MemoryAllocator.cpp ****         previousBlock->previousBlock = adjacentBlock->previousBlock;
+ 495              		.loc 1 168 51 is_stmt 0
+ 496 02b0 83B70501 		ld	a5,16(a1)
+ 168:src/MemoryAllocator.cpp ****         previousBlock->previousBlock = adjacentBlock->previousBlock;
+ 497              		.loc 1 168 34
+ 498 02b4 2338F500 		sd	a5,16(a0)
+ 169:src/MemoryAllocator.cpp ****     }
+ 499              		.loc 1 169 9 is_stmt 1
+ 169:src/MemoryAllocator.cpp ****     }
+ 500              		.loc 1 169 55 is_stmt 0
+ 501 02b8 83B78501 		ld	a5,24(a1)
+ 169:src/MemoryAllocator.cpp ****     }
+ 502              		.loc 1 169 38
+ 503 02bc 233CF500 		sd	a5,24(a0)
+ 504 02c0 6FF09FFD 		j	.L32
+ 505              		.cfi_endproc
+ 506              	.LFE7:
+ 508              		.align	2
+ 509              		.globl	_ZN15MemoryAllocator10freeMemoryEPv
+ 511              	_ZN15MemoryAllocator10freeMemoryEPv:
+ 512              	.LFB6:
+ 128:src/MemoryAllocator.cpp ****     if(!addressToFree)
+ 513              		.loc 1 128 1 is_stmt 1
+ 514              		.cfi_startproc
+ 515              	.LVL33:
+ 129:src/MemoryAllocator.cpp ****     {
+ 516              		.loc 1 129 5
+ 517 02c4 630E050C 		beqz	a0,.L40
+ 128:src/MemoryAllocator.cpp ****     if(!addressToFree)
+ 518              		.loc 1 128 1 is_stmt 0
+ 519 02c8 130101FC 		addi	sp,sp,-64
+ 520              		.cfi_def_cfa_offset 64
+ 521 02cc 233C1102 		sd	ra,56(sp)
+ 522 02d0 23388102 		sd	s0,48(sp)
+ 523 02d4 23349102 		sd	s1,40(sp)
+ 524 02d8 23302103 		sd	s2,32(sp)
+ 525 02dc 233C3101 		sd	s3,24(sp)
+ 526 02e0 23384101 		sd	s4,16(sp)
+ 527 02e4 23345101 		sd	s5,8(sp)
+ 528              		.cfi_offset 1, -8
+ 529              		.cfi_offset 8, -16
+ 530              		.cfi_offset 9, -24
+ 531              		.cfi_offset 18, -32
+ 532              		.cfi_offset 19, -40
+ 533              		.cfi_offset 20, -48
+ 534              		.cfi_offset 21, -56
+ 535 02e8 13040104 		addi	s0,sp,64
+ 536              		.cfi_def_cfa 8, 0
+ 537 02ec 93040500 		mv	s1,a0
+ 133:src/MemoryAllocator.cpp ****     tempAddress--;
+ 538              		.loc 1 133 5 is_stmt 1
+ 539              	.LVL34:
+ 134:src/MemoryAllocator.cpp ****     int numOfTakenBlocks = tempAddress->numOfBlocks;
+ 540              		.loc 1 134 5
+ 134:src/MemoryAllocator.cpp ****     int numOfTakenBlocks = tempAddress->numOfBlocks;
+ 541              		.loc 1 134 16 is_stmt 0
+GAS LISTING /tmp/ccVMFa3H.s 			page 15
+
+
+ 542 02f0 130905FF 		addi	s2,a0,-16
+ 543              	.LVL35:
+ 135:src/MemoryAllocator.cpp ****     FreeBlock* newFreeBlock = (FreeBlock*)tempAddress;
+ 544              		.loc 1 135 5 is_stmt 1
+ 135:src/MemoryAllocator.cpp ****     FreeBlock* newFreeBlock = (FreeBlock*)tempAddress;
+ 545              		.loc 1 135 9 is_stmt 0
+ 546 02f4 832A85FF 		lw	s5,-8(a0)
+ 547              	.LVL36:
+ 136:src/MemoryAllocator.cpp **** 
+ 548              		.loc 1 136 5 is_stmt 1
+ 138:src/MemoryAllocator.cpp ****     FreeBlock* nextFreeBlock = findNextFreeBlock(newFreeBlock);
+ 549              		.loc 1 138 5
+ 138:src/MemoryAllocator.cpp ****     FreeBlock* nextFreeBlock = findNextFreeBlock(newFreeBlock);
+ 550              		.loc 1 138 21 is_stmt 0
+ 551 02f8 97090000 		lla	s3,.LANCHOR0
+ 551      93890900 
+ 552 0300 83B78900 		ld	a5,8(s3)
+ 553 0304 B3875701 		add	a5,a5,s5
+ 554 0308 23B4F900 		sd	a5,8(s3)
+ 139:src/MemoryAllocator.cpp ****     FreeBlock* previousFreeBlock = findPreviousFreeBlock(firstFreeBlock, newFreeBlock);
+ 555              		.loc 1 139 5 is_stmt 1
+ 139:src/MemoryAllocator.cpp ****     FreeBlock* previousFreeBlock = findPreviousFreeBlock(firstFreeBlock, newFreeBlock);
+ 556              		.loc 1 139 49 is_stmt 0
+ 557 030c 13050900 		mv	a0,s2
+ 558              	.LVL37:
+ 559 0310 97000000 		call	_ZN15MemoryAllocator17findNextFreeBlockEPNS_9FreeBlockE
+ 559      E7800000 
+ 560              	.LVL38:
+ 561 0318 130A0500 		mv	s4,a0
+ 562              	.LVL39:
+ 140:src/MemoryAllocator.cpp **** 
+ 563              		.loc 1 140 5 is_stmt 1
+ 140:src/MemoryAllocator.cpp **** 
+ 564              		.loc 1 140 57 is_stmt 0
+ 565 031c 93050900 		mv	a1,s2
+ 566 0320 03B50901 		ld	a0,16(s3)
+ 567              	.LVL40:
+ 568 0324 97000000 		call	_ZN15MemoryAllocator21findPreviousFreeBlockEPNS_9FreeBlockES1_
+ 568      E7800000 
+ 569              	.LVL41:
+ 570 032c 93090500 		mv	s3,a0
+ 571              	.LVL42:
+ 142:src/MemoryAllocator.cpp ****     newFreeBlock->numOfBlocks = numOfTakenBlocks;
+ 572              		.loc 1 142 5 is_stmt 1
+ 142:src/MemoryAllocator.cpp ****     newFreeBlock->numOfBlocks = numOfTakenBlocks;
+ 573              		.loc 1 142 28 is_stmt 0
+ 574 0330 93071000 		li	a5,1
+ 575 0334 2388F4FE 		sb	a5,-16(s1)
+ 143:src/MemoryAllocator.cpp ****     newFreeBlock->nextBlock = nullptr;
+ 576              		.loc 1 143 5 is_stmt 1
+ 143:src/MemoryAllocator.cpp ****     newFreeBlock->nextBlock = nullptr;
+ 577              		.loc 1 143 31 is_stmt 0
+ 578 0338 23BC54FF 		sd	s5,-8(s1)
+ 144:src/MemoryAllocator.cpp ****     newFreeBlock->previousBlock = nullptr;
+ 579              		.loc 1 144 5 is_stmt 1
+ 144:src/MemoryAllocator.cpp ****     newFreeBlock->previousBlock = nullptr;
+ 580              		.loc 1 144 29 is_stmt 0
+GAS LISTING /tmp/ccVMFa3H.s 			page 16
+
+
+ 581 033c 23B00400 		sd	zero,0(s1)
+ 145:src/MemoryAllocator.cpp **** 
+ 582              		.loc 1 145 5 is_stmt 1
+ 145:src/MemoryAllocator.cpp **** 
+ 583              		.loc 1 145 33 is_stmt 0
+ 584 0340 23B40400 		sd	zero,8(s1)
+ 147:src/MemoryAllocator.cpp ****     if(previousFreeBlock)
+ 585              		.loc 1 147 5 is_stmt 1
+ 147:src/MemoryAllocator.cpp ****     if(previousFreeBlock)
+ 586              		.loc 1 147 26 is_stmt 0
+ 587 0344 93050A00 		mv	a1,s4
+ 588 0348 13050900 		mv	a0,s2
+ 589              	.LVL43:
+ 590 034c 97000000 		call	_ZN15MemoryAllocator21connectAdjacentBlocksEPNS_9FreeBlockES1_
+ 590      E7800000 
+ 591              	.LVL44:
+ 148:src/MemoryAllocator.cpp ****     {
+ 592              		.loc 1 148 5 is_stmt 1
+ 593 0354 638E0902 		beqz	s3,.L39
+ 150:src/MemoryAllocator.cpp ****     }
+ 594              		.loc 1 150 9
+ 150:src/MemoryAllocator.cpp ****     }
+ 595              		.loc 1 150 30 is_stmt 0
+ 596 0358 93050900 		mv	a1,s2
+ 597 035c 13850900 		mv	a0,s3
+ 598 0360 97000000 		call	_ZN15MemoryAllocator21connectAdjacentBlocksEPNS_9FreeBlockES1_
+ 598      E7800000 
+ 599              	.LVL45:
+ 158:src/MemoryAllocator.cpp **** }
+ 600              		.loc 1 158 12
+ 601 0368 13050000 		li	a0,0
+ 602              	.L38:
+ 159:src/MemoryAllocator.cpp **** 
+ 603              		.loc 1 159 1
+ 604 036c 83308103 		ld	ra,56(sp)
+ 605              		.cfi_remember_state
+ 606              		.cfi_restore 1
+ 607 0370 03340103 		ld	s0,48(sp)
+ 608              		.cfi_restore 8
+ 609              		.cfi_def_cfa 2, 64
+ 610 0374 83348102 		ld	s1,40(sp)
+ 611              		.cfi_restore 9
+ 612              	.LVL46:
+ 613 0378 03390102 		ld	s2,32(sp)
+ 614              		.cfi_restore 18
+ 615              	.LVL47:
+ 616 037c 83398101 		ld	s3,24(sp)
+ 617              		.cfi_restore 19
+ 618              	.LVL48:
+ 619 0380 033A0101 		ld	s4,16(sp)
+ 620              		.cfi_restore 20
+ 621              	.LVL49:
+ 622 0384 833A8100 		ld	s5,8(sp)
+ 623              		.cfi_restore 21
+ 624              	.LVL50:
+ 625 0388 13010104 		addi	sp,sp,64
+ 626              		.cfi_def_cfa_offset 0
+GAS LISTING /tmp/ccVMFa3H.s 			page 17
+
+
+ 627 038c 67800000 		jr	ra
+ 628              	.LVL51:
+ 629              	.L39:
+ 630              		.cfi_restore_state
+ 154:src/MemoryAllocator.cpp ****     }
+ 631              		.loc 1 154 9 is_stmt 1
+ 154:src/MemoryAllocator.cpp ****     }
+ 632              		.loc 1 154 24 is_stmt 0
+ 633 0390 97070000 		sd	s2,.LANCHOR0+16,a5
+ 633      23B02701 
+ 158:src/MemoryAllocator.cpp **** }
+ 634              		.loc 1 158 12
+ 635 0398 13050000 		li	a0,0
+ 636 039c 6FF01FFD 		j	.L38
+ 637              	.LVL52:
+ 638              	.L40:
+ 639              		.cfi_def_cfa_register 2
+ 640              		.cfi_restore 1
+ 641              		.cfi_restore 8
+ 642              		.cfi_restore 9
+ 643              		.cfi_restore 18
+ 644              		.cfi_restore 19
+ 645              		.cfi_restore 20
+ 646              		.cfi_restore 21
+ 131:src/MemoryAllocator.cpp ****     }
+ 647              		.loc 1 131 17
+ 648 03a0 1305F0FF 		li	a0,-1
+ 649              	.LVL53:
+ 159:src/MemoryAllocator.cpp **** 
+ 650              		.loc 1 159 1
+ 651 03a4 67800000 		ret
+ 652              		.cfi_endproc
+ 653              	.LFE6:
+ 655              		.align	2
+ 656              		.globl	_ZN15MemoryAllocator19getLargestFreeBlockEv
+ 658              	_ZN15MemoryAllocator19getLargestFreeBlockEv:
+ 659              	.LFB8:
+ 181:src/MemoryAllocator.cpp **** 
+ 182:src/MemoryAllocator.cpp **** size_t  MemoryAllocator::getLargestFreeBlock()
+ 183:src/MemoryAllocator.cpp **** {
+ 660              		.loc 1 183 1 is_stmt 1
+ 661              		.cfi_startproc
+ 662 03a8 130101FF 		addi	sp,sp,-16
+ 663              		.cfi_def_cfa_offset 16
+ 664 03ac 23348100 		sd	s0,8(sp)
+ 665              		.cfi_offset 8, -8
+ 666 03b0 13040101 		addi	s0,sp,16
+ 667              		.cfi_def_cfa 8, 0
+ 184:src/MemoryAllocator.cpp ****     size_t largestBlock = firstFreeBlock->numOfBlocks;
+ 668              		.loc 1 184 5
+ 669              		.loc 1 184 43 is_stmt 0
+ 670 03b4 97070000 		ld	a5,.LANCHOR0+16
+ 670      83B70700 
+ 671              		.loc 1 184 12
+ 672 03bc 03B58700 		ld	a0,8(a5)
+ 673              	.LVL54:
+ 185:src/MemoryAllocator.cpp ****     for(FreeBlock* curr = firstFreeBlock->nextBlock; curr; curr = curr->nextBlock)
+GAS LISTING /tmp/ccVMFa3H.s 			page 18
+
+
+ 674              		.loc 1 185 5 is_stmt 1
+ 675              	.LBB7:
+ 676              		.loc 1 185 20 is_stmt 0
+ 677 03c0 83B70701 		ld	a5,16(a5)
+ 678              	.LVL55:
+ 679 03c4 6F008000 		j	.L48
+ 680              	.LVL56:
+ 681              	.L47:
+ 682              		.loc 1 185 5 is_stmt 1 discriminator 2
+ 683              		.loc 1 185 65 is_stmt 0 discriminator 2
+ 684 03c8 83B70701 		ld	a5,16(a5)
+ 685              	.LVL57:
+ 686              	.L48:
+ 687              		.loc 1 185 54 is_stmt 1 discriminator 1
+ 688 03cc 638A0700 		beqz	a5,.L46
+ 186:src/MemoryAllocator.cpp ****     {
+ 187:src/MemoryAllocator.cpp ****         if(curr->numOfBlocks > largestBlock)
+ 689              		.loc 1 187 9
+ 690              		.loc 1 187 18 is_stmt 0
+ 691 03d0 03B78700 		ld	a4,8(a5)
+ 692              		.loc 1 187 9
+ 693 03d4 E37AE5FE 		bleu	a4,a0,.L47
+ 188:src/MemoryAllocator.cpp ****         {
+ 189:src/MemoryAllocator.cpp ****             largestBlock = curr->numOfBlocks;
+ 694              		.loc 1 189 26
+ 695 03d8 13050700 		mv	a0,a4
+ 696              	.LVL58:
+ 697 03dc 6FF0DFFE 		j	.L47
+ 698              	.LVL59:
+ 699              	.L46:
+ 700              	.LBE7:
+ 190:src/MemoryAllocator.cpp ****         }
+ 191:src/MemoryAllocator.cpp ****     }
+ 192:src/MemoryAllocator.cpp ****     return largestBlock * MEM_BLOCK_SIZE;
+ 701              		.loc 1 192 5 is_stmt 1
+ 193:src/MemoryAllocator.cpp **** }
+ 702              		.loc 1 193 1 is_stmt 0
+ 703 03e0 13156500 		slli	a0,a0,6
+ 704              	.LVL60:
+ 705 03e4 03348100 		ld	s0,8(sp)
+ 706              		.cfi_restore 8
+ 707              		.cfi_def_cfa 2, 16
+ 708 03e8 13010101 		addi	sp,sp,16
+ 709              		.cfi_def_cfa_offset 0
+ 710 03ec 67800000 		jr	ra
+ 711              		.cfi_endproc
+ 712              	.LFE8:
+ 714              		.align	2
+ 715              		.globl	_ZN15MemoryAllocator12getFreeSpaceEv
+ 717              	_ZN15MemoryAllocator12getFreeSpaceEv:
+ 718              	.LFB9:
+ 194:src/MemoryAllocator.cpp **** size_t MemoryAllocator::getFreeSpace()
+ 195:src/MemoryAllocator.cpp **** {
+ 719              		.loc 1 195 1 is_stmt 1
+ 720              		.cfi_startproc
+ 721 03f0 130101FF 		addi	sp,sp,-16
+ 722              		.cfi_def_cfa_offset 16
+GAS LISTING /tmp/ccVMFa3H.s 			page 19
+
+
+ 723 03f4 23348100 		sd	s0,8(sp)
+ 724              		.cfi_offset 8, -8
+ 725 03f8 13040101 		addi	s0,sp,16
+ 726              		.cfi_def_cfa 8, 0
+ 196:src/MemoryAllocator.cpp ****     return numOfFreeBlocks * MEM_BLOCK_SIZE;
+ 727              		.loc 1 196 5
+ 197:src/MemoryAllocator.cpp **** }
+ 728              		.loc 1 197 1 is_stmt 0
+ 729 03fc 17050000 		ld	a0,.LANCHOR0+8
+ 729      03350500 
+ 730 0404 13156500 		slli	a0,a0,6
+ 731 0408 03348100 		ld	s0,8(sp)
+ 732              		.cfi_restore 8
+ 733              		.cfi_def_cfa 2, 16
+ 734 040c 13010101 		addi	sp,sp,16
+ 735              		.cfi_def_cfa_offset 0
+ 736 0410 67800000 		jr	ra
+ 737              		.cfi_endproc
+ 738              	.LFE9:
+ 740              		.globl	_ZN15MemoryAllocator14firstFreeBlockE
+ 741              		.globl	_ZN15MemoryAllocator15numOfFreeBlocksE
+ 742              		.globl	_ZN15MemoryAllocator13NUM_OF_BLOCKSE
+ 743              		.globl	_ZN15MemoryAllocator20flagSystemInitializeE
+ 744              		.bss
+ 745              		.align	3
+ 746              		.set	.LANCHOR0,. + 0
+ 749              	_ZN15MemoryAllocator13NUM_OF_BLOCKSE:
+ 750 0000 00000000 		.zero	8
+ 750      00000000 
+ 753              	_ZN15MemoryAllocator15numOfFreeBlocksE:
+ 754 0008 00000000 		.zero	8
+ 754      00000000 
+ 757              	_ZN15MemoryAllocator14firstFreeBlockE:
+ 758 0010 00000000 		.zero	8
+ 758      00000000 
+ 761              	_ZN15MemoryAllocator20flagSystemInitializeE:
+ 762 0018 00       		.zero	1
+ 763              		.text
+ 764              	.Letext0:
+ 765              		.file 2 "src/../h/../lib/hw.h"
+ 766              		.file 3 "src/../h/MemoryAllocator.hpp"
+GAS LISTING /tmp/ccVMFa3H.s 			page 20
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 MemoryAllocator.cpp
+     /tmp/ccVMFa3H.s:9      .text:0000000000000000 _ZN15MemoryAllocator16initializeMemoryEv
+     /tmp/ccVMFa3H.s:13     .text:0000000000000000 .L0 
+     /tmp/ccVMFa3H.s:14     .text:0000000000000000 .L0 
+     /tmp/ccVMFa3H.s:15     .text:0000000000000004 .L0 
+     /tmp/ccVMFa3H.s:17     .text:0000000000000008 .L0 
+     /tmp/ccVMFa3H.s:19     .text:000000000000000c .L0 
+     /tmp/ccVMFa3H.s:21     .text:000000000000000c .L0 
+     /tmp/ccVMFa3H.s:22     .text:000000000000000c .L0 
+     /tmp/ccVMFa3H.s:25     .text:0000000000000018 .L0 
+     /tmp/ccVMFa3H.s:28     .text:0000000000000024 .L0 
+     /tmp/ccVMFa3H.s:30     .text:0000000000000028 .L0 
+     /tmp/ccVMFa3H.s:32     .text:000000000000002c .L0 
+     /tmp/ccVMFa3H.s:35     .text:0000000000000038 .L0 
+     /tmp/ccVMFa3H.s:36     .text:0000000000000038 .L0 
+     /tmp/ccVMFa3H.s:38     .text:000000000000003c .L0 
+     /tmp/ccVMFa3H.s:39     .text:000000000000003c .L0 
+     /tmp/ccVMFa3H.s:41     .text:0000000000000040 .L0 
+     /tmp/ccVMFa3H.s:42     .text:0000000000000040 .L0 
+     /tmp/ccVMFa3H.s:45     .text:0000000000000048 .L0 
+     /tmp/ccVMFa3H.s:46     .text:0000000000000048 .L0 
+     /tmp/ccVMFa3H.s:48     .text:000000000000004c .L0 
+     /tmp/ccVMFa3H.s:51     .text:0000000000000054 .L0 
+     /tmp/ccVMFa3H.s:52     .text:0000000000000054 .L0 
+     /tmp/ccVMFa3H.s:54     .text:0000000000000058 .L0 
+     /tmp/ccVMFa3H.s:55     .text:0000000000000058 .L0 
+     /tmp/ccVMFa3H.s:57     .text:000000000000005c .L0 
+     /tmp/ccVMFa3H.s:58     .text:000000000000005c .L0 
+     /tmp/ccVMFa3H.s:60     .text:0000000000000060 .L0 
+     /tmp/ccVMFa3H.s:61     .text:0000000000000064 .L0 
+     /tmp/ccVMFa3H.s:62     .text:0000000000000064 .L0 
+     /tmp/ccVMFa3H.s:64     .text:0000000000000068 .L0 
+     /tmp/ccVMFa3H.s:66     .text:000000000000006c .L0 
+     /tmp/ccVMFa3H.s:72     .text:000000000000006c _ZN15MemoryAllocator11remapMemoryEPPNS_9FreeBlockES1_m
+     /tmp/ccVMFa3H.s:75     .text:000000000000006c .L0 
+     /tmp/ccVMFa3H.s:77     .text:000000000000006c .L0 
+     /tmp/ccVMFa3H.s:78     .text:0000000000000070 .L0 
+     /tmp/ccVMFa3H.s:80     .text:0000000000000074 .L0 
+     /tmp/ccVMFa3H.s:82     .text:0000000000000078 .L0 
+     /tmp/ccVMFa3H.s:85     .text:0000000000000078 .L0 
+     /tmp/ccVMFa3H.s:86     .text:0000000000000078 .L0 
+     /tmp/ccVMFa3H.s:88     .text:000000000000007c .L0 
+     /tmp/ccVMFa3H.s:90     .text:0000000000000080 .L0 
+     /tmp/ccVMFa3H.s:91     .text:0000000000000080 .L0 
+     /tmp/ccVMFa3H.s:93     .text:0000000000000084 .L0 
+     /tmp/ccVMFa3H.s:95     .text:0000000000000088 .L0 
+     /tmp/ccVMFa3H.s:96     .text:0000000000000088 .L0 
+     /tmp/ccVMFa3H.s:98     .text:000000000000008c .L0 
+     /tmp/ccVMFa3H.s:101    .text:0000000000000090 .L0 
+     /tmp/ccVMFa3H.s:102    .text:0000000000000090 .L0 
+     /tmp/ccVMFa3H.s:104    .text:0000000000000094 .L0 
+     /tmp/ccVMFa3H.s:106    .text:0000000000000098 .L0 
+     /tmp/ccVMFa3H.s:107    .text:0000000000000098 .L0 
+     /tmp/ccVMFa3H.s:109    .text:000000000000009c .L0 
+     /tmp/ccVMFa3H.s:112    .text:00000000000000a0 .L0 
+     /tmp/ccVMFa3H.s:113    .text:00000000000000a0 .L0 
+GAS LISTING /tmp/ccVMFa3H.s 			page 21
+
+
+     /tmp/ccVMFa3H.s:115    .text:00000000000000a4 .L0 
+     /tmp/ccVMFa3H.s:120    .text:00000000000000a8 .L0 
+     /tmp/ccVMFa3H.s:121    .text:00000000000000ac .L0 
+     /tmp/ccVMFa3H.s:122    .text:00000000000000ac .L0 
+     /tmp/ccVMFa3H.s:123    .text:00000000000000ac .L0 
+     /tmp/ccVMFa3H.s:125    .text:00000000000000b0 .L0 
+     /tmp/ccVMFa3H.s:129    .text:00000000000000b4 .L0 
+     /tmp/ccVMFa3H.s:132    .text:00000000000000b4 .L0 
+     /tmp/ccVMFa3H.s:133    .text:00000000000000b4 .L0 
+     /tmp/ccVMFa3H.s:135    .text:00000000000000b8 .L0 
+     /tmp/ccVMFa3H.s:140    .text:00000000000000c0 .L0 
+     /tmp/ccVMFa3H.s:141    .text:00000000000000c0 .L0 
+     /tmp/ccVMFa3H.s:144    .text:00000000000000c4 .L0 
+     /tmp/ccVMFa3H.s:147    .text:00000000000000c8 .L0 
+     /tmp/ccVMFa3H.s:148    .text:00000000000000c8 .L0 
+     /tmp/ccVMFa3H.s:151    .text:00000000000000d0 .L0 
+     /tmp/ccVMFa3H.s:152    .text:00000000000000d0 .L0 
+     /tmp/ccVMFa3H.s:154    .text:00000000000000d4 .L0 
+     /tmp/ccVMFa3H.s:156    .text:00000000000000d8 .L0 
+     /tmp/ccVMFa3H.s:157    .text:00000000000000d8 .L0 
+     /tmp/ccVMFa3H.s:159    .text:00000000000000dc .L0 
+     /tmp/ccVMFa3H.s:161    .text:00000000000000e0 .L0 
+     /tmp/ccVMFa3H.s:162    .text:00000000000000e0 .L0 
+     /tmp/ccVMFa3H.s:165    .text:00000000000000e4 .L0 
+     /tmp/ccVMFa3H.s:166    .text:00000000000000e4 .L0 
+     /tmp/ccVMFa3H.s:168    .text:00000000000000e8 .L0 
+     /tmp/ccVMFa3H.s:170    .text:00000000000000ec .L0 
+     /tmp/ccVMFa3H.s:171    .text:00000000000000ec .L0 
+     /tmp/ccVMFa3H.s:173    .text:00000000000000f0 .L0 
+     /tmp/ccVMFa3H.s:175    .text:00000000000000f4 .L0 
+     /tmp/ccVMFa3H.s:176    .text:00000000000000f4 .L0 
+     /tmp/ccVMFa3H.s:180    .text:00000000000000f8 .L0 
+     /tmp/ccVMFa3H.s:181    .text:00000000000000fc .L0 
+     /tmp/ccVMFa3H.s:187    .text:00000000000000fc _ZN15MemoryAllocator11findBestFitEPPNS_9FreeBlockEm
+     /tmp/ccVMFa3H.s:190    .text:00000000000000fc .L0 
+     /tmp/ccVMFa3H.s:192    .text:00000000000000fc .L0 
+     /tmp/ccVMFa3H.s:193    .text:0000000000000100 .L0 
+     /tmp/ccVMFa3H.s:198    .text:0000000000000110 .L0 
+     /tmp/ccVMFa3H.s:199    .text:0000000000000110 .L0 
+     /tmp/ccVMFa3H.s:200    .text:0000000000000110 .L0 
+     /tmp/ccVMFa3H.s:201    .text:0000000000000110 .L0 
+     /tmp/ccVMFa3H.s:203    .text:0000000000000114 .L0 
+     /tmp/ccVMFa3H.s:206    .text:0000000000000118 .L0 
+     /tmp/ccVMFa3H.s:207    .text:0000000000000118 .L0 
+     /tmp/ccVMFa3H.s:211    .text:000000000000011c .L0 
+     /tmp/ccVMFa3H.s:212    .text:000000000000011c .L0 
+     /tmp/ccVMFa3H.s:218    .text:0000000000000124 .L0 
+     /tmp/ccVMFa3H.s:219    .text:0000000000000124 .L0 
+     /tmp/ccVMFa3H.s:223    .text:0000000000000128 .L0 
+     /tmp/ccVMFa3H.s:225    .text:000000000000012c .L0 
+     /tmp/ccVMFa3H.s:226    .text:000000000000012c .L0 
+     /tmp/ccVMFa3H.s:228    .text:0000000000000130 .L0 
+     /tmp/ccVMFa3H.s:230    .text:0000000000000134 .L0 
+     /tmp/ccVMFa3H.s:231    .text:0000000000000134 .L0 
+     /tmp/ccVMFa3H.s:233    .text:0000000000000138 .L0 
+     /tmp/ccVMFa3H.s:235    .text:000000000000013c .L0 
+     /tmp/ccVMFa3H.s:242    .text:0000000000000144 .L0 
+GAS LISTING /tmp/ccVMFa3H.s 			page 22
+
+
+     /tmp/ccVMFa3H.s:243    .text:0000000000000144 .L0 
+     /tmp/ccVMFa3H.s:249    .text:0000000000000158 .L0 
+     /tmp/ccVMFa3H.s:250    .text:0000000000000158 .L0 
+     /tmp/ccVMFa3H.s:254    .text:0000000000000164 .L0 
+     /tmp/ccVMFa3H.s:255    .text:0000000000000164 .L0 
+     /tmp/ccVMFa3H.s:261    .text:0000000000000174 .L0 
+     /tmp/ccVMFa3H.s:262    .text:0000000000000174 .L0 
+     /tmp/ccVMFa3H.s:263    .text:0000000000000174 .L0 
+     /tmp/ccVMFa3H.s:265    .text:0000000000000178 .L0 
+     /tmp/ccVMFa3H.s:266    .text:0000000000000178 .L0 
+     /tmp/ccVMFa3H.s:269    .text:000000000000017c .L0 
+     /tmp/ccVMFa3H.s:270    .text:000000000000017c .L0 
+     /tmp/ccVMFa3H.s:271    .text:000000000000017c .L0 
+     /tmp/ccVMFa3H.s:274    .text:0000000000000184 .L0 
+     /tmp/ccVMFa3H.s:276    .text:0000000000000188 .L0 
+     /tmp/ccVMFa3H.s:277    .text:0000000000000188 .L0 
+     /tmp/ccVMFa3H.s:279    .text:000000000000018c .L0 
+     /tmp/ccVMFa3H.s:282    .text:0000000000000190 .L0 
+     /tmp/ccVMFa3H.s:285    .text:0000000000000194 .L0 
+     /tmp/ccVMFa3H.s:287    .text:0000000000000198 .L0 
+     /tmp/ccVMFa3H.s:293    .text:0000000000000198 _ZN15MemoryAllocator14allocateMemoryEm
+     /tmp/ccVMFa3H.s:296    .text:0000000000000198 .L0 
+     /tmp/ccVMFa3H.s:298    .text:0000000000000198 .L0 
+     /tmp/ccVMFa3H.s:299    .text:000000000000019c .L0 
+     /tmp/ccVMFa3H.s:303    .text:00000000000001a8 .L0 
+     /tmp/ccVMFa3H.s:304    .text:00000000000001a8 .L0 
+     /tmp/ccVMFa3H.s:305    .text:00000000000001a8 .L0 
+     /tmp/ccVMFa3H.s:307    .text:00000000000001ac .L0 
+     /tmp/ccVMFa3H.s:310    .text:00000000000001b0 .L0 
+     /tmp/ccVMFa3H.s:311    .text:00000000000001b0 .L0 
+     /tmp/ccVMFa3H.s:313    .text:00000000000001b8 .L0 
+     /tmp/ccVMFa3H.s:317    .text:00000000000001bc .L0 
+     /tmp/ccVMFa3H.s:318    .text:00000000000001bc .L0 
+     /tmp/ccVMFa3H.s:320    .text:00000000000001c4 .L0 
+     /tmp/ccVMFa3H.s:322    .text:00000000000001c8 .L0 
+     /tmp/ccVMFa3H.s:323    .text:00000000000001c8 .L0 
+     /tmp/ccVMFa3H.s:329    .text:00000000000001dc .L0 
+     /tmp/ccVMFa3H.s:330    .text:00000000000001e0 .L0 
+     /tmp/ccVMFa3H.s:331    .text:00000000000001e0 .L0 
+     /tmp/ccVMFa3H.s:333    .text:00000000000001e4 .L0 
+     /tmp/ccVMFa3H.s:334    .text:00000000000001e4 .L0 
+     /tmp/ccVMFa3H.s:336    .text:00000000000001e8 .L0 
+     /tmp/ccVMFa3H.s:339    .text:00000000000001ec .L0 
+     /tmp/ccVMFa3H.s:343    .text:00000000000001f0 .L0 
+     /tmp/ccVMFa3H.s:345    .text:00000000000001f0 .L0 
+     /tmp/ccVMFa3H.s:346    .text:00000000000001f0 .L0 
+     /tmp/ccVMFa3H.s:351    .text:00000000000001fc .L0 
+     /tmp/ccVMFa3H.s:353    .text:0000000000000204 .L0 
+     /tmp/ccVMFa3H.s:359    .text:0000000000000204 _ZN15MemoryAllocator17findNextFreeBlockEPNS_9FreeBlockE
+     /tmp/ccVMFa3H.s:362    .text:0000000000000204 .L0 
+     /tmp/ccVMFa3H.s:364    .text:0000000000000204 .L0 
+     /tmp/ccVMFa3H.s:365    .text:0000000000000208 .L0 
+     /tmp/ccVMFa3H.s:367    .text:000000000000020c .L0 
+     /tmp/ccVMFa3H.s:369    .text:0000000000000210 .L0 
+     /tmp/ccVMFa3H.s:375    .text:0000000000000214 .L0 
+     /tmp/ccVMFa3H.s:376    .text:0000000000000214 .L0 
+     /tmp/ccVMFa3H.s:378    .text:0000000000000218 .L0 
+GAS LISTING /tmp/ccVMFa3H.s 			page 23
+
+
+     /tmp/ccVMFa3H.s:381    .text:000000000000021c .L0 
+     /tmp/ccVMFa3H.s:384    .text:0000000000000228 .L0 
+     /tmp/ccVMFa3H.s:386    .text:000000000000022c .L0 
+     /tmp/ccVMFa3H.s:387    .text:000000000000022c .L0 
+     /tmp/ccVMFa3H.s:389    .text:0000000000000230 .L0 
+     /tmp/ccVMFa3H.s:394    .text:0000000000000238 .L0 
+     /tmp/ccVMFa3H.s:398    .text:000000000000023c .L0 
+     /tmp/ccVMFa3H.s:399    .text:0000000000000240 .L0 
+     /tmp/ccVMFa3H.s:400    .text:0000000000000240 .L0 
+     /tmp/ccVMFa3H.s:402    .text:0000000000000244 .L0 
+     /tmp/ccVMFa3H.s:404    .text:0000000000000248 .L0 
+     /tmp/ccVMFa3H.s:410    .text:0000000000000248 _ZN15MemoryAllocator21findPreviousFreeBlockEPNS_9FreeBlockES1_
+     /tmp/ccVMFa3H.s:413    .text:0000000000000248 .L0 
+     /tmp/ccVMFa3H.s:415    .text:0000000000000248 .L0 
+     /tmp/ccVMFa3H.s:416    .text:000000000000024c .L0 
+     /tmp/ccVMFa3H.s:418    .text:0000000000000250 .L0 
+     /tmp/ccVMFa3H.s:420    .text:0000000000000254 .L0 
+     /tmp/ccVMFa3H.s:424    .text:0000000000000254 .L0 
+     /tmp/ccVMFa3H.s:425    .text:0000000000000254 .L0 
+     /tmp/ccVMFa3H.s:427    .text:0000000000000258 .L0 
+     /tmp/ccVMFa3H.s:429    .text:000000000000025c .L0 
+     /tmp/ccVMFa3H.s:430    .text:000000000000025c .L0 
+     /tmp/ccVMFa3H.s:433    .text:0000000000000260 .L0 
+     /tmp/ccVMFa3H.s:436    .text:0000000000000264 .L0 
+     /tmp/ccVMFa3H.s:437    .text:0000000000000264 .L0 
+     /tmp/ccVMFa3H.s:438    .text:0000000000000268 .L0 
+     /tmp/ccVMFa3H.s:439    .text:0000000000000268 .L0 
+     /tmp/ccVMFa3H.s:441    .text:000000000000026c .L0 
+     /tmp/ccVMFa3H.s:443    .text:0000000000000270 .L0 
+     /tmp/ccVMFa3H.s:449    .text:0000000000000270 _ZN15MemoryAllocator21connectAdjacentBlocksEPNS_9FreeBlockES1_
+     /tmp/ccVMFa3H.s:452    .text:0000000000000270 .L0 
+     /tmp/ccVMFa3H.s:454    .text:0000000000000270 .L0 
+     /tmp/ccVMFa3H.s:455    .text:0000000000000274 .L0 
+     /tmp/ccVMFa3H.s:457    .text:0000000000000278 .L0 
+     /tmp/ccVMFa3H.s:459    .text:000000000000027c .L0 
+     /tmp/ccVMFa3H.s:461    .text:000000000000027c .L0 
+     /tmp/ccVMFa3H.s:462    .text:000000000000027c .L0 
+     /tmp/ccVMFa3H.s:464    .text:0000000000000280 .L0 
+     /tmp/ccVMFa3H.s:466    .text:0000000000000284 .L0 
+     /tmp/ccVMFa3H.s:468    .text:0000000000000288 .L0 
+     /tmp/ccVMFa3H.s:470    .text:000000000000028c .L0 
+     /tmp/ccVMFa3H.s:471    .text:000000000000028c .L0 
+     /tmp/ccVMFa3H.s:473    .text:0000000000000290 .L0 
+     /tmp/ccVMFa3H.s:475    .text:0000000000000294 .L0 
+     /tmp/ccVMFa3H.s:476    .text:0000000000000294 .L0 
+     /tmp/ccVMFa3H.s:479    .text:0000000000000298 .L0 
+     /tmp/ccVMFa3H.s:480    .text:000000000000029c .L0 
+     /tmp/ccVMFa3H.s:481    .text:000000000000029c .L0 
+     /tmp/ccVMFa3H.s:482    .text:000000000000029c .L0 
+     /tmp/ccVMFa3H.s:484    .text:00000000000002a0 .L0 
+     /tmp/ccVMFa3H.s:487    .text:00000000000002a4 .L0 
+     /tmp/ccVMFa3H.s:489    .text:00000000000002a4 .L0 
+     /tmp/ccVMFa3H.s:490    .text:00000000000002a4 .L0 
+     /tmp/ccVMFa3H.s:492    .text:00000000000002a8 .L0 
+     /tmp/ccVMFa3H.s:495    .text:00000000000002b0 .L0 
+     /tmp/ccVMFa3H.s:496    .text:00000000000002b0 .L0 
+     /tmp/ccVMFa3H.s:498    .text:00000000000002b4 .L0 
+GAS LISTING /tmp/ccVMFa3H.s 			page 24
+
+
+     /tmp/ccVMFa3H.s:500    .text:00000000000002b8 .L0 
+     /tmp/ccVMFa3H.s:501    .text:00000000000002b8 .L0 
+     /tmp/ccVMFa3H.s:503    .text:00000000000002bc .L0 
+     /tmp/ccVMFa3H.s:505    .text:00000000000002c4 .L0 
+     /tmp/ccVMFa3H.s:511    .text:00000000000002c4 _ZN15MemoryAllocator10freeMemoryEPv
+     /tmp/ccVMFa3H.s:514    .text:00000000000002c4 .L0 
+     /tmp/ccVMFa3H.s:516    .text:00000000000002c4 .L0 
+     /tmp/ccVMFa3H.s:517    .text:00000000000002c4 .L0 
+     /tmp/ccVMFa3H.s:519    .text:00000000000002c8 .L0 
+     /tmp/ccVMFa3H.s:520    .text:00000000000002cc .L0 
+     /tmp/ccVMFa3H.s:528    .text:00000000000002e8 .L0 
+     /tmp/ccVMFa3H.s:529    .text:00000000000002e8 .L0 
+     /tmp/ccVMFa3H.s:530    .text:00000000000002e8 .L0 
+     /tmp/ccVMFa3H.s:531    .text:00000000000002e8 .L0 
+     /tmp/ccVMFa3H.s:532    .text:00000000000002e8 .L0 
+     /tmp/ccVMFa3H.s:533    .text:00000000000002e8 .L0 
+     /tmp/ccVMFa3H.s:534    .text:00000000000002e8 .L0 
+     /tmp/ccVMFa3H.s:536    .text:00000000000002ec .L0 
+     /tmp/ccVMFa3H.s:540    .text:00000000000002f0 .L0 
+     /tmp/ccVMFa3H.s:541    .text:00000000000002f0 .L0 
+     /tmp/ccVMFa3H.s:542    .text:00000000000002f0 .L0 
+     /tmp/ccVMFa3H.s:545    .text:00000000000002f4 .L0 
+     /tmp/ccVMFa3H.s:546    .text:00000000000002f4 .L0 
+     /tmp/ccVMFa3H.s:549    .text:00000000000002f8 .L0 
+     /tmp/ccVMFa3H.s:550    .text:00000000000002f8 .L0 
+     /tmp/ccVMFa3H.s:551    .text:00000000000002f8 .L0 
+     /tmp/ccVMFa3H.s:556    .text:000000000000030c .L0 
+     /tmp/ccVMFa3H.s:557    .text:000000000000030c .L0 
+     /tmp/ccVMFa3H.s:564    .text:000000000000031c .L0 
+     /tmp/ccVMFa3H.s:565    .text:000000000000031c .L0 
+     /tmp/ccVMFa3H.s:573    .text:0000000000000330 .L0 
+     /tmp/ccVMFa3H.s:574    .text:0000000000000330 .L0 
+     /tmp/ccVMFa3H.s:577    .text:0000000000000338 .L0 
+     /tmp/ccVMFa3H.s:578    .text:0000000000000338 .L0 
+     /tmp/ccVMFa3H.s:580    .text:000000000000033c .L0 
+     /tmp/ccVMFa3H.s:581    .text:000000000000033c .L0 
+     /tmp/ccVMFa3H.s:583    .text:0000000000000340 .L0 
+     /tmp/ccVMFa3H.s:584    .text:0000000000000340 .L0 
+     /tmp/ccVMFa3H.s:586    .text:0000000000000344 .L0 
+     /tmp/ccVMFa3H.s:587    .text:0000000000000344 .L0 
+     /tmp/ccVMFa3H.s:593    .text:0000000000000354 .L0 
+     /tmp/ccVMFa3H.s:595    .text:0000000000000358 .L0 
+     /tmp/ccVMFa3H.s:596    .text:0000000000000358 .L0 
+     /tmp/ccVMFa3H.s:601    .text:0000000000000368 .L0 
+     /tmp/ccVMFa3H.s:604    .text:000000000000036c .L0 
+     /tmp/ccVMFa3H.s:605    .text:0000000000000370 .L0 
+     /tmp/ccVMFa3H.s:606    .text:0000000000000370 .L0 
+     /tmp/ccVMFa3H.s:608    .text:0000000000000374 .L0 
+     /tmp/ccVMFa3H.s:609    .text:0000000000000374 .L0 
+     /tmp/ccVMFa3H.s:611    .text:0000000000000378 .L0 
+     /tmp/ccVMFa3H.s:614    .text:000000000000037c .L0 
+     /tmp/ccVMFa3H.s:617    .text:0000000000000380 .L0 
+     /tmp/ccVMFa3H.s:620    .text:0000000000000384 .L0 
+     /tmp/ccVMFa3H.s:623    .text:0000000000000388 .L0 
+     /tmp/ccVMFa3H.s:626    .text:000000000000038c .L0 
+     /tmp/ccVMFa3H.s:630    .text:0000000000000390 .L0 
+     /tmp/ccVMFa3H.s:632    .text:0000000000000390 .L0 
+GAS LISTING /tmp/ccVMFa3H.s 			page 25
+
+
+     /tmp/ccVMFa3H.s:633    .text:0000000000000390 .L0 
+     /tmp/ccVMFa3H.s:635    .text:0000000000000398 .L0 
+     /tmp/ccVMFa3H.s:639    .text:00000000000003a0 .L0 
+     /tmp/ccVMFa3H.s:640    .text:00000000000003a0 .L0 
+     /tmp/ccVMFa3H.s:641    .text:00000000000003a0 .L0 
+     /tmp/ccVMFa3H.s:642    .text:00000000000003a0 .L0 
+     /tmp/ccVMFa3H.s:643    .text:00000000000003a0 .L0 
+     /tmp/ccVMFa3H.s:644    .text:00000000000003a0 .L0 
+     /tmp/ccVMFa3H.s:645    .text:00000000000003a0 .L0 
+     /tmp/ccVMFa3H.s:646    .text:00000000000003a0 .L0 
+     /tmp/ccVMFa3H.s:648    .text:00000000000003a0 .L0 
+     /tmp/ccVMFa3H.s:651    .text:00000000000003a4 .L0 
+     /tmp/ccVMFa3H.s:652    .text:00000000000003a8 .L0 
+     /tmp/ccVMFa3H.s:658    .text:00000000000003a8 _ZN15MemoryAllocator19getLargestFreeBlockEv
+     /tmp/ccVMFa3H.s:661    .text:00000000000003a8 .L0 
+     /tmp/ccVMFa3H.s:662    .text:00000000000003a8 .L0 
+     /tmp/ccVMFa3H.s:663    .text:00000000000003ac .L0 
+     /tmp/ccVMFa3H.s:665    .text:00000000000003b0 .L0 
+     /tmp/ccVMFa3H.s:667    .text:00000000000003b4 .L0 
+     /tmp/ccVMFa3H.s:669    .text:00000000000003b4 .L0 
+     /tmp/ccVMFa3H.s:670    .text:00000000000003b4 .L0 
+     /tmp/ccVMFa3H.s:672    .text:00000000000003bc .L0 
+     /tmp/ccVMFa3H.s:676    .text:00000000000003c0 .L0 
+     /tmp/ccVMFa3H.s:677    .text:00000000000003c0 .L0 
+     /tmp/ccVMFa3H.s:683    .text:00000000000003c8 .L0 
+     /tmp/ccVMFa3H.s:684    .text:00000000000003c8 .L0 
+     /tmp/ccVMFa3H.s:688    .text:00000000000003cc .L0 
+     /tmp/ccVMFa3H.s:690    .text:00000000000003d0 .L0 
+     /tmp/ccVMFa3H.s:691    .text:00000000000003d0 .L0 
+     /tmp/ccVMFa3H.s:693    .text:00000000000003d4 .L0 
+     /tmp/ccVMFa3H.s:695    .text:00000000000003d8 .L0 
+     /tmp/ccVMFa3H.s:702    .text:00000000000003e0 .L0 
+     /tmp/ccVMFa3H.s:703    .text:00000000000003e0 .L0 
+     /tmp/ccVMFa3H.s:706    .text:00000000000003e8 .L0 
+     /tmp/ccVMFa3H.s:707    .text:00000000000003e8 .L0 
+     /tmp/ccVMFa3H.s:709    .text:00000000000003ec .L0 
+     /tmp/ccVMFa3H.s:711    .text:00000000000003f0 .L0 
+     /tmp/ccVMFa3H.s:717    .text:00000000000003f0 _ZN15MemoryAllocator12getFreeSpaceEv
+     /tmp/ccVMFa3H.s:720    .text:00000000000003f0 .L0 
+     /tmp/ccVMFa3H.s:721    .text:00000000000003f0 .L0 
+     /tmp/ccVMFa3H.s:722    .text:00000000000003f4 .L0 
+     /tmp/ccVMFa3H.s:724    .text:00000000000003f8 .L0 
+     /tmp/ccVMFa3H.s:726    .text:00000000000003fc .L0 
+     /tmp/ccVMFa3H.s:728    .text:00000000000003fc .L0 
+     /tmp/ccVMFa3H.s:729    .text:00000000000003fc .L0 
+     /tmp/ccVMFa3H.s:732    .text:000000000000040c .L0 
+     /tmp/ccVMFa3H.s:733    .text:000000000000040c .L0 
+     /tmp/ccVMFa3H.s:735    .text:0000000000000410 .L0 
+     /tmp/ccVMFa3H.s:737    .text:0000000000000414 .L0 
+     /tmp/ccVMFa3H.s:757    .bss:0000000000000010 _ZN15MemoryAllocator14firstFreeBlockE
+     /tmp/ccVMFa3H.s:753    .bss:0000000000000008 _ZN15MemoryAllocator15numOfFreeBlocksE
+     /tmp/ccVMFa3H.s:749    .bss:0000000000000000 _ZN15MemoryAllocator13NUM_OF_BLOCKSE
+     /tmp/ccVMFa3H.s:761    .bss:0000000000000018 _ZN15MemoryAllocator20flagSystemInitializeE
+     /tmp/ccVMFa3H.s:746    .bss:0000000000000000 .LANCHOR0
+     /tmp/ccVMFa3H.s:767    .text:0000000000000414 .L0 
+     /tmp/ccVMFa3H.s:22     .text:000000000000000c .L0 
+     /tmp/ccVMFa3H.s:25     .text:0000000000000018 .L0 
+GAS LISTING /tmp/ccVMFa3H.s 			page 26
+
+
+     /tmp/ccVMFa3H.s:32     .text:000000000000002c .L0 
+     /tmp/ccVMFa3H.s:243    .text:0000000000000144 .L0 
+     /tmp/ccVMFa3H.s:311    .text:00000000000001b0 .L0 
+     /tmp/ccVMFa3H.s:318    .text:00000000000001bc .L0 
+     /tmp/ccVMFa3H.s:324    .text:00000000000001cc .L0 
+     /tmp/ccVMFa3H.s:381    .text:000000000000021c .L0 
+     /tmp/ccVMFa3H.s:551    .text:00000000000002f8 .L0 
+     /tmp/ccVMFa3H.s:633    .text:0000000000000390 .L0 
+     /tmp/ccVMFa3H.s:670    .text:00000000000003b4 .L0 
+     /tmp/ccVMFa3H.s:729    .text:00000000000003fc .L0 
+     /tmp/ccVMFa3H.s:137    .text:00000000000000c0 .L4
+     /tmp/ccVMFa3H.s:99     .text:0000000000000090 .L5
+     /tmp/ccVMFa3H.s:110    .text:00000000000000a0 .L6
+     /tmp/ccVMFa3H.s:128    .text:00000000000000b4 .L10
+     /tmp/ccVMFa3H.s:117    .text:00000000000000a8 .L3
+     /tmp/ccVMFa3H.s:163    .text:00000000000000e4 .L8
+     /tmp/ccVMFa3H.s:221    .text:0000000000000128 .L14
+     /tmp/ccVMFa3H.s:239    .text:0000000000000144 .L12
+     /tmp/ccVMFa3H.s:216    .text:0000000000000124 .L13
+     /tmp/ccVMFa3H.s:342    .text:00000000000001f0 .L22
+     /tmp/ccVMFa3H.s:349    .text:00000000000001fc .L20
+     /tmp/ccVMFa3H.s:315    .text:00000000000001bc .L18
+     /tmp/ccVMFa3H.s:327    .text:00000000000001dc .L17
+     /tmp/ccVMFa3H.s:391    .text:0000000000000238 .L26
+     /tmp/ccVMFa3H.s:373    .text:0000000000000214 .L25
+     /tmp/ccVMFa3H.s:396    .text:000000000000023c .L23
+     /tmp/ccVMFa3H.s:434    .text:0000000000000264 .L29
+     /tmp/ccVMFa3H.s:422    .text:0000000000000254 .L30
+     /tmp/ccVMFa3H.s:486    .text:00000000000002a4 .L36
+     /tmp/ccVMFa3H.s:477    .text:0000000000000298 .L32
+     /tmp/ccVMFa3H.s:638    .text:00000000000003a0 .L40
+     /tmp/ccVMFa3H.s:629    .text:0000000000000390 .L39
+     /tmp/ccVMFa3H.s:602    .text:000000000000036c .L38
+     /tmp/ccVMFa3H.s:686    .text:00000000000003cc .L48
+     /tmp/ccVMFa3H.s:699    .text:00000000000003e0 .L46
+     /tmp/ccVMFa3H.s:681    .text:00000000000003c8 .L47
+     /tmp/ccVMFa3H.s:1605   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccVMFa3H.s:2629   .debug_str:00000000000002d8 .LASF70
+     /tmp/ccVMFa3H.s:2665   .debug_str:0000000000000537 .LASF71
+     /tmp/ccVMFa3H.s:2671   .debug_str:000000000000058b .LASF72
+     /tmp/ccVMFa3H.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccVMFa3H.s:764    .text:0000000000000414 .Letext0
+     /tmp/ccVMFa3H.s:2553   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccVMFa3H.s:2645   .debug_str:0000000000000441 .LASF0
+     /tmp/ccVMFa3H.s:2613   .debug_str:0000000000000249 .LASF1
+     /tmp/ccVMFa3H.s:2601   .debug_str:00000000000001e5 .LASF2
+     /tmp/ccVMFa3H.s:2685   .debug_str:0000000000000643 .LASF3
+     /tmp/ccVMFa3H.s:2573   .debug_str:0000000000000085 .LASF4
+     /tmp/ccVMFa3H.s:2609   .debug_str:0000000000000232 .LASF5
+     /tmp/ccVMFa3H.s:2563   .debug_str:0000000000000054 .LASF6
+     /tmp/ccVMFa3H.s:2559   .debug_str:0000000000000031 .LASF7
+     /tmp/ccVMFa3H.s:2591   .debug_str:0000000000000187 .LASF8
+     /tmp/ccVMFa3H.s:2655   .debug_str:00000000000004e2 .LASF9
+     /tmp/ccVMFa3H.s:2569   .debug_str:000000000000006a .LASF10
+     /tmp/ccVMFa3H.s:2707   .debug_str:00000000000006e3 .LASF11
+     /tmp/ccVMFa3H.s:2595   .debug_str:00000000000001ac .LASF12
+     /tmp/ccVMFa3H.s:2689   .debug_str:0000000000000655 .LASF13
+GAS LISTING /tmp/ccVMFa3H.s 			page 27
+
+
+     /tmp/ccVMFa3H.s:2667   .debug_str:000000000000054f .LASF14
+     /tmp/ccVMFa3H.s:2617   .debug_str:0000000000000269 .LASF15
+     /tmp/ccVMFa3H.s:2581   .debug_str:00000000000000b9 .LASF16
+     /tmp/ccVMFa3H.s:2659   .debug_str:00000000000004fe .LASF17
+     /tmp/ccVMFa3H.s:2561   .debug_str:0000000000000044 .LASF24
+     /tmp/ccVMFa3H.s:2683   .debug_str:0000000000000639 .LASF22
+     /tmp/ccVMFa3H.s:2705   .debug_str:00000000000006da .LASF18
+     /tmp/ccVMFa3H.s:2687   .debug_str:0000000000000649 .LASF19
+     /tmp/ccVMFa3H.s:2567   .debug_str:0000000000000060 .LASF20
+     /tmp/ccVMFa3H.s:2627   .debug_str:00000000000002ca .LASF21
+     /tmp/ccVMFa3H.s:2679   .debug_str:00000000000005ec .LASF23
+     /tmp/ccVMFa3H.s:2635   .debug_str:00000000000003ee .LASF25
+     /tmp/ccVMFa3H.s:2577   .debug_str:0000000000000091 .LASF26
+     /tmp/ccVMFa3H.s:2691   .debug_str:0000000000000665 .LASF73
+     /tmp/ccVMFa3H.s:2603   .debug_str:00000000000001f3 .LASF74
+     /tmp/ccVMFa3H.s:2619   .debug_str:0000000000000275 .LASF27
+     /tmp/ccVMFa3H.s:2555   .debug_str:0000000000000000 .LASF29
+     /tmp/ccVMFa3H.s:2703   .debug_str:00000000000006cf .LASF28
+     /tmp/ccVMFa3H.s:2673   .debug_str:00000000000005ae .LASF30
+     /tmp/ccVMFa3H.s:2597   .debug_str:00000000000001bb .LASF31
+     /tmp/ccVMFa3H.s:2669   .debug_str:000000000000055f .LASF33
+     /tmp/ccVMFa3H.s:2675   .debug_str:00000000000005d2 .LASF32
+     /tmp/ccVMFa3H.s:2651   .debug_str:0000000000000485 .LASF34
+     /tmp/ccVMFa3H.s:2663   .debug_str:0000000000000522 .LASF35
+     /tmp/ccVMFa3H.s:2697   .debug_str:00000000000006a4 .LASF36
+     /tmp/ccVMFa3H.s:2701   .debug_str:00000000000006bf .LASF37
+     /tmp/ccVMFa3H.s:2647   .debug_str:000000000000044e .LASF38
+     /tmp/ccVMFa3H.s:2699   .debug_str:00000000000006b3 .LASF39
+     /tmp/ccVMFa3H.s:2589   .debug_str:0000000000000153 .LASF41
+     /tmp/ccVMFa3H.s:2657   .debug_str:00000000000004f2 .LASF45
+     /tmp/ccVMFa3H.s:2583   .debug_str:00000000000000cf .LASF47
+     /tmp/ccVMFa3H.s:2605   .debug_str:000000000000020f .LASF40
+     /tmp/ccVMFa3H.s:2653   .debug_str:00000000000004aa .LASF42
+     /tmp/ccVMFa3H.s:2641   .debug_str:000000000000041d .LASF43
+     /tmp/ccVMFa3H.s:2681   .debug_str:00000000000005fa .LASF44
+     /tmp/ccVMFa3H.s:2599   .debug_str:00000000000001cf .LASF46
+     /tmp/ccVMFa3H.s:2587   .debug_str:0000000000000114 .LASF48
+     /tmp/ccVMFa3H.s:2607   .debug_str:0000000000000221 .LASF75
+     /tmp/ccVMFa3H.s:2649   .debug_str:000000000000045c .LASF76
+     /tmp/ccVMFa3H.s:2575   .debug_str:000000000000008c .LASF49
+     /tmp/ccVMFa3H.s:2633   .debug_str:00000000000003c2 .LASF50
+     /tmp/ccVMFa3H.s:2623   .debug_str:0000000000000295 .LASF51
+     /tmp/ccVMFa3H.s:2693   .debug_str:000000000000066f .LASF52
+     /tmp/ccVMFa3H.s:2631   .debug_str:000000000000039c .LASF53
+     /tmp/ccVMFa3H.s:718    .text:00000000000003f0 .LFB9
+     /tmp/ccVMFa3H.s:738    .text:0000000000000414 .LFE9
+     /tmp/ccVMFa3H.s:659    .text:00000000000003a8 .LFB8
+     /tmp/ccVMFa3H.s:712    .text:00000000000003f0 .LFE8
+     /tmp/ccVMFa3H.s:2677   .debug_str:00000000000005df .LASF54
+     /tmp/ccVMFa3H.s:2237   .debug_loc:0000000000000000 .LLST16
+     /tmp/ccVMFa3H.s:675    .text:00000000000003c0 .LBB7
+     /tmp/ccVMFa3H.s:700    .text:00000000000003e0 .LBE7
+     /tmp/ccVMFa3H.s:2565   .debug_str:000000000000005b .LASF55
+     /tmp/ccVMFa3H.s:450    .text:0000000000000270 .LFB7
+     /tmp/ccVMFa3H.s:506    .text:00000000000002c4 .LFE7
+     /tmp/ccVMFa3H.s:2661   .debug_str:0000000000000514 .LASF56
+     /tmp/ccVMFa3H.s:512    .text:00000000000002c4 .LFB6
+GAS LISTING /tmp/ccVMFa3H.s 			page 28
+
+
+     /tmp/ccVMFa3H.s:653    .text:00000000000003a8 .LFE6
+     /tmp/ccVMFa3H.s:2643   .debug_str:0000000000000433 .LASF57
+     /tmp/ccVMFa3H.s:2248   .debug_loc:0000000000000036 .LLST10
+     /tmp/ccVMFa3H.s:2579   .debug_str:00000000000000ad .LASF58
+     /tmp/ccVMFa3H.s:2287   .debug_loc:00000000000000d3 .LLST11
+     /tmp/ccVMFa3H.s:2637   .debug_str:0000000000000407 .LASF59
+     /tmp/ccVMFa3H.s:2311   .debug_loc:0000000000000134 .LLST12
+     /tmp/ccVMFa3H.s:2615   .debug_str:000000000000025c .LASF60
+     /tmp/ccVMFa3H.s:2322   .debug_loc:000000000000016a .LLST13
+     /tmp/ccVMFa3H.s:2695   .debug_str:0000000000000696 .LASF61
+     /tmp/ccVMFa3H.s:2342   .debug_loc:00000000000001b8 .LLST14
+     /tmp/ccVMFa3H.s:2593   .debug_str:000000000000019a .LASF62
+     /tmp/ccVMFa3H.s:2357   .debug_loc:0000000000000201 .LLST15
+     /tmp/ccVMFa3H.s:560    .text:0000000000000318 .LVL38
+     /tmp/ccVMFa3H.s:569    .text:000000000000032c .LVL41
+     /tmp/ccVMFa3H.s:591    .text:0000000000000354 .LVL44
+     /tmp/ccVMFa3H.s:599    .text:0000000000000368 .LVL45
+     /tmp/ccVMFa3H.s:411    .text:0000000000000248 .LFB5
+     /tmp/ccVMFa3H.s:444    .text:0000000000000270 .LFE5
+     /tmp/ccVMFa3H.s:2639   .debug_str:0000000000000418 .LASF63
+     /tmp/ccVMFa3H.s:2372   .debug_loc:000000000000024a .LLST9
+     /tmp/ccVMFa3H.s:2571   .debug_str:0000000000000078 .LASF64
+     /tmp/ccVMFa3H.s:2611   .debug_str:0000000000000244 .LASF65
+     /tmp/ccVMFa3H.s:360    .text:0000000000000204 .LFB4
+     /tmp/ccVMFa3H.s:405    .text:0000000000000248 .LFE4
+     /tmp/ccVMFa3H.s:2386   .debug_loc:0000000000000283 .LLST7
+     /tmp/ccVMFa3H.s:374    .text:0000000000000214 .LBB6
+     /tmp/ccVMFa3H.s:392    .text:0000000000000238 .LBE6
+     /tmp/ccVMFa3H.s:2400   .debug_loc:00000000000002bc .LLST8
+     /tmp/ccVMFa3H.s:73     .text:000000000000006c .LFB3
+     /tmp/ccVMFa3H.s:182    .text:00000000000000fc .LFE3
+     /tmp/ccVMFa3H.s:2625   .debug_str:00000000000002ba .LASF66
+     /tmp/ccVMFa3H.s:2621   .debug_str:0000000000000284 .LASF67
+     /tmp/ccVMFa3H.s:2417   .debug_loc:0000000000000307 .LLST0
+     /tmp/ccVMFa3H.s:138    .text:00000000000000c0 .LBB3
+     /tmp/ccVMFa3H.s:177    .text:00000000000000f8 .LBE3
+     /tmp/ccVMFa3H.s:188    .text:00000000000000fc .LFB2
+     /tmp/ccVMFa3H.s:288    .text:0000000000000198 .LFE2
+     /tmp/ccVMFa3H.s:2442   .debug_loc:0000000000000369 .LLST1
+     /tmp/ccVMFa3H.s:2456   .debug_loc:00000000000003a2 .LLST2
+     /tmp/ccVMFa3H.s:2557   .debug_str:0000000000000027 .LASF68
+     /tmp/ccVMFa3H.s:2477   .debug_loc:0000000000000400 .LLST3
+     /tmp/ccVMFa3H.s:2585   .debug_str:0000000000000106 .LASF69
+     /tmp/ccVMFa3H.s:2494   .debug_loc:000000000000044b .LLST4
+     /tmp/ccVMFa3H.s:210    .text:000000000000011c .LBB5
+     /tmp/ccVMFa3H.s:240    .text:0000000000000144 .LBE5
+     /tmp/ccVMFa3H.s:2511   .debug_loc:0000000000000496 .LLST5
+     /tmp/ccVMFa3H.s:259    .text:0000000000000174 .LVL14
+     /tmp/ccVMFa3H.s:294    .text:0000000000000198 .LFB1
+     /tmp/ccVMFa3H.s:354    .text:0000000000000204 .LFE1
+     /tmp/ccVMFa3H.s:2518   .debug_loc:00000000000004b9 .LLST6
+     /tmp/ccVMFa3H.s:326    .text:00000000000001dc .LVL21
+     /tmp/ccVMFa3H.s:347    .text:00000000000001f8 .LVL24
+     /tmp/ccVMFa3H.s:10     .text:0000000000000000 .LFB0
+     /tmp/ccVMFa3H.s:67     .text:000000000000006c .LFE0
+     /tmp/ccVMFa3H.s:673    .text:00000000000003c0 .LVL54
+     /tmp/ccVMFa3H.s:696    .text:00000000000003dc .LVL58
+GAS LISTING /tmp/ccVMFa3H.s 			page 29
+
+
+     /tmp/ccVMFa3H.s:698    .text:00000000000003e0 .LVL59
+     /tmp/ccVMFa3H.s:704    .text:00000000000003e4 .LVL60
+     /tmp/ccVMFa3H.s:515    .text:00000000000002c4 .LVL33
+     /tmp/ccVMFa3H.s:558    .text:0000000000000310 .LVL37
+     /tmp/ccVMFa3H.s:612    .text:0000000000000378 .LVL46
+     /tmp/ccVMFa3H.s:615    .text:000000000000037c .LVL47
+     /tmp/ccVMFa3H.s:628    .text:0000000000000390 .LVL51
+     /tmp/ccVMFa3H.s:637    .text:00000000000003a0 .LVL52
+     /tmp/ccVMFa3H.s:649    .text:00000000000003a4 .LVL53
+     /tmp/ccVMFa3H.s:539    .text:00000000000002f0 .LVL34
+     /tmp/ccVMFa3H.s:543    .text:00000000000002f4 .LVL35
+     /tmp/ccVMFa3H.s:547    .text:00000000000002f8 .LVL36
+     /tmp/ccVMFa3H.s:624    .text:0000000000000388 .LVL50
+     /tmp/ccVMFa3H.s:562    .text:000000000000031c .LVL39
+     /tmp/ccVMFa3H.s:567    .text:0000000000000324 .LVL40
+     /tmp/ccVMFa3H.s:621    .text:0000000000000384 .LVL49
+     /tmp/ccVMFa3H.s:571    .text:0000000000000330 .LVL42
+     /tmp/ccVMFa3H.s:589    .text:000000000000034c .LVL43
+     /tmp/ccVMFa3H.s:618    .text:0000000000000380 .LVL48
+     /tmp/ccVMFa3H.s:414    .text:0000000000000248 .LVL29
+     /tmp/ccVMFa3H.s:421    .text:0000000000000254 .LVL30
+     /tmp/ccVMFa3H.s:363    .text:0000000000000204 .LVL25
+     /tmp/ccVMFa3H.s:372    .text:0000000000000214 .LVL26
+     /tmp/ccVMFa3H.s:379    .text:000000000000021c .LVL27
+     /tmp/ccVMFa3H.s:395    .text:000000000000023c .LVL28
+     /tmp/ccVMFa3H.s:76     .text:000000000000006c .LVL0
+     /tmp/ccVMFa3H.s:116    .text:00000000000000a8 .LVL1
+     /tmp/ccVMFa3H.s:127    .text:00000000000000b4 .LVL2
+     /tmp/ccVMFa3H.s:142    .text:00000000000000c4 .LVL3
+     /tmp/ccVMFa3H.s:191    .text:00000000000000fc .LVL5
+     /tmp/ccVMFa3H.s:257    .text:000000000000016c .LVL13
+     /tmp/ccVMFa3H.s:280    .text:000000000000018c .LVL17
+     /tmp/ccVMFa3H.s:283    .text:0000000000000190 .LVL18
+     /tmp/ccVMFa3H.s:208    .text:000000000000011c .LVL6
+     /tmp/ccVMFa3H.s:236    .text:0000000000000140 .LVL10
+     /tmp/ccVMFa3H.s:238    .text:0000000000000144 .LVL11
+     /tmp/ccVMFa3H.s:268    .text:000000000000017c .LVL15
+     /tmp/ccVMFa3H.s:272    .text:0000000000000180 .LVL16
+     /tmp/ccVMFa3H.s:213    .text:0000000000000120 .LVL7
+     /tmp/ccVMFa3H.s:245    .text:0000000000000150 .LVL12
+     /tmp/ccVMFa3H.s:297    .text:0000000000000198 .LVL19
+     /tmp/ccVMFa3H.s:314    .text:00000000000001bc .LVL20
+     /tmp/ccVMFa3H.s:337    .text:00000000000001e8 .LVL22
+     /tmp/ccVMFa3H.s:341    .text:00000000000001f0 .LVL23
+     /tmp/ccVMFa3H.s:768    .debug_info:0000000000000000 .Ldebug_info0
+
+UNDEFINED SYMBOLS
+HEAP_END_ADDR
+HEAP_START_ADDR

@@ -1,0 +1,153 @@
+GAS LISTING /tmp/ccZ1LI5T.s 			page 1
+
+
+   1              		.file	"main.cpp"
+   2              		.option pic
+   3              		.option norelax
+   4              		.text
+   5              	.Ltext0:
+   6              		.align	2
+   7              		.globl	main
+   9              	main:
+  10              	.LFB0:
+  11              		.file 1 "src/main.cpp"
+   1:src/main.cpp  **** //
+   2:src/main.cpp  **** // Created by os on 11/29/25.
+   3:src/main.cpp  **** //
+   4:src/main.cpp  **** #include "../h/MemoryAllocator.hpp"
+   5:src/main.cpp  **** void main(){
+  12              		.loc 1 5 12
+  13              		.cfi_startproc
+  14 0000 130101FF 		addi	sp,sp,-16
+  15              		.cfi_def_cfa_offset 16
+  16 0004 23341100 		sd	ra,8(sp)
+  17 0008 23308100 		sd	s0,0(sp)
+  18              		.cfi_offset 1, -8
+  19              		.cfi_offset 8, -16
+  20 000c 13040101 		addi	s0,sp,16
+  21              		.cfi_def_cfa 8, 0
+   6:src/main.cpp  ****     //void* allocMem1 = (void*)MemoryAllocator::allocateMemory(4);
+   7:src/main.cpp  ****     MemoryAllocator::allocateMemory(4);
+  22              		.loc 1 7 5
+  23              		.loc 1 7 36 is_stmt 0
+  24 0010 13054000 		li	a0,4
+  25 0014 97000000 		call	_ZN15MemoryAllocator14allocateMemoryEm@plt
+  25      E7800000 
+  26              	.LVL0:
+   8:src/main.cpp  ****     MemoryAllocator::allocateMemory(10);
+  27              		.loc 1 8 5 is_stmt 1
+  28              		.loc 1 8 36 is_stmt 0
+  29 001c 1305A000 		li	a0,10
+  30 0020 97000000 		call	_ZN15MemoryAllocator14allocateMemoryEm@plt
+  30      E7800000 
+  31              	.LVL1:
+   9:src/main.cpp  **** }...
+  32              		.loc 1 9 1
+  33 0028 83308100 		ld	ra,8(sp)
+  34              		.cfi_restore 1
+  35 002c 03340100 		ld	s0,0(sp)
+  36              		.cfi_restore 8
+  37              		.cfi_def_cfa 2, 16
+  38 0030 13010101 		addi	sp,sp,16
+  39              		.cfi_def_cfa_offset 0
+  40 0034 67800000 		jr	ra
+  41              		.cfi_endproc
+  42              	.LFE0:
+  44              	.Letext0:
+  45              		.file 2 "src/../h/../lib/hw.h"
+  46              		.file 3 "src/../h/MemoryAllocator.hpp"
+GAS LISTING /tmp/ccZ1LI5T.s 			page 2
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.cpp
+     /tmp/ccZ1LI5T.s:9      .text:0000000000000000 main
+     /tmp/ccZ1LI5T.s:13     .text:0000000000000000 .L0 
+     /tmp/ccZ1LI5T.s:14     .text:0000000000000000 .L0 
+     /tmp/ccZ1LI5T.s:15     .text:0000000000000004 .L0 
+     /tmp/ccZ1LI5T.s:18     .text:000000000000000c .L0 
+     /tmp/ccZ1LI5T.s:19     .text:000000000000000c .L0 
+     /tmp/ccZ1LI5T.s:21     .text:0000000000000010 .L0 
+     /tmp/ccZ1LI5T.s:23     .text:0000000000000010 .L0 
+     /tmp/ccZ1LI5T.s:24     .text:0000000000000010 .L0 
+     /tmp/ccZ1LI5T.s:28     .text:000000000000001c .L0 
+     /tmp/ccZ1LI5T.s:29     .text:000000000000001c .L0 
+     /tmp/ccZ1LI5T.s:33     .text:0000000000000028 .L0 
+     /tmp/ccZ1LI5T.s:34     .text:000000000000002c .L0 
+     /tmp/ccZ1LI5T.s:36     .text:0000000000000030 .L0 
+     /tmp/ccZ1LI5T.s:37     .text:0000000000000030 .L0 
+     /tmp/ccZ1LI5T.s:39     .text:0000000000000034 .L0 
+     /tmp/ccZ1LI5T.s:41     .text:0000000000000038 .L0 
+     /tmp/ccZ1LI5T.s:47     .text:0000000000000038 .L0 
+     /tmp/ccZ1LI5T.s:451    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccZ1LI5T.s:971    .debug_str:0000000000000238 .LASF49
+     /tmp/ccZ1LI5T.s:979    .debug_str:0000000000000330 .LASF50
+     /tmp/ccZ1LI5T.s:1003   .debug_str:0000000000000461 .LASF51
+     /tmp/ccZ1LI5T.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccZ1LI5T.s:44     .text:0000000000000038 .Letext0
+     /tmp/ccZ1LI5T.s:917    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccZ1LI5T.s:981    .debug_str:000000000000033d .LASF0
+     /tmp/ccZ1LI5T.s:963    .debug_str:00000000000001fc .LASF1
+     /tmp/ccZ1LI5T.s:953    .debug_str:000000000000019d .LASF2
+     /tmp/ccZ1LI5T.s:1013   .debug_str:00000000000004fe .LASF3
+     /tmp/ccZ1LI5T.s:931    .debug_str:0000000000000069 .LASF4
+     /tmp/ccZ1LI5T.s:961    .debug_str:00000000000001ea .LASF5
+     /tmp/ccZ1LI5T.s:925    .debug_str:000000000000004a .LASF6
+     /tmp/ccZ1LI5T.s:921    .debug_str:0000000000000027 .LASF7
+     /tmp/ccZ1LI5T.s:945    .debug_str:0000000000000151 .LASF8
+     /tmp/ccZ1LI5T.s:991    .debug_str:00000000000003de .LASF9
+     /tmp/ccZ1LI5T.s:929    .debug_str:000000000000005b .LASF10
+     /tmp/ccZ1LI5T.s:1031   .debug_str:0000000000000569 .LASF11
+     /tmp/ccZ1LI5T.s:947    .debug_str:0000000000000164 .LASF12
+     /tmp/ccZ1LI5T.s:1017   .debug_str:0000000000000510 .LASF13
+     /tmp/ccZ1LI5T.s:999    .debug_str:0000000000000425 .LASF14
+     /tmp/ccZ1LI5T.s:965    .debug_str:000000000000020f .LASF15
+     /tmp/ccZ1LI5T.s:937    .debug_str:0000000000000091 .LASF16
+     /tmp/ccZ1LI5T.s:995    .debug_str:00000000000003fa .LASF17
+     /tmp/ccZ1LI5T.s:923    .debug_str:000000000000003a .LASF22
+     /tmp/ccZ1LI5T.s:1011   .debug_str:00000000000004f4 .LASF52
+     /tmp/ccZ1LI5T.s:1029   .debug_str:0000000000000560 .LASF18
+     /tmp/ccZ1LI5T.s:1015   .debug_str:0000000000000504 .LASF19
+     /tmp/ccZ1LI5T.s:927    .debug_str:0000000000000051 .LASF20
+     /tmp/ccZ1LI5T.s:969    .debug_str:000000000000022a .LASF21
+     /tmp/ccZ1LI5T.s:975    .debug_str:0000000000000301 .LASF23
+     /tmp/ccZ1LI5T.s:935    .debug_str:0000000000000075 .LASF24
+     /tmp/ccZ1LI5T.s:1019   .debug_str:0000000000000520 .LASF53
+     /tmp/ccZ1LI5T.s:955    .debug_str:00000000000001ab .LASF54
+     /tmp/ccZ1LI5T.s:967    .debug_str:000000000000021b .LASF25
+     /tmp/ccZ1LI5T.s:919    .debug_str:0000000000000000 .LASF27
+GAS LISTING /tmp/ccZ1LI5T.s 			page 3
+
+
+     /tmp/ccZ1LI5T.s:1027   .debug_str:0000000000000555 .LASF26
+     /tmp/ccZ1LI5T.s:1005   .debug_str:0000000000000484 .LASF28
+     /tmp/ccZ1LI5T.s:949    .debug_str:0000000000000173 .LASF29
+     /tmp/ccZ1LI5T.s:1001   .debug_str:0000000000000435 .LASF31
+     /tmp/ccZ1LI5T.s:1007   .debug_str:00000000000004a8 .LASF30
+     /tmp/ccZ1LI5T.s:987    .debug_str:0000000000000381 .LASF32
+     /tmp/ccZ1LI5T.s:997    .debug_str:0000000000000410 .LASF33
+     /tmp/ccZ1LI5T.s:1021   .debug_str:000000000000052a .LASF34
+     /tmp/ccZ1LI5T.s:1025   .debug_str:0000000000000545 .LASF35
+     /tmp/ccZ1LI5T.s:983    .debug_str:000000000000034a .LASF36
+     /tmp/ccZ1LI5T.s:1023   .debug_str:0000000000000539 .LASF37
+     /tmp/ccZ1LI5T.s:943    .debug_str:000000000000011d .LASF39
+     /tmp/ccZ1LI5T.s:993    .debug_str:00000000000003ee .LASF43
+     /tmp/ccZ1LI5T.s:939    .debug_str:00000000000000a7 .LASF45
+     /tmp/ccZ1LI5T.s:957    .debug_str:00000000000001c7 .LASF38
+     /tmp/ccZ1LI5T.s:989    .debug_str:00000000000003a6 .LASF40
+     /tmp/ccZ1LI5T.s:977    .debug_str:000000000000031a .LASF41
+     /tmp/ccZ1LI5T.s:1009   .debug_str:00000000000004b5 .LASF42
+     /tmp/ccZ1LI5T.s:951    .debug_str:0000000000000187 .LASF44
+     /tmp/ccZ1LI5T.s:941    .debug_str:00000000000000de .LASF46
+     /tmp/ccZ1LI5T.s:959    .debug_str:00000000000001d9 .LASF55
+     /tmp/ccZ1LI5T.s:985    .debug_str:0000000000000358 .LASF56
+     /tmp/ccZ1LI5T.s:933    .debug_str:0000000000000070 .LASF47
+     /tmp/ccZ1LI5T.s:973    .debug_str:00000000000002fc .LASF48
+     /tmp/ccZ1LI5T.s:10     .text:0000000000000000 .LFB0
+     /tmp/ccZ1LI5T.s:42     .text:0000000000000038 .LFE0
+     /tmp/ccZ1LI5T.s:26     .text:000000000000001c .LVL0
+     /tmp/ccZ1LI5T.s:31     .text:0000000000000028 .LVL1
+     /tmp/ccZ1LI5T.s:48     .debug_info:0000000000000000 .Ldebug_info0
+
+UNDEFINED SYMBOLS
+_ZN15MemoryAllocator14allocateMemoryEm
