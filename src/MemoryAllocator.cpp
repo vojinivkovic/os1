@@ -110,7 +110,7 @@ void MemoryAllocator::remapMemory(FreeBlock **head, FreeBlock *allocatedBlocks, 
 }
 MemoryAllocator::FreeBlock* MemoryAllocator::findNextFreeBlock(FreeBlock* memoryToFree)
 {
-    for(uint8* i = (uint8*)memoryToFree; i + MEM_BLOCK_SIZE <= (uint8*)HEAP_END_ADDR; i+= MEM_BLOCK_SIZE)
+    for(uint8* i = (uint8*)memoryToFree; i + (((OccupiedBlock*)i)->numOfBlocks * MEM_BLOCK_SIZE) <= (uint8*)HEAP_END_ADDR; i+= (((OccupiedBlock*)i)->numOfBlocks * MEM_BLOCK_SIZE))
     {
         if(((FreeBlock*)i)->flagFree)
         {
@@ -124,7 +124,11 @@ MemoryAllocator::FreeBlock* MemoryAllocator::findPreviousFreeBlock(FreeBlock* he
 {
     FreeBlock* temp = head;
     for(; temp && temp <= memoryToFree; temp = temp->nextBlock){}
-    return temp;
+    if(!temp)
+    {
+        return nullptr;
+    }
+    return temp->previousBlock;
 }
 int MemoryAllocator::freeMemory(void *addressToFree)
 {
@@ -166,9 +170,16 @@ void MemoryAllocator::connectAdjacentBlocks(FreeBlock* previousBlock, FreeBlock*
 
     if(adjacentBlock == (FreeBlock*)((uint8 *)previousBlock + previousBlock->numOfBlocks * MEM_BLOCK_SIZE))
     {
+
         previousBlock->numOfBlocks += adjacentBlock->numOfBlocks;
         previousBlock->nextBlock = adjacentBlock->nextBlock;
-        previousBlock->previousBlock = adjacentBlock->previousBlock;
+        previousBlock->previousBlock = (previousBlock == adjacentBlock->previousBlock ? nullptr : adjacentBlock->previousBlock);
+
+        adjacentBlock->flagFree = false;
+        adjacentBlock->numOfBlocks = 0;
+        adjacentBlock->nextBlock = nullptr;
+        adjacentBlock->previousBlock = nullptr;
+
     }
     else
     {
