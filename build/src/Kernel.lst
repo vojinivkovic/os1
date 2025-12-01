@@ -1,0 +1,348 @@
+GAS LISTING /tmp/ccajgI4H.s 			page 1
+
+
+   1              		.file	"Kernel.cpp"
+   2              		.option pic
+   3              		.option norelax
+   4              		.text
+   5              	.Ltext0:
+   6              		.align	2
+   7              		.globl	_ZN6Kernel16initializeKernelEv
+   9              	_ZN6Kernel16initializeKernelEv:
+  10              	.LFB4:
+  11              		.file 1 "src/Kernel.cpp"
+   1:src/Kernel.cpp **** //
+   2:src/Kernel.cpp **** // Created by os on 12/1/25.
+   3:src/Kernel.cpp **** //
+   4:src/Kernel.cpp **** 
+   5:src/Kernel.cpp **** #include "../h/Kernel.hpp"
+   6:src/Kernel.cpp **** extern "C" void interrupt_trap(void);
+   7:src/Kernel.cpp **** 
+   8:src/Kernel.cpp **** void Kernel::initializeKernel()
+   9:src/Kernel.cpp **** {
+  12              		.loc 1 9 1
+  13              		.cfi_startproc
+  14 0000 130101FF 		addi	sp,sp,-16
+  15              		.cfi_def_cfa_offset 16
+  16 0004 23348100 		sd	s0,8(sp)
+  17              		.cfi_offset 8, -8
+  18 0008 13040101 		addi	s0,sp,16
+  19              		.cfi_def_cfa 8, 0
+  10:src/Kernel.cpp ****     Kernel::setInterruptRoutine(&interrupt_trap);
+  20              		.loc 1 10 5
+  21              	.LVL0:
+  22              	.LBB12:
+  23              	.LBB13:
+  24              		.file 2 "src/../h/Kernel.hpp"
+   1:src/../h/Kernel.hpp **** //
+   2:src/../h/Kernel.hpp **** // Created by os on 12/1/25.
+   3:src/../h/Kernel.hpp **** //
+   4:src/../h/Kernel.hpp **** 
+   5:src/../h/Kernel.hpp **** #ifndef PROJECT_BASE_V1_1_KERNEL_H
+   6:src/../h/Kernel.hpp **** #define PROJECT_BASE_V1_1_KERNEL_H
+   7:src/../h/Kernel.hpp **** #include "Machine.hpp"
+   8:src/../h/Kernel.hpp **** 
+   9:src/../h/Kernel.hpp **** class Kernel {
+  10:src/../h/Kernel.hpp **** public:
+  11:src/../h/Kernel.hpp ****     Kernel() = delete;
+  12:src/../h/Kernel.hpp ****     Kernel(const Kernel& kernel) = delete;
+  13:src/../h/Kernel.hpp ****     Kernel& operator=(const Kernel& kernel) = delete;
+  14:src/../h/Kernel.hpp ****     static void initializeKernel(void);
+  15:src/../h/Kernel.hpp **** 
+  16:src/../h/Kernel.hpp **** private:
+  17:src/../h/Kernel.hpp ****     static void setInterruptRoutine(void (*routine)(void));
+  18:src/../h/Kernel.hpp ****     static void interruptHandler(void);
+  19:src/../h/Kernel.hpp **** };
+  20:src/../h/Kernel.hpp **** 
+  21:src/../h/Kernel.hpp **** inline void Kernel::setInterruptRoutine(void (*routine)(void)) {
+  22:src/../h/Kernel.hpp ****     Machine::writeStvec((uint64) routine);
+  25              		.loc 2 22 5
+  26              		.loc 2 22 24 is_stmt 0
+GAS LISTING /tmp/ccajgI4H.s 			page 2
+
+
+  27 000c 97070000 		la	a5,interrupt_trap
+  27      83B70700 
+  28              	.LVL1:
+  29              	.LBB14:
+  30              	.LBB15:
+  31              		.file 3 "src/../h/Machine.hpp"
+   1:src/../h/Machine.hpp **** //
+   2:src/../h/Machine.hpp **** // Created by os on 12/1/25.
+   3:src/../h/Machine.hpp **** //
+   4:src/../h/Machine.hpp **** 
+   5:src/../h/Machine.hpp **** #ifndef PROJECT_BASE_V1_1_MACHINE_H
+   6:src/../h/Machine.hpp **** #define PROJECT_BASE_V1_1_MACHINE_H
+   7:src/../h/Machine.hpp **** #include "../lib/hw.h"
+   8:src/../h/Machine.hpp **** 
+   9:src/../h/Machine.hpp **** class Kernel; //forward declaration
+  10:src/../h/Machine.hpp **** 
+  11:src/../h/Machine.hpp **** 
+  12:src/../h/Machine.hpp **** class Machine {
+  13:src/../h/Machine.hpp **** public:
+  14:src/../h/Machine.hpp ****     Machine() = delete;
+  15:src/../h/Machine.hpp ****     Machine(const Machine& riscv) = delete;
+  16:src/../h/Machine.hpp ****     Machine& operator=(const Machine& riscv) = delete;
+  17:src/../h/Machine.hpp **** private:
+  18:src/../h/Machine.hpp ****     static void writeStvec(uint64 interruptAddress);
+  19:src/../h/Machine.hpp ****     static uint64 readScause(void);
+  20:src/../h/Machine.hpp ****     static void incrementSepc(void);
+  21:src/../h/Machine.hpp ****     friend class Kernel;
+  22:src/../h/Machine.hpp **** };
+  23:src/../h/Machine.hpp **** 
+  24:src/../h/Machine.hpp **** inline void Machine::writeStvec(uint64 interruptAddress)
+  25:src/../h/Machine.hpp **** {
+  26:src/../h/Machine.hpp ****     __asm__ volatile ("csrw stvec, %[address]": : [address] "r"(interruptAddress));
+  32              		.loc 3 26 5 is_stmt 1
+  33              		.loc 3 26 83 is_stmt 0
+  34              	#APP
+  35              	# 26 "src/../h/Machine.hpp" 1
+  27              	}
+  36              		csrw stvec, a5
+  37              	# 0 "" 2
+  38              	.LVL2:
+  39              	#NO_APP
+  40              	.LBE15:
+  41              	.LBE14:
+  42              	.LBE13:
+  43              	.LBE12:
+  11:src/Kernel.cpp **** }
+  44              		.loc 1 11 1
+  45 0018 03348100 		ld	s0,8(sp)
+  46              		.cfi_restore 8
+  47              		.cfi_def_cfa 2, 16
+  48 001c 13010101 		addi	sp,sp,16
+  49              		.cfi_def_cfa_offset 0
+  50 0020 67800000 		jr	ra
+  51              		.cfi_endproc
+  52              	.LFE4:
+  54              		.align	2
+  55              		.globl	_ZN6Kernel16interruptHandlerEv
+GAS LISTING /tmp/ccajgI4H.s 			page 3
+
+
+  57              	_ZN6Kernel16interruptHandlerEv:
+  58              	.LFB5:
+  12:src/Kernel.cpp **** void Kernel::interruptHandler(void)
+  13:src/Kernel.cpp **** {
+  59              		.loc 1 13 1 is_stmt 1
+  60              		.cfi_startproc
+  61 0024 130101FF 		addi	sp,sp,-16
+  62              		.cfi_def_cfa_offset 16
+  63 0028 23348100 		sd	s0,8(sp)
+  64              		.cfi_offset 8, -8
+  65 002c 13040101 		addi	s0,sp,16
+  66              		.cfi_def_cfa 8, 0
+  14:src/Kernel.cpp ****     uint64 scause = Machine::readScause();
+  67              		.loc 1 14 5
+  68              	.LBB16:
+  69              	.LBB17:
+  28:src/../h/Machine.hpp **** 
+  29:src/../h/Machine.hpp **** inline uint64 Machine::readScause(void)
+  30:src/../h/Machine.hpp **** {
+  31:src/../h/Machine.hpp ****     uint64 scause;
+  70              		.loc 3 31 5
+  32:src/../h/Machine.hpp ****     __asm__ volatile ("csrr %[cause], scause": [cause] "=r"(scause));
+  71              		.loc 3 32 5
+  72              		.loc 3 32 69 is_stmt 0
+  73              	#APP
+  74              	# 32 "src/../h/Machine.hpp" 1
+  33              	    return scause;
+  75              		csrr a5, scause
+  76              	# 0 "" 2
+  77              	.LVL3:
+  78              		.loc 3 33 5 is_stmt 1
+  79              	#NO_APP
+  80              	.LBE17:
+  81              	.LBE16:
+  15:src/Kernel.cpp ****     if(scause == 0x0000000000000008UL || scause == 0x0000000000000009UL)
+  82              		.loc 1 15 5
+  83              		.loc 1 15 39 is_stmt 0
+  84 0034 938787FF 		addi	a5,a5,-8
+  85              	.LVL4:
+  86              		.loc 1 15 5
+  87 0038 13071000 		li	a4,1
+  88 003c 6378F700 		bleu	a5,a4,.L6
+  89              	.L3:
+  16:src/Kernel.cpp ****     {
+  17:src/Kernel.cpp ****         Machine::incrementSepc();
+  18:src/Kernel.cpp ****     }
+  19:src/Kernel.cpp **** 
+  20:src/Kernel.cpp **** }...
+  90              		.loc 1 20 1
+  91 0040 03348100 		ld	s0,8(sp)
+  92              		.cfi_remember_state
+  93              		.cfi_restore 8
+  94              		.cfi_def_cfa 2, 16
+  95 0044 13010101 		addi	sp,sp,16
+  96              		.cfi_def_cfa_offset 0
+  97 0048 67800000 		jr	ra
+  98              	.L6:
+GAS LISTING /tmp/ccajgI4H.s 			page 4
+
+
+  99              		.cfi_restore_state
+  17:src/Kernel.cpp ****         Machine::incrementSepc();
+ 100              		.loc 1 17 9 is_stmt 1
+ 101              	.LBB18:
+ 102              	.LBB19:
+  34:src/../h/Machine.hpp **** }
+  35:src/../h/Machine.hpp **** 
+  36:src/../h/Machine.hpp **** inline void Machine::incrementSepc(void)
+  37:src/../h/Machine.hpp **** {
+  38:src/../h/Machine.hpp ****     __asm__ volatile ("csrr t0, sepc");
+ 103              		.loc 3 38 5
+ 104              		.loc 3 38 39 is_stmt 0
+ 105              	#APP
+ 106              	# 38 "src/../h/Machine.hpp" 1
+  39              	    __asm__ volatile ("addi t0, t0, 0x4");
+ 107              		csrr t0, sepc
+ 108              	# 0 "" 2
+ 109              		.loc 3 39 5 is_stmt 1
+ 110              		.loc 3 39 42 is_stmt 0
+ 111              	# 39 "src/../h/Machine.hpp" 1
+  40              	    __asm__ volatile ("csrw sepc, t0");
+ 112              		addi t0, t0, 0x4
+ 113              	# 0 "" 2
+ 114              		.loc 3 40 5 is_stmt 1
+ 115              		.loc 3 40 39 is_stmt 0
+ 116              	# 40 "src/../h/Machine.hpp" 1
+  41              	}
+ 117              		csrw sepc, t0
+ 118              	# 0 "" 2
+ 119              	#NO_APP
+ 120              	.LBE19:
+ 121              	.LBE18:
+ 122              		.loc 1 20 1
+ 123 0058 6FF09FFE 		j	.L3
+ 124              		.cfi_endproc
+ 125              	.LFE5:
+ 127              	.Letext0:
+ 128              		.file 4 "src/../h/../lib/hw.h"
+GAS LISTING /tmp/ccajgI4H.s 			page 5
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 Kernel.cpp
+     /tmp/ccajgI4H.s:9      .text:0000000000000000 _ZN6Kernel16initializeKernelEv
+     /tmp/ccajgI4H.s:13     .text:0000000000000000 .L0 
+     /tmp/ccajgI4H.s:14     .text:0000000000000000 .L0 
+     /tmp/ccajgI4H.s:15     .text:0000000000000004 .L0 
+     /tmp/ccajgI4H.s:17     .text:0000000000000008 .L0 
+     /tmp/ccajgI4H.s:19     .text:000000000000000c .L0 
+     /tmp/ccajgI4H.s:25     .text:000000000000000c .L0 
+     /tmp/ccajgI4H.s:26     .text:000000000000000c .L0 
+     /tmp/ccajgI4H.s:27     .text:000000000000000c .L0 
+     /tmp/ccajgI4H.s:33     .text:0000000000000014 .L0 
+src/../h/Machine.hpp:26     .text:0000000000000014 .L0 
+     /tmp/ccajgI4H.s:45     .text:0000000000000018 .L0 
+     /tmp/ccajgI4H.s:46     .text:000000000000001c .L0 
+     /tmp/ccajgI4H.s:47     .text:000000000000001c .L0 
+     /tmp/ccajgI4H.s:49     .text:0000000000000020 .L0 
+     /tmp/ccajgI4H.s:51     .text:0000000000000024 .L0 
+     /tmp/ccajgI4H.s:57     .text:0000000000000024 _ZN6Kernel16interruptHandlerEv
+     /tmp/ccajgI4H.s:60     .text:0000000000000024 .L0 
+     /tmp/ccajgI4H.s:61     .text:0000000000000024 .L0 
+     /tmp/ccajgI4H.s:62     .text:0000000000000028 .L0 
+     /tmp/ccajgI4H.s:64     .text:000000000000002c .L0 
+     /tmp/ccajgI4H.s:66     .text:0000000000000030 .L0 
+     /tmp/ccajgI4H.s:70     .text:0000000000000030 .L0 
+     /tmp/ccajgI4H.s:71     .text:0000000000000030 .L0 
+     /tmp/ccajgI4H.s:72     .text:0000000000000030 .L0 
+src/../h/Machine.hpp:32     .text:0000000000000030 .L0 
+     /tmp/ccajgI4H.s:82     .text:0000000000000034 .L0 
+     /tmp/ccajgI4H.s:83     .text:0000000000000034 .L0 
+     /tmp/ccajgI4H.s:84     .text:0000000000000034 .L0 
+     /tmp/ccajgI4H.s:87     .text:0000000000000038 .L0 
+     /tmp/ccajgI4H.s:91     .text:0000000000000040 .L0 
+     /tmp/ccajgI4H.s:92     .text:0000000000000044 .L0 
+     /tmp/ccajgI4H.s:93     .text:0000000000000044 .L0 
+     /tmp/ccajgI4H.s:94     .text:0000000000000044 .L0 
+     /tmp/ccajgI4H.s:96     .text:0000000000000048 .L0 
+     /tmp/ccajgI4H.s:99     .text:000000000000004c .L0 
+     /tmp/ccajgI4H.s:103    .text:000000000000004c .L0 
+     /tmp/ccajgI4H.s:104    .text:000000000000004c .L0 
+src/../h/Machine.hpp:38     .text:000000000000004c .L0 
+     /tmp/ccajgI4H.s:110    .text:0000000000000050 .L0 
+src/../h/Machine.hpp:39     .text:0000000000000050 .L0 
+     /tmp/ccajgI4H.s:115    .text:0000000000000054 .L0 
+src/../h/Machine.hpp:40     .text:0000000000000054 .L0 
+     /tmp/ccajgI4H.s:123    .text:0000000000000058 .L0 
+     /tmp/ccajgI4H.s:124    .text:000000000000005c .L0 
+     /tmp/ccajgI4H.s:129    .text:000000000000005c .L0 
+     /tmp/ccajgI4H.s:27     .text:000000000000000c .L0 
+     /tmp/ccajgI4H.s:98     .text:000000000000004c .L6
+     /tmp/ccajgI4H.s:89     .text:0000000000000040 .L3
+     /tmp/ccajgI4H.s:533    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccajgI4H.s:1091   .debug_str:0000000000000147 .LASF41
+     /tmp/ccajgI4H.s:1089   .debug_str:0000000000000138 .LASF42
+     /tmp/ccajgI4H.s:1113   .debug_str:00000000000002b8 .LASF43
+     /tmp/ccajgI4H.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccajgI4H.s:127    .text:000000000000005c .Letext0
+GAS LISTING /tmp/ccajgI4H.s 			page 6
+
+
+     /tmp/ccajgI4H.s:1045   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccajgI4H.s:1099   .debug_str:0000000000000254 .LASF0
+     /tmp/ccajgI4H.s:1085   .debug_str:0000000000000119 .LASF1
+     /tmp/ccajgI4H.s:1079   .debug_str:00000000000000e6 .LASF2
+     /tmp/ccajgI4H.s:1061   .debug_str:0000000000000071 .LASF4
+     /tmp/ccajgI4H.s:1083   .debug_str:0000000000000107 .LASF3
+     /tmp/ccajgI4H.s:1053   .debug_str:000000000000003e .LASF5
+     /tmp/ccajgI4H.s:1049   .debug_str:000000000000001a .LASF6
+     /tmp/ccajgI4H.s:1071   .debug_str:00000000000000ae .LASF7
+     /tmp/ccajgI4H.s:1105   .debug_str:000000000000027a .LASF8
+     /tmp/ccajgI4H.s:1059   .debug_str:0000000000000063 .LASF9
+     /tmp/ccajgI4H.s:1133   .debug_str:00000000000003a0 .LASF10
+     /tmp/ccajgI4H.s:1075   .debug_str:00000000000000cc .LASF11
+     /tmp/ccajgI4H.s:1121   .debug_str:000000000000032a .LASF12
+     /tmp/ccajgI4H.s:1111   .debug_str:00000000000002a8 .LASF13
+     /tmp/ccajgI4H.s:1087   .debug_str:000000000000012c .LASF14
+     /tmp/ccajgI4H.s:1067   .debug_str:0000000000000091 .LASF15
+     /tmp/ccajgI4H.s:1107   .debug_str:000000000000028a .LASF16
+     /tmp/ccajgI4H.s:1063   .debug_str:0000000000000078 .LASF17
+     /tmp/ccajgI4H.s:1055   .debug_str:0000000000000045 .LASF18
+     /tmp/ccajgI4H.s:1119   .debug_str:0000000000000317 .LASF19
+     /tmp/ccajgI4H.s:1123   .debug_str:000000000000033a .LASF23
+     /tmp/ccajgI4H.s:1081   .debug_str:00000000000000f4 .LASF24
+     /tmp/ccajgI4H.s:1073   .debug_str:00000000000000c1 .LASF30
+     /tmp/ccajgI4H.s:1047   .debug_str:0000000000000000 .LASF32
+     /tmp/ccajgI4H.s:1077   .debug_str:00000000000000db .LASF26
+     /tmp/ccajgI4H.s:1131   .debug_str:0000000000000386 .LASF28
+     /tmp/ccajgI4H.s:1057   .debug_str:0000000000000055 .LASF34
+     /tmp/ccajgI4H.s:1115   .debug_str:00000000000002db .LASF36
+     /tmp/ccajgI4H.s:1101   .debug_str:0000000000000261 .LASF20
+     /tmp/ccajgI4H.s:1093   .debug_str:000000000000020b .LASF21
+     /tmp/ccajgI4H.s:1103   .debug_str:0000000000000268 .LASF22
+     /tmp/ccajgI4H.s:1125   .debug_str:0000000000000344 .LASF25
+     /tmp/ccajgI4H.s:1051   .debug_str:000000000000002d .LASF27
+     /tmp/ccajgI4H.s:1127   .debug_str:0000000000000356 .LASF29
+     /tmp/ccajgI4H.s:1095   .debug_str:000000000000021a .LASF31
+     /tmp/ccajgI4H.s:1097   .debug_str:000000000000022e .LASF33
+     /tmp/ccajgI4H.s:1065   .debug_str:0000000000000080 .LASF35
+     /tmp/ccajgI4H.s:1117   .debug_str:00000000000002f8 .LASF37
+     /tmp/ccajgI4H.s:58     .text:0000000000000024 .LFB5
+     /tmp/ccajgI4H.s:125    .text:000000000000005c .LFE5
+     /tmp/ccajgI4H.s:1069   .debug_str:00000000000000a7 .LASF38
+     /tmp/ccajgI4H.s:1019   .debug_loc:0000000000000000 .LLST0
+     /tmp/ccajgI4H.s:68     .text:0000000000000030 .LBB16
+     /tmp/ccajgI4H.s:81     .text:0000000000000034 .LBE16
+     /tmp/ccajgI4H.s:101    .text:000000000000004c .LBB18
+     /tmp/ccajgI4H.s:121    .text:0000000000000058 .LBE18
+     /tmp/ccajgI4H.s:10     .text:0000000000000000 .LFB4
+     /tmp/ccajgI4H.s:52     .text:0000000000000024 .LFE4
+     /tmp/ccajgI4H.s:22     .text:000000000000000c .LBB12
+     /tmp/ccajgI4H.s:43     .text:0000000000000018 .LBE12
+     /tmp/ccajgI4H.s:29     .text:0000000000000014 .LBB14
+     /tmp/ccajgI4H.s:41     .text:0000000000000018 .LBE14
+     /tmp/ccajgI4H.s:1109   .debug_str:00000000000002a0 .LASF39
+     /tmp/ccajgI4H.s:1129   .debug_str:0000000000000375 .LASF40
+     /tmp/ccajgI4H.s:77     .text:0000000000000034 .LVL3
+     /tmp/ccajgI4H.s:85     .text:0000000000000038 .LVL4
+GAS LISTING /tmp/ccajgI4H.s 			page 7
+
+
+     /tmp/ccajgI4H.s:130    .debug_info:0000000000000000 .Ldebug_info0
+
+UNDEFINED SYMBOLS
+interrupt_trap
