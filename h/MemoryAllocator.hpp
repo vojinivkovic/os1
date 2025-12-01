@@ -25,17 +25,17 @@ public:
     static size_t getFreeSpace();
 
 private:
-    struct FreeBlock {
+    typedef struct FreeBlock {
         bool flagFree;
         size_t numOfBlocks;
         FreeBlock *nextBlock;
         FreeBlock *previousBlock;
-    };
+    } FreeBlock;
     
-    struct OccupiedBlock{
+    typedef struct OccupiedBlock{
         bool flagFree;
         size_t numOfBlocks;
-    };
+    } OccupiedBlock;
     
     
     static uint8 flagSystemInitialize;
