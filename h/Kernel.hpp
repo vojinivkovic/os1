@@ -26,7 +26,7 @@ private:
     static uint64 kmalloc(ArgumentsOfSystemCall* arg);
     static uint64 kfree(ArgumentsOfSystemCall* arg);
     static uint64 (*systemCallsTable[NUM_OF_SYSTEM_CALLS])(ArgumentsOfSystemCall* arg);
-    static void initializeArguments(ArgumentsOfSystemCall& arg);
+    static void initializeArguments(ArgumentsOfSystemCall* arg);
 };
 
 inline void Kernel::setInterruptRoutine(void (*routine)(void)) {

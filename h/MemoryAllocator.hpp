@@ -23,7 +23,7 @@ public:
     static int freeMemory(void* addressToFree);
     static size_t getLargestFreeBlock();
     static size_t getFreeSpace();
-
+    static size_t getSizeOfMetaData();
 private:
     typedef struct FreeBlock {
         bool flagFree;
@@ -49,6 +49,7 @@ private:
     static FreeBlock* findPreviousFreeBlock(FreeBlock* head, FreeBlock* memoryToFree);
     static void connectAdjacentBlocks(FreeBlock* previousBlock, FreeBlock* nextBlock);
     static void initializeMemory();
+
 
 };
 

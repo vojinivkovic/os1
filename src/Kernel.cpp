@@ -12,7 +12,8 @@ void Kernel::initializeKernel()
     systemCallsTable[1] = &kmalloc;
     systemCallsTable[2] = &kfree;
 }
-void Kernel::initializeArguments(Kernel::ArgumentsOfSystemCall &arg) {
+void Kernel::initializeArguments(Kernel::ArgumentsOfSystemCall* arg)
+{
     __asm__ volatile("sd a1, 0x0(a0)");
     __asm__ volatile("sd a2, 0x8(a0)");
     __asm__ volatile("sd a3, 0x10(a0)");
@@ -22,14 +23,16 @@ void Kernel::initializeArguments(Kernel::ArgumentsOfSystemCall &arg) {
     __asm__ volatile("sd a7, 0x30(a0)");
 }
 
-uint64 Kernel::kmalloc(Kernel::ArgumentsOfSystemCall *arg) {
+uint64 Kernel::kmalloc(Kernel::ArgumentsOfSystemCall *arg)
+{
     uint64 returnValue;
     returnValue = (uint64)MemoryAllocator::allocateMemory(arg->a0);
     return returnValue;
 }
-uint64 Kernel::kfree(Kernel::ArgumentsOfSystemCall *arg) {
+uint64 Kernel::kfree(Kernel::ArgumentsOfSystemCall *arg)
+{
     uint64 returnValue;
-    returnValue = (uint64)MemoryAllocator::freeMemory(arg->a0);
+    returnValue = (uint64)MemoryAllocator::freeMemory((void*)arg->a0);
     return returnValue;
 }
 

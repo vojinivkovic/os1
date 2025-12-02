@@ -208,3 +208,8 @@ size_t MemoryAllocator::getFreeSpace()
 {
     return numOfFreeBlocks * MEM_BLOCK_SIZE;
 }
+
+size_t MemoryAllocator::getSizeOfMetaData()
+{
+    return sizeof(OccupiedBlock);
+}

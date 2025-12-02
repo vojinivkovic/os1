@@ -3,7 +3,7 @@
 //
 #include "../h/MemoryAllocator.hpp"
 #include "../h/Kernel.hpp"
-
+#include "../h/syscall_c.hpp"
 void main(){
 
     //void* allocMem1 = (void*)MemoryAllocator::allocateMemory(4);
@@ -13,6 +13,7 @@ void main(){
 //    MemoryAllocator::freeMemory(allocMem2);
 //    MemoryAllocator::allocateMemory(4);
     Kernel::initializeKernel();
-    __asm__ volatile ("ecall");
-    MemoryAllocator::allocateMemory(4);
+//    __asm__ volatile ("ecall");
+    void* allocMem1 = mem_alloc(4);
+    mem_free(allocMem1);
 }
