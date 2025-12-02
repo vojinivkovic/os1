@@ -15,10 +15,12 @@ public:
     Machine(const Machine& riscv) = delete;
     Machine& operator=(const Machine& riscv) = delete;
 private:
+
     static void writeStvec(uint64 interruptAddress);
     static uint64 readScause(void);
     static void incrementSepc(void);
     friend class Kernel;
+
 };
 
 inline void Machine::writeStvec(uint64 interruptAddress)

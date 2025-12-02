@@ -36,8 +36,9 @@ private:
         bool flagFree;
         size_t numOfBlocks;
     } OccupiedBlock;
-    
-    
+
+
+
     static uint8 flagSystemInitialize;
     static FreeBlock* firstFreeBlock;
     static size_t numOfFreeBlocks;

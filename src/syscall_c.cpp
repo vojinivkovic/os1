@@ -3,7 +3,7 @@
 //
 
 #include "../h/syscall_c.hpp"
-enum Number_Of_System_Call{
+enum number_of_system_call{
     MEM_ALLOC = 0x1,
     MEM_FREE = 0x2
 };
@@ -21,9 +21,10 @@ uint64 prepare_system_call(uint64 id, uint64 arg0, uint64 arg1, uint64 arg2, uin
 }
 
 void* mem_alloc(size_t size){
+
     return (void*)prepare_system_call(MEM_ALLOC, size, 0, 0, 0, 0, 0, 0);
 }
 
 int mem_free(void* obj){
-    return (int)prepare_system_call(MEM_FREE, obj, 0, 0, 0, 0, 0, 0);
+    return (int)prepare_system_call(MEM_FREE, (uint64)obj, 0, 0, 0, 0, 0, 0);
 }
