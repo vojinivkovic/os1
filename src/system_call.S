@@ -11,5 +11,4 @@ system_call:
     ld a6, 0x30(t0)
     ld a7, 0x38(t0)
     ecall
-    sd a0, 0x0(t0)
     ret

@@ -14,6 +14,6 @@ void main(){
 //    MemoryAllocator::allocateMemory(4);
     Kernel::initializeKernel();
 //    __asm__ volatile ("ecall");
-    void* allocMem1 = mem_alloc(4);
+    void* allocMem1 = mem_alloc(100);
     mem_free(allocMem1);
 }

@@ -22,11 +22,11 @@ private:
         uint64 a0, a1, a2, a3, a4, a5, a6;
     } ArgumentsOfSystemCall;
     static void setInterruptRoutine(void (*routine)(void));
-    static void interruptHandler(size_t numberOfEntry);
+    static void interruptHandler();
     static uint64 kmalloc(ArgumentsOfSystemCall* arg);
     static uint64 kfree(ArgumentsOfSystemCall* arg);
     static uint64 (*systemCallsTable[NUM_OF_SYSTEM_CALLS])(ArgumentsOfSystemCall* arg);
-    static void initializeArguments(ArgumentsOfSystemCall* arg);
+    static void initializeArguments(ArgumentsOfSystemCall* arg, uint64 basePointer);
 };
 
 inline void Kernel::setInterruptRoutine(void (*routine)(void)) {

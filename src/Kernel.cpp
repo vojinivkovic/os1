@@ -12,15 +12,15 @@ void Kernel::initializeKernel()
     systemCallsTable[1] = &kmalloc;
     systemCallsTable[2] = &kfree;
 }
-void Kernel::initializeArguments(Kernel::ArgumentsOfSystemCall* arg)
+void Kernel::initializeArguments(Kernel::ArgumentsOfSystemCall* arg, uint64 basePointer)
 {
-    __asm__ volatile("sd a1, 0x0(a0)");
-    __asm__ volatile("sd a2, 0x8(a0)");
-    __asm__ volatile("sd a3, 0x10(a0)");
-    __asm__ volatile("sd a4, 0x18(a0)");
-    __asm__ volatile("sd a5, 0x20(a0)");
-    __asm__ volatile("sd a6, 0x28(a0)");
-    __asm__ volatile("sd a7, 0x30(a0)");
+    __asm__ volatile("ld %[rd], 11*8(%[rs])":[rd]"=r"(arg->a0):[rs]"r"(basePointer));
+    __asm__ volatile("ld %[rd], 12*8(%[rs])":[rd]"=r"(arg->a1):[rs]"r"(basePointer));
+    __asm__ volatile("ld %[rd], 13*8(%[rs])":[rd]"=r"(arg->a2):[rs]"r"(basePointer));
+    __asm__ volatile("ld %[rd], 14*8(%[rs])":[rd]"=r"(arg->a3):[rs]"r"(basePointer));
+    __asm__ volatile("ld %[rd], 15*8(%[rs])":[rd]"=r"(arg->a4):[rs]"r"(basePointer));
+    __asm__ volatile("ld %[rd], 16*8(%[rs])":[rd]"=r"(arg->a5):[rs]"r"(basePointer));
+    __asm__ volatile("ld %[rd], 17*8(%[rs])":[rd]"=r"(arg->a6):[rs]"r"(basePointer));
 }
 
 uint64 Kernel::kmalloc(Kernel::ArgumentsOfSystemCall *arg)
@@ -36,14 +36,19 @@ uint64 Kernel::kfree(Kernel::ArgumentsOfSystemCall *arg)
     return returnValue;
 }
 
-void Kernel::interruptHandler(size_t numberOfEntry)
+void Kernel::interruptHandler()
 {
+    volatile uint64 basePointer;
+    __asm__ volatile ("addi %[reg], s0, 0x0": [reg]"=r"(basePointer)); // Problem: da li mozemo biti 100% sigurni da ce s0 biti nepromenjen; resenje inline f-ja
     uint64 scause = Machine::readScause();
     if(scause == 0x0000000000000008UL || scause == 0x0000000000000009UL)
     {
+        uint64 numberOfEntry;
+        __asm__ volatile ("ld %[rd], 80(%[rs])": [rd]"=r"(numberOfEntry):[rs]"r"(basePointer));
         ArgumentsOfSystemCall arg;
-        initializeArguments(&arg);
+        initializeArguments(&arg, basePointer);
         systemCallsTable[numberOfEntry](&arg);
+        __asm__ volatile("sd a0, 80(%[rs])"::[rs]"r"(basePointer));
         Machine::incrementSepc();
     }
 
