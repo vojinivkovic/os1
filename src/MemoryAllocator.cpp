@@ -46,7 +46,7 @@ void* MemoryAllocator::findBestFit(FreeBlock **head, size_t blocksToAllocate)
 
     for(FreeBlock* curr = (*head); curr; curr = curr->nextBlock)
     {
-        if(curr->numOfBlocks > blocksToAllocate)
+        if(curr->numOfBlocks >= blocksToAllocate)
         {   if(bestBlock == nullptr)
             {
                 bestBlock = curr;
@@ -62,6 +62,9 @@ void* MemoryAllocator::findBestFit(FreeBlock **head, size_t blocksToAllocate)
     numOfFreeBlocks -= blocksToAllocate;
     bestBlock->numOfBlocks -= blocksToAllocate;
     remapMemory(head, bestBlock, blocksToAllocate);
+
+    //bestBlock->nextBlock = nullptr;
+    //bestBlock->previousBlock = nullptr;
 
     OccupiedBlock* occupiedBlock = (OccupiedBlock*)bestBlock;
     occupiedBlock->flagFree = false;
@@ -114,7 +117,7 @@ void MemoryAllocator::remapMemory(FreeBlock **head, FreeBlock *allocatedBlocks, 
 }
 MemoryAllocator::FreeBlock* MemoryAllocator::findNextFreeBlock(FreeBlock* memoryToFree)
 {
-    for(uint8* i = (uint8*)memoryToFree; i + (((OccupiedBlock*)i)->numOfBlocks * MEM_BLOCK_SIZE) <= (uint8*)HEAP_END_ADDR; i+= (((OccupiedBlock*)i)->numOfBlocks * MEM_BLOCK_SIZE))
+    for(uint8* i = (uint8*)memoryToFree; i < (uint8*)HEAP_END_ADDR; i+= (((OccupiedBlock*)i)->numOfBlocks * MEM_BLOCK_SIZE))
     {
         if(((FreeBlock*)i)->flagFree)
         {
@@ -177,9 +180,14 @@ void MemoryAllocator::connectAdjacentBlocks(FreeBlock* previousBlock, FreeBlock*
 
         previousBlock->numOfBlocks += adjacentBlock->numOfBlocks;
         previousBlock->nextBlock = adjacentBlock->nextBlock;
+        if(adjacentBlock->nextBlock != nullptr)
+        {
+            adjacentBlock->nextBlock->previousBlock = previousBlock;
+        }
         if(adjacentBlock->previousBlock != previousBlock && adjacentBlock->previousBlock != nullptr)
         {
             previousBlock->previousBlock = adjacentBlock->previousBlock;
+            adjacentBlock->previousBlock->nextBlock = previousBlock;
         }
         //previousBlock->previousBlock = (previousBlock != adjacentBlock->previousBlock ? adjacentBlock->previousBlock : previousBlock->previousBlock);
 

@@ -29,9 +29,14 @@ int mem_free(void* obj)
     return (int) system_call(&arg);
 }
 
-//uint64 prepare_system_call(uint64 id, uint64 arg0, uint64 arg1, uint64 arg2, uint64 arg3, uint64 arg4, uint64 arg5, uint64 arg6)
-//{
-//    Arguments arg = {id, arg0, arg1, arg2, arg3, arg4, arg5, arg6};
-//    system_call(&arg);
-//    return arg.a0;
-//}
+size_t mem_get_free_space()
+{
+    Arguments arg = {Kernel::MEM_FREE_SPACE, 0, 0, 0, 0, 0, 0, 0};
+    return (size_t) system_call(&arg);
+}
+size_t mem_get_largest_free_block()
+{
+    Arguments arg = {Kernel::LARGEST_FREE_BLOCK, 0, 0, 0, 0, 0, 0, 0};
+    return (size_t) system_call(&arg);
+}
+

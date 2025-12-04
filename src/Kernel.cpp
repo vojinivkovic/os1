@@ -9,8 +9,10 @@ uint64 (*Kernel::systemCallsTable[NUM_OF_SYSTEM_CALLS])(Kernel::ArgumentsOfSyste
 void Kernel::initializeKernel()
 {
     Kernel::setInterruptRoutine(&interrupt_trap);
-    systemCallsTable[MEM_ALLOC] = &sys_malloc;
-    systemCallsTable[MEM_FREE] = &sys_free;
+    systemCallsTable[MEM_ALLOC] = &sysMalloc;
+    systemCallsTable[MEM_FREE] = &sysFree;
+    systemCallsTable[MEM_FREE_SPACE] = &sysGetFreeSpace;
+    systemCallsTable[LARGEST_FREE_BLOCK] = &sysLargestFreeBlock;
 }
 void Kernel::initializeArguments(Kernel::ArgumentsOfSystemCall* arg, uint64 basePointer)
 {
@@ -23,16 +25,28 @@ void Kernel::initializeArguments(Kernel::ArgumentsOfSystemCall* arg, uint64 base
     __asm__ volatile("ld %[rd], 17*8(%[rs])":[rd]"=r"(arg->a6):[rs]"r"(basePointer));
 }
 
-uint64 Kernel::sys_malloc(Kernel::ArgumentsOfSystemCall *arg)
+uint64 Kernel::sysMalloc(Kernel::ArgumentsOfSystemCall *arg)
 {
     uint64 returnValue;
     returnValue = (uint64)MemoryAllocator::allocateMemory(arg->a0);
     return returnValue;
 }
-uint64 Kernel::sys_free(Kernel::ArgumentsOfSystemCall *arg)
+uint64 Kernel::sysFree(Kernel::ArgumentsOfSystemCall *arg)
 {
     uint64 returnValue;
     returnValue = (uint64)MemoryAllocator::freeMemory((void*)arg->a0);
+    return returnValue;
+}
+uint64 Kernel::sysGetFreeSpace(Kernel::ArgumentsOfSystemCall *arg)
+{
+    uint64 returnValue;
+    returnValue = (uint64)MemoryAllocator::getFreeSpace();
+    return returnValue;
+}
+uint64 Kernel::sysLargestFreeBlock(Kernel::ArgumentsOfSystemCall *arg)
+{
+    uint64 returnValue;
+    returnValue = (uint64)MemoryAllocator::getLargestFreeBlock();
     return returnValue;
 }
 

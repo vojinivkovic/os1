@@ -29,8 +29,10 @@ private:
     } ArgumentsOfSystemCall;
     static void setInterruptRoutine(void (*routine)(void));
     static void interruptHandler();
-    static uint64 sys_malloc(ArgumentsOfSystemCall* arg);
-    static uint64 sys_free(ArgumentsOfSystemCall* arg);
+    static uint64 sysMalloc(ArgumentsOfSystemCall* arg);
+    static uint64 sysFree(ArgumentsOfSystemCall* arg);
+    static uint64 sysGetFreeSpace(ArgumentsOfSystemCall* arg);
+    static uint64 sysLargestFreeBlock(ArgumentsOfSystemCall* arg);
     static uint64 (*systemCallsTable[NUM_OF_SYSTEM_CALLS])(ArgumentsOfSystemCall* arg);
     static void initializeArguments(ArgumentsOfSystemCall* arg, uint64 basePointer);
 };
