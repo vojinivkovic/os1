@@ -9,8 +9,8 @@ uint64 (*Kernel::systemCallsTable[NUM_OF_SYSTEM_CALLS])(Kernel::ArgumentsOfSyste
 void Kernel::initializeKernel()
 {
     Kernel::setInterruptRoutine(&interrupt_trap);
-    systemCallsTable[1] = &kmalloc;
-    systemCallsTable[2] = &kfree;
+    systemCallsTable[MEM_ALLOC] = &sys_malloc;
+    systemCallsTable[MEM_FREE] = &sys_free;
 }
 void Kernel::initializeArguments(Kernel::ArgumentsOfSystemCall* arg, uint64 basePointer)
 {
@@ -23,13 +23,13 @@ void Kernel::initializeArguments(Kernel::ArgumentsOfSystemCall* arg, uint64 base
     __asm__ volatile("ld %[rd], 17*8(%[rs])":[rd]"=r"(arg->a6):[rs]"r"(basePointer));
 }
 
-uint64 Kernel::kmalloc(Kernel::ArgumentsOfSystemCall *arg)
+uint64 Kernel::sys_malloc(Kernel::ArgumentsOfSystemCall *arg)
 {
     uint64 returnValue;
     returnValue = (uint64)MemoryAllocator::allocateMemory(arg->a0);
     return returnValue;
 }
-uint64 Kernel::kfree(Kernel::ArgumentsOfSystemCall *arg)
+uint64 Kernel::sys_free(Kernel::ArgumentsOfSystemCall *arg)
 {
     uint64 returnValue;
     returnValue = (uint64)MemoryAllocator::freeMemory((void*)arg->a0);

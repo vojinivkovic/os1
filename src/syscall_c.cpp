@@ -4,13 +4,8 @@
 
 #include "../h/syscall_c.hpp"
 #include "../h/MemoryAllocator.hpp"
-#include "../lib/hw.h"
-enum number_of_system_call{
-    MEM_ALLOC = 0x1,
-    MEM_FREE = 0x2,
-    MEM_FREE_SPACE = 0x3,
-    LARGEST_FREE_BLOCK = 0x4
-};
+#include "../h/Kernel.hpp"
+
 
 typedef struct Arguments{
     uint64 a0, a1, a2, a3, a4, a5, a6, a7;
@@ -25,12 +20,12 @@ void* mem_alloc(size_t size)
 {
     uint64 size_of_blocks = (size + MemoryAllocator::getSizeOfMetaData()) / MEM_BLOCK_SIZE;
     size_of_blocks += (size + MemoryAllocator::getSizeOfMetaData()) % MEM_BLOCK_SIZE ? 1: 0;
-    Arguments arg = {MEM_ALLOC, size_of_blocks, 0, 0, 0, 0, 0, 0};
+    Arguments arg = {Kernel::MEM_ALLOC, size_of_blocks, 0, 0, 0, 0, 0, 0};
     return (void*) system_call(&arg);
 }
 
 int mem_free(void* obj)
-{   Arguments arg = {MEM_FREE, (uint64)obj, 0, 0, 0, 0, 0, 0};
+{   Arguments arg = {Kernel::MEM_FREE, (uint64)obj, 0, 0, 0, 0, 0, 0};
     return (int) system_call(&arg);
 }
 

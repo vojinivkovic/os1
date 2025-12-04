@@ -42,12 +42,16 @@ void* MemoryAllocator::allocateMemory(size_t blocksToAllocate)
 
 void* MemoryAllocator::findBestFit(FreeBlock **head, size_t blocksToAllocate)
 {
-    FreeBlock* bestBlock = *head;
+    FreeBlock* bestBlock = nullptr;
 
-    for(FreeBlock* curr = (*head)->nextBlock; curr; curr = curr->nextBlock)
+    for(FreeBlock* curr = (*head); curr; curr = curr->nextBlock)
     {
         if(curr->numOfBlocks > blocksToAllocate)
-        {
+        {   if(bestBlock == nullptr)
+            {
+                bestBlock = curr;
+                continue;
+            }
             if(bestBlock->numOfBlocks > curr->numOfBlocks)
             {
                 bestBlock = curr;
@@ -173,7 +177,11 @@ void MemoryAllocator::connectAdjacentBlocks(FreeBlock* previousBlock, FreeBlock*
 
         previousBlock->numOfBlocks += adjacentBlock->numOfBlocks;
         previousBlock->nextBlock = adjacentBlock->nextBlock;
-        previousBlock->previousBlock = (previousBlock == adjacentBlock->previousBlock ? nullptr : adjacentBlock->previousBlock);
+        if(adjacentBlock->previousBlock != previousBlock && adjacentBlock->previousBlock != nullptr)
+        {
+            previousBlock->previousBlock = adjacentBlock->previousBlock;
+        }
+        //previousBlock->previousBlock = (previousBlock != adjacentBlock->previousBlock ? adjacentBlock->previousBlock : previousBlock->previousBlock);
 
         adjacentBlock->flagFree = false;
         adjacentBlock->numOfBlocks = 0;

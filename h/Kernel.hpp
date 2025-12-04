@@ -16,6 +16,12 @@ public:
     Kernel(const Kernel& kernel) = delete;
     Kernel& operator=(const Kernel& kernel) = delete;
     static void initializeKernel(void);
+    enum NumberOfSystemCall {
+        MEM_ALLOC = 0x1,
+        MEM_FREE = 0x2,
+        MEM_FREE_SPACE = 0x3,
+        LARGEST_FREE_BLOCK = 0x4
+    };
 
 private:
     typedef struct ArgumentsOfSystemCall{
@@ -23,8 +29,8 @@ private:
     } ArgumentsOfSystemCall;
     static void setInterruptRoutine(void (*routine)(void));
     static void interruptHandler();
-    static uint64 kmalloc(ArgumentsOfSystemCall* arg);
-    static uint64 kfree(ArgumentsOfSystemCall* arg);
+    static uint64 sys_malloc(ArgumentsOfSystemCall* arg);
+    static uint64 sys_free(ArgumentsOfSystemCall* arg);
     static uint64 (*systemCallsTable[NUM_OF_SYSTEM_CALLS])(ArgumentsOfSystemCall* arg);
     static void initializeArguments(ArgumentsOfSystemCall* arg, uint64 basePointer);
 };
