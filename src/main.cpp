@@ -6,8 +6,30 @@
 #include "../h/syscall_c.hpp"
 void main(){
 
-//    void* allocMem1 = (void*)MemoryAllocator::allocateMemory(5);
+//    void* allocMem1 = (void*)MemoryAllocator::allocateMemory(2096795);
+//
+//    MemoryAllocator::freeMemory(allocMem1);
 //    void* allocMem2 = (void*)MemoryAllocator::allocateMemory(10);
+//    void* allocMem3 = (void*)MemoryAllocator::allocateMemory(20);
+//    void* allocMem4 = (void*)MemoryAllocator::allocateMemory(10);
+//    void* allocMem5 = (void*)MemoryAllocator::allocateMemory(20);
+//    void* allocMem6 = (void*)MemoryAllocator::allocateMemory(10);
+//    void* allocMem7 = (void*)MemoryAllocator::allocateMemory(20);
+//    void* allocMem8 = (void*)MemoryAllocator::allocateMemory(20);
+//    void* allocMem9 = (void*)MemoryAllocator::allocateMemory(20);
+//    void* allocMem10 = (void*)MemoryAllocator::allocateMemory(20);
+//    void* allocMem11 = (void*)MemoryAllocator::allocateMemory(20);
+//    MemoryAllocator::freeMemory(allocMem2);
+//    MemoryAllocator::freeMemory(allocMem3);
+//    MemoryAllocator::freeMemory(allocMem4);
+//    MemoryAllocator::freeMemory(allocMem5);
+//    MemoryAllocator::freeMemory(allocMem6);
+//    MemoryAllocator::freeMemory(allocMem7);
+//    MemoryAllocator::freeMemory(allocMem8);
+//    MemoryAllocator::freeMemory(allocMem9);
+//    MemoryAllocator::freeMemory(allocMem10);
+//    MemoryAllocator::freeMemory(allocMem11);
+
 //    void* allocMem3 = (void*)MemoryAllocator::allocateMemory(6);
 //    void* allocMem4 = (void*)MemoryAllocator::allocateMemory(15);
 //    void* allocMem5 = (void*)MemoryAllocator::allocateMemory(20);

@@ -117,7 +117,7 @@ void MemoryAllocator::remapMemory(FreeBlock **head, FreeBlock *allocatedBlocks, 
 }
 MemoryAllocator::FreeBlock* MemoryAllocator::findNextFreeBlock(FreeBlock* memoryToFree)
 {
-    for(uint8* i = (uint8*)memoryToFree; i < (uint8*)HEAP_END_ADDR; i+= (((OccupiedBlock*)i)->numOfBlocks * MEM_BLOCK_SIZE))
+    for(uint8* i = (uint8*)memoryToFree; i + MEM_BLOCK_SIZE <= (uint8*)HEAP_END_ADDR; i+= (((OccupiedBlock*)i)->numOfBlocks * MEM_BLOCK_SIZE))
     {
         if(((FreeBlock*)i)->flagFree)
         {
