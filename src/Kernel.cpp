@@ -4,7 +4,12 @@
 
 #include "../h/Kernel.hpp"
 extern "C" void interrupt_trap(void);
+const size_t NUM_OF_THREADS_IN_POOL = 20;
+const size_t DEFAULT_SYSTEM_STACK_SIZE = 1024;
+
 uint64 (*Kernel::systemCallsTable[NUM_OF_SYSTEM_CALLS])(Kernel::ArgumentsOfSystemCall* arg) = {nullptr};
+ObjectPool<TCB, NUM_OF_THREADS_IN_POOL>* Kernel::poolOfThreads = new ObjectPool<TCB, NUM_OF_THREADS_IN_POOL>();
+TCB* Kernel::runningThread = nullptr;
 
 void Kernel::initializeKernel()
 {

@@ -6,10 +6,11 @@
 #define PROJECT_BASE_V1_1_KERNEL_H
 #include "Machine.hpp"
 #include "MemoryAllocator.hpp"
-
+#include "TCB.hpp"
+#include "ObjectPool.hpp"
 #define NUM_OF_SYSTEM_CALLS 10
-
-
+extern const size_t NUM_OF_THREADS_IN_POOL;
+extern const size_t DEFAULT_SYSTEM_STACK_SIZE;
 class Kernel
 {
 public:
@@ -30,14 +31,20 @@ private:
     {
         uint64 a0, a1, a2, a3, a4, a5, a6;
     } ArgumentsOfSystemCall;
+
     static void setInterruptRoutine(void (*routine)(void));
     static void interruptHandler();
+
     static uint64 sysMalloc(ArgumentsOfSystemCall* arg);
     static uint64 sysFree(ArgumentsOfSystemCall* arg);
     static uint64 sysGetFreeSpace(ArgumentsOfSystemCall* arg);
     static uint64 sysLargestFreeBlock(ArgumentsOfSystemCall* arg);
+
     static uint64 (*systemCallsTable[NUM_OF_SYSTEM_CALLS])(ArgumentsOfSystemCall* arg);
     static void initializeArguments(ArgumentsOfSystemCall* arg, uint64 basePointer);
+
+    static ObjectPool<TCB, NUM_OF_THREADS_IN_POOL>* poolOfThreads;
+    static TCB* runningThread;
 };
 
 inline void Kernel::setInterruptRoutine(void (*routine)(void))
