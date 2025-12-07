@@ -10,13 +10,15 @@
 #define NUM_OF_SYSTEM_CALLS 10
 
 
-class Kernel {
+class Kernel
+{
 public:
     Kernel() = delete;
     Kernel(const Kernel& kernel) = delete;
     Kernel& operator=(const Kernel& kernel) = delete;
     static void initializeKernel(void);
-    enum NumberOfSystemCall {
+    enum NumberOfSystemCall
+    {
         MEM_ALLOC = 0x1,
         MEM_FREE = 0x2,
         MEM_FREE_SPACE = 0x3,
@@ -24,7 +26,8 @@ public:
     };
 
 private:
-    typedef struct ArgumentsOfSystemCall{
+    typedef struct ArgumentsOfSystemCall
+    {
         uint64 a0, a1, a2, a3, a4, a5, a6;
     } ArgumentsOfSystemCall;
     static void setInterruptRoutine(void (*routine)(void));
@@ -37,7 +40,8 @@ private:
     static void initializeArguments(ArgumentsOfSystemCall* arg, uint64 basePointer);
 };
 
-inline void Kernel::setInterruptRoutine(void (*routine)(void)) {
+inline void Kernel::setInterruptRoutine(void (*routine)(void))
+{
     Machine::writeStvec((uint64) routine);
 }
 

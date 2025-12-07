@@ -9,7 +9,8 @@
 class Kernel; //forward declaration
 
 
-class Machine {
+class Machine
+{
 public:
     Machine() = delete;
     Machine(const Machine& riscv) = delete;

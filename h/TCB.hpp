@@ -6,7 +6,8 @@
 #define PROJECT_BASE_V1_1_TCB_H
 
 
-class TCB {
+class TCB
+{
 
 };
 

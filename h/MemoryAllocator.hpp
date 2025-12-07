@@ -12,7 +12,8 @@
 
 
 
-class MemoryAllocator {
+class MemoryAllocator
+{
 public:
 
     MemoryAllocator() = delete;
@@ -25,14 +26,16 @@ public:
     static size_t getFreeSpace();
     static size_t getSizeOfMetaData();
 private:
-    typedef struct FreeBlock {
+    typedef struct FreeBlock
+    {
         bool flagFree;
         size_t numOfBlocks;
         FreeBlock *nextBlock;
         FreeBlock *previousBlock;
     } FreeBlock;
     
-    typedef struct OccupiedBlock{
+    typedef struct OccupiedBlock
+    {
         bool flagFree;
         size_t numOfBlocks;
     } OccupiedBlock;
