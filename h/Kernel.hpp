@@ -6,11 +6,10 @@
 #define PROJECT_BASE_V1_1_KERNEL_H
 #include "Machine.hpp"
 #include "MemoryAllocator.hpp"
-#include "TCB.hpp"
+#include "Config.hpp"
 #include "ObjectPool.hpp"
-#define NUM_OF_SYSTEM_CALLS 10
-extern const size_t NUM_OF_THREADS_IN_POOL;
-extern const size_t DEFAULT_SYSTEM_STACK_SIZE;
+#include "TCB.hpp"
+
 class Kernel
 {
 public:
@@ -23,7 +22,8 @@ public:
         MEM_ALLOC = 0x1,
         MEM_FREE = 0x2,
         MEM_FREE_SPACE = 0x3,
-        LARGEST_FREE_BLOCK = 0x4
+        LARGEST_FREE_BLOCK = 0x4,
+        CREATE_THREAD = 0x11
     };
 
 private:
@@ -39,12 +39,14 @@ private:
     static uint64 sysFree(ArgumentsOfSystemCall* arg);
     static uint64 sysGetFreeSpace(ArgumentsOfSystemCall* arg);
     static uint64 sysLargestFreeBlock(ArgumentsOfSystemCall* arg);
+    static uint64 sysCreateThread(ArgumentsOfSystemCall* arg);
 
-    static uint64 (*systemCallsTable[NUM_OF_SYSTEM_CALLS])(ArgumentsOfSystemCall* arg);
+    static uint64 (*systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(ArgumentsOfSystemCall* arg);
     static void initializeArguments(ArgumentsOfSystemCall* arg, uint64 basePointer);
 
-    static ObjectPool<TCB, NUM_OF_THREADS_IN_POOL>* poolOfThreads;
+    static ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* poolOfThreads;
     static TCB* runningThread;
+
 };
 
 inline void Kernel::setInterruptRoutine(void (*routine)(void))

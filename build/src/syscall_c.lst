@@ -1,0 +1,496 @@
+GAS LISTING /tmp/ccOmYawj.s 			page 1
+
+
+   1              		.file	"syscall_c.cpp"
+   2              		.option pic
+   3              		.option norelax
+   4              		.text
+   5              	.Ltext0:
+   6              		.align	2
+   7              		.globl	_Z9mem_allocm
+   9              	_Z9mem_allocm:
+  10              	.LFB10:
+  11              		.file 1 "src/syscall_c.cpp"
+   1:src/syscall_c.cpp **** //
+   2:src/syscall_c.cpp **** // Created by os on 12/1/25.
+   3:src/syscall_c.cpp **** //
+   4:src/syscall_c.cpp **** 
+   5:src/syscall_c.cpp **** #include "../h/syscall_c.hpp"
+   6:src/syscall_c.cpp **** #include "../h/MemoryAllocator.hpp"
+   7:src/syscall_c.cpp **** #include "../h/Kernel.hpp"
+   8:src/syscall_c.cpp **** 
+   9:src/syscall_c.cpp **** 
+  10:src/syscall_c.cpp **** typedef struct Arguments
+  11:src/syscall_c.cpp **** {
+  12:src/syscall_c.cpp ****     uint64 a0, a1, a2, a3, a4, a5, a6, a7;
+  13:src/syscall_c.cpp **** } Arguments;
+  14:src/syscall_c.cpp **** 
+  15:src/syscall_c.cpp **** 
+  16:src/syscall_c.cpp **** 
+  17:src/syscall_c.cpp **** 
+  18:src/syscall_c.cpp **** extern "C" uint64 system_call(Arguments* arg);
+  19:src/syscall_c.cpp **** 
+  20:src/syscall_c.cpp **** void* mem_alloc(size_t size)
+  21:src/syscall_c.cpp **** {
+  12              		.loc 1 21 1
+  13              		.cfi_startproc
+  14              	.LVL0:
+  15 0000 130101FA 		addi	sp,sp,-96
+  16              		.cfi_def_cfa_offset 96
+  17 0004 233C1104 		sd	ra,88(sp)
+  18 0008 23388104 		sd	s0,80(sp)
+  19 000c 23349104 		sd	s1,72(sp)
+  20 0010 23302105 		sd	s2,64(sp)
+  21              		.cfi_offset 1, -8
+  22              		.cfi_offset 8, -16
+  23              		.cfi_offset 9, -24
+  24              		.cfi_offset 18, -32
+  25 0014 13040106 		addi	s0,sp,96
+  26              		.cfi_def_cfa 8, 0
+  27 0018 93040500 		mv	s1,a0
+  22:src/syscall_c.cpp ****     uint64 size_of_blocks = (size + MemoryAllocator::getSizeOfMetaData()) / MEM_BLOCK_SIZE;
+  28              		.loc 1 22 5
+  29              		.loc 1 22 71 is_stmt 0
+  30 001c 97000000 		call	_ZN15MemoryAllocator17getSizeOfMetaDataEv@plt
+  30      E7800000 
+  31              	.LVL1:
+  32              		.loc 1 22 35
+  33 0024 33099500 		add	s2,a0,s1
+  34              		.loc 1 22 77
+  35 0028 13596900 		srli	s2,s2,6
+GAS LISTING /tmp/ccOmYawj.s 			page 2
+
+
+  36              	.LVL2:
+  23:src/syscall_c.cpp ****     size_of_blocks += (size + MemoryAllocator::getSizeOfMetaData()) % MEM_BLOCK_SIZE ? 1: 0;
+  37              		.loc 1 23 5 is_stmt 1
+  38              		.loc 1 23 65 is_stmt 0
+  39 002c 97000000 		call	_ZN15MemoryAllocator17getSizeOfMetaDataEv@plt
+  39      E7800000 
+  40              	.LVL3:
+  41              		.loc 1 23 29
+  42 0034 B384A400 		add	s1,s1,a0
+  43              	.LVL4:
+  44              		.loc 1 23 69
+  45 0038 93F4F403 		andi	s1,s1,63
+  46              		.loc 1 23 86
+  47 003c 638A0404 		beqz	s1,.L3
+  48 0040 13051000 		li	a0,1
+  49              	.L2:
+  50              		.loc 1 23 20 discriminator 5
+  51 0044 33092501 		add	s2,a0,s2
+  52              	.LVL5:
+  24:src/syscall_c.cpp ****     Arguments arg = {Kernel::MEM_ALLOC, size_of_blocks, 0, 0, 0, 0, 0, 0};
+  53              		.loc 1 24 5 is_stmt 1 discriminator 5
+  54              		.loc 1 24 15 is_stmt 0 discriminator 5
+  55 0048 233804FA 		sd	zero,-80(s0)
+  56 004c 233C04FA 		sd	zero,-72(s0)
+  57 0050 233004FC 		sd	zero,-64(s0)
+  58 0054 233404FC 		sd	zero,-56(s0)
+  59 0058 233804FC 		sd	zero,-48(s0)
+  60 005c 233C04FC 		sd	zero,-40(s0)
+  61 0060 93071000 		li	a5,1
+  62 0064 2330F4FA 		sd	a5,-96(s0)
+  63              		.loc 1 24 73 discriminator 5
+  64 0068 233424FB 		sd	s2,-88(s0)
+  25:src/syscall_c.cpp ****     return (void*) system_call(&arg);
+  65              		.loc 1 25 5 is_stmt 1 discriminator 5
+  66              		.loc 1 25 31 is_stmt 0 discriminator 5
+  67 006c 130504FA 		addi	a0,s0,-96
+  68 0070 97000000 		call	system_call@plt
+  68      E7800000 
+  69              	.LVL6:
+  26:src/syscall_c.cpp **** }
+  70              		.loc 1 26 1 discriminator 5
+  71 0078 83308105 		ld	ra,88(sp)
+  72              		.cfi_remember_state
+  73              		.cfi_restore 1
+  74 007c 03340105 		ld	s0,80(sp)
+  75              		.cfi_restore 8
+  76              		.cfi_def_cfa 2, 96
+  77 0080 83348104 		ld	s1,72(sp)
+  78              		.cfi_restore 9
+  79 0084 03390104 		ld	s2,64(sp)
+  80              		.cfi_restore 18
+  81              	.LVL7:
+  82 0088 13010106 		addi	sp,sp,96
+  83              		.cfi_def_cfa_offset 0
+  84 008c 67800000 		jr	ra
+  85              	.LVL8:
+  86              	.L3:
+GAS LISTING /tmp/ccOmYawj.s 			page 3
+
+
+  87              		.cfi_restore_state
+  23:src/syscall_c.cpp ****     Arguments arg = {Kernel::MEM_ALLOC, size_of_blocks, 0, 0, 0, 0, 0, 0};
+  88              		.loc 1 23 86
+  89 0090 13050000 		li	a0,0
+  90 0094 6FF01FFB 		j	.L2
+  91              		.cfi_endproc
+  92              	.LFE10:
+  94              		.align	2
+  95              		.globl	_Z8mem_freePv
+  97              	_Z8mem_freePv:
+  98              	.LFB11:
+  27:src/syscall_c.cpp **** 
+  28:src/syscall_c.cpp **** int mem_free(void* obj)
+  29:src/syscall_c.cpp **** {   Arguments arg = {Kernel::MEM_FREE, (uint64)obj, 0, 0, 0, 0, 0, 0};
+  99              		.loc 1 29 1 is_stmt 1
+ 100              		.cfi_startproc
+ 101              	.LVL9:
+ 102 0098 130101FB 		addi	sp,sp,-80
+ 103              		.cfi_def_cfa_offset 80
+ 104 009c 23341104 		sd	ra,72(sp)
+ 105 00a0 23308104 		sd	s0,64(sp)
+ 106              		.cfi_offset 1, -8
+ 107              		.cfi_offset 8, -16
+ 108 00a4 13040105 		addi	s0,sp,80
+ 109              		.cfi_def_cfa 8, 0
+ 110              		.loc 1 29 5
+ 111              		.loc 1 29 15 is_stmt 0
+ 112 00a8 233004FC 		sd	zero,-64(s0)
+ 113 00ac 233404FC 		sd	zero,-56(s0)
+ 114 00b0 233804FC 		sd	zero,-48(s0)
+ 115 00b4 233C04FC 		sd	zero,-40(s0)
+ 116 00b8 233004FE 		sd	zero,-32(s0)
+ 117 00bc 233404FE 		sd	zero,-24(s0)
+ 118 00c0 93072000 		li	a5,2
+ 119 00c4 2338F4FA 		sd	a5,-80(s0)
+ 120              		.loc 1 29 69
+ 121 00c8 233CA4FA 		sd	a0,-72(s0)
+  30:src/syscall_c.cpp ****     return (int) system_call(&arg);
+ 122              		.loc 1 30 5 is_stmt 1
+ 123              		.loc 1 30 29 is_stmt 0
+ 124 00cc 130504FB 		addi	a0,s0,-80
+ 125              	.LVL10:
+ 126 00d0 97000000 		call	system_call@plt
+ 126      E7800000 
+ 127              	.LVL11:
+  31:src/syscall_c.cpp **** }
+ 128              		.loc 1 31 1
+ 129 00d8 1B050500 		sext.w	a0,a0
+ 130 00dc 83308104 		ld	ra,72(sp)
+ 131              		.cfi_restore 1
+ 132 00e0 03340104 		ld	s0,64(sp)
+ 133              		.cfi_restore 8
+ 134              		.cfi_def_cfa 2, 80
+ 135 00e4 13010105 		addi	sp,sp,80
+ 136              		.cfi_def_cfa_offset 0
+ 137 00e8 67800000 		jr	ra
+ 138              		.cfi_endproc
+GAS LISTING /tmp/ccOmYawj.s 			page 4
+
+
+ 139              	.LFE11:
+ 141              		.align	2
+ 142              		.globl	_Z18mem_get_free_spacev
+ 144              	_Z18mem_get_free_spacev:
+ 145              	.LFB12:
+  32:src/syscall_c.cpp **** 
+  33:src/syscall_c.cpp **** size_t mem_get_free_space()
+  34:src/syscall_c.cpp **** {
+ 146              		.loc 1 34 1 is_stmt 1
+ 147              		.cfi_startproc
+ 148 00ec 130101FB 		addi	sp,sp,-80
+ 149              		.cfi_def_cfa_offset 80
+ 150 00f0 23341104 		sd	ra,72(sp)
+ 151 00f4 23308104 		sd	s0,64(sp)
+ 152              		.cfi_offset 1, -8
+ 153              		.cfi_offset 8, -16
+ 154 00f8 13040105 		addi	s0,sp,80
+ 155              		.cfi_def_cfa 8, 0
+  35:src/syscall_c.cpp ****     Arguments arg = {Kernel::MEM_FREE_SPACE, 0, 0, 0, 0, 0, 0, 0};
+ 156              		.loc 1 35 5
+ 157              		.loc 1 35 15 is_stmt 0
+ 158 00fc 93073000 		li	a5,3
+ 159 0100 2338F4FA 		sd	a5,-80(s0)
+ 160 0104 233C04FA 		sd	zero,-72(s0)
+ 161 0108 233004FC 		sd	zero,-64(s0)
+ 162 010c 233404FC 		sd	zero,-56(s0)
+ 163 0110 233804FC 		sd	zero,-48(s0)
+ 164 0114 233C04FC 		sd	zero,-40(s0)
+ 165 0118 233004FE 		sd	zero,-32(s0)
+ 166 011c 233404FE 		sd	zero,-24(s0)
+  36:src/syscall_c.cpp ****     return (size_t) system_call(&arg);
+ 167              		.loc 1 36 5 is_stmt 1
+ 168              		.loc 1 36 32 is_stmt 0
+ 169 0120 130504FB 		addi	a0,s0,-80
+ 170 0124 97000000 		call	system_call@plt
+ 170      E7800000 
+ 171              	.LVL12:
+  37:src/syscall_c.cpp **** }
+ 172              		.loc 1 37 1
+ 173 012c 83308104 		ld	ra,72(sp)
+ 174              		.cfi_restore 1
+ 175 0130 03340104 		ld	s0,64(sp)
+ 176              		.cfi_restore 8
+ 177              		.cfi_def_cfa 2, 80
+ 178 0134 13010105 		addi	sp,sp,80
+ 179              		.cfi_def_cfa_offset 0
+ 180 0138 67800000 		jr	ra
+ 181              		.cfi_endproc
+ 182              	.LFE12:
+ 184              		.align	2
+ 185              		.globl	_Z26mem_get_largest_free_blockv
+ 187              	_Z26mem_get_largest_free_blockv:
+ 188              	.LFB13:
+  38:src/syscall_c.cpp **** size_t mem_get_largest_free_block()
+  39:src/syscall_c.cpp **** {
+ 189              		.loc 1 39 1 is_stmt 1
+ 190              		.cfi_startproc
+GAS LISTING /tmp/ccOmYawj.s 			page 5
+
+
+ 191 013c 130101FB 		addi	sp,sp,-80
+ 192              		.cfi_def_cfa_offset 80
+ 193 0140 23341104 		sd	ra,72(sp)
+ 194 0144 23308104 		sd	s0,64(sp)
+ 195              		.cfi_offset 1, -8
+ 196              		.cfi_offset 8, -16
+ 197 0148 13040105 		addi	s0,sp,80
+ 198              		.cfi_def_cfa 8, 0
+  40:src/syscall_c.cpp ****     Arguments arg = {Kernel::LARGEST_FREE_BLOCK, 0, 0, 0, 0, 0, 0, 0};
+ 199              		.loc 1 40 5
+ 200              		.loc 1 40 15 is_stmt 0
+ 201 014c 93074000 		li	a5,4
+ 202 0150 2338F4FA 		sd	a5,-80(s0)
+ 203 0154 233C04FA 		sd	zero,-72(s0)
+ 204 0158 233004FC 		sd	zero,-64(s0)
+ 205 015c 233404FC 		sd	zero,-56(s0)
+ 206 0160 233804FC 		sd	zero,-48(s0)
+ 207 0164 233C04FC 		sd	zero,-40(s0)
+ 208 0168 233004FE 		sd	zero,-32(s0)
+ 209 016c 233404FE 		sd	zero,-24(s0)
+  41:src/syscall_c.cpp ****     return (size_t) system_call(&arg);
+ 210              		.loc 1 41 5 is_stmt 1
+ 211              		.loc 1 41 32 is_stmt 0
+ 212 0170 130504FB 		addi	a0,s0,-80
+ 213 0174 97000000 		call	system_call@plt
+ 213      E7800000 
+ 214              	.LVL13:
+  42:src/syscall_c.cpp **** }
+ 215              		.loc 1 42 1
+ 216 017c 83308104 		ld	ra,72(sp)
+ 217              		.cfi_restore 1
+ 218 0180 03340104 		ld	s0,64(sp)
+ 219              		.cfi_restore 8
+ 220              		.cfi_def_cfa 2, 80
+ 221 0184 13010105 		addi	sp,sp,80
+ 222              		.cfi_def_cfa_offset 0
+ 223 0188 67800000 		jr	ra
+ 224              		.cfi_endproc
+ 225              	.LFE13:
+ 227              	.Letext0:
+ 228              		.file 2 "src/../h/../lib/hw.h"
+ 229              		.file 3 "src/../h/MemoryAllocator.hpp"
+ 230              		.file 4 "src/../h/Config.hpp"
+GAS LISTING /tmp/ccOmYawj.s 			page 6
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 syscall_c.cpp
+     /tmp/ccOmYawj.s:9      .text:0000000000000000 _Z9mem_allocm
+     /tmp/ccOmYawj.s:13     .text:0000000000000000 .L0 
+     /tmp/ccOmYawj.s:15     .text:0000000000000000 .L0 
+     /tmp/ccOmYawj.s:16     .text:0000000000000004 .L0 
+     /tmp/ccOmYawj.s:21     .text:0000000000000014 .L0 
+     /tmp/ccOmYawj.s:22     .text:0000000000000014 .L0 
+     /tmp/ccOmYawj.s:23     .text:0000000000000014 .L0 
+     /tmp/ccOmYawj.s:24     .text:0000000000000014 .L0 
+     /tmp/ccOmYawj.s:26     .text:0000000000000018 .L0 
+     /tmp/ccOmYawj.s:29     .text:000000000000001c .L0 
+     /tmp/ccOmYawj.s:30     .text:000000000000001c .L0 
+     /tmp/ccOmYawj.s:33     .text:0000000000000024 .L0 
+     /tmp/ccOmYawj.s:35     .text:0000000000000028 .L0 
+     /tmp/ccOmYawj.s:38     .text:000000000000002c .L0 
+     /tmp/ccOmYawj.s:39     .text:000000000000002c .L0 
+     /tmp/ccOmYawj.s:42     .text:0000000000000034 .L0 
+     /tmp/ccOmYawj.s:45     .text:0000000000000038 .L0 
+     /tmp/ccOmYawj.s:47     .text:000000000000003c .L0 
+     /tmp/ccOmYawj.s:51     .text:0000000000000044 .L0 
+     /tmp/ccOmYawj.s:54     .text:0000000000000048 .L0 
+     /tmp/ccOmYawj.s:55     .text:0000000000000048 .L0 
+     /tmp/ccOmYawj.s:64     .text:0000000000000068 .L0 
+     /tmp/ccOmYawj.s:66     .text:000000000000006c .L0 
+     /tmp/ccOmYawj.s:67     .text:000000000000006c .L0 
+     /tmp/ccOmYawj.s:71     .text:0000000000000078 .L0 
+     /tmp/ccOmYawj.s:72     .text:000000000000007c .L0 
+     /tmp/ccOmYawj.s:73     .text:000000000000007c .L0 
+     /tmp/ccOmYawj.s:75     .text:0000000000000080 .L0 
+     /tmp/ccOmYawj.s:76     .text:0000000000000080 .L0 
+     /tmp/ccOmYawj.s:78     .text:0000000000000084 .L0 
+     /tmp/ccOmYawj.s:80     .text:0000000000000088 .L0 
+     /tmp/ccOmYawj.s:83     .text:000000000000008c .L0 
+     /tmp/ccOmYawj.s:87     .text:0000000000000090 .L0 
+     /tmp/ccOmYawj.s:89     .text:0000000000000090 .L0 
+     /tmp/ccOmYawj.s:91     .text:0000000000000098 .L0 
+     /tmp/ccOmYawj.s:97     .text:0000000000000098 _Z8mem_freePv
+     /tmp/ccOmYawj.s:100    .text:0000000000000098 .L0 
+     /tmp/ccOmYawj.s:102    .text:0000000000000098 .L0 
+     /tmp/ccOmYawj.s:103    .text:000000000000009c .L0 
+     /tmp/ccOmYawj.s:106    .text:00000000000000a4 .L0 
+     /tmp/ccOmYawj.s:107    .text:00000000000000a4 .L0 
+     /tmp/ccOmYawj.s:109    .text:00000000000000a8 .L0 
+     /tmp/ccOmYawj.s:111    .text:00000000000000a8 .L0 
+     /tmp/ccOmYawj.s:112    .text:00000000000000a8 .L0 
+     /tmp/ccOmYawj.s:121    .text:00000000000000c8 .L0 
+     /tmp/ccOmYawj.s:123    .text:00000000000000cc .L0 
+     /tmp/ccOmYawj.s:124    .text:00000000000000cc .L0 
+     /tmp/ccOmYawj.s:129    .text:00000000000000d8 .L0 
+     /tmp/ccOmYawj.s:131    .text:00000000000000e0 .L0 
+     /tmp/ccOmYawj.s:133    .text:00000000000000e4 .L0 
+     /tmp/ccOmYawj.s:134    .text:00000000000000e4 .L0 
+     /tmp/ccOmYawj.s:136    .text:00000000000000e8 .L0 
+     /tmp/ccOmYawj.s:138    .text:00000000000000ec .L0 
+     /tmp/ccOmYawj.s:144    .text:00000000000000ec _Z18mem_get_free_spacev
+     /tmp/ccOmYawj.s:147    .text:00000000000000ec .L0 
+GAS LISTING /tmp/ccOmYawj.s 			page 7
+
+
+     /tmp/ccOmYawj.s:148    .text:00000000000000ec .L0 
+     /tmp/ccOmYawj.s:149    .text:00000000000000f0 .L0 
+     /tmp/ccOmYawj.s:152    .text:00000000000000f8 .L0 
+     /tmp/ccOmYawj.s:153    .text:00000000000000f8 .L0 
+     /tmp/ccOmYawj.s:155    .text:00000000000000fc .L0 
+     /tmp/ccOmYawj.s:157    .text:00000000000000fc .L0 
+     /tmp/ccOmYawj.s:158    .text:00000000000000fc .L0 
+     /tmp/ccOmYawj.s:168    .text:0000000000000120 .L0 
+     /tmp/ccOmYawj.s:169    .text:0000000000000120 .L0 
+     /tmp/ccOmYawj.s:173    .text:000000000000012c .L0 
+     /tmp/ccOmYawj.s:174    .text:0000000000000130 .L0 
+     /tmp/ccOmYawj.s:176    .text:0000000000000134 .L0 
+     /tmp/ccOmYawj.s:177    .text:0000000000000134 .L0 
+     /tmp/ccOmYawj.s:179    .text:0000000000000138 .L0 
+     /tmp/ccOmYawj.s:181    .text:000000000000013c .L0 
+     /tmp/ccOmYawj.s:187    .text:000000000000013c _Z26mem_get_largest_free_blockv
+     /tmp/ccOmYawj.s:190    .text:000000000000013c .L0 
+     /tmp/ccOmYawj.s:191    .text:000000000000013c .L0 
+     /tmp/ccOmYawj.s:192    .text:0000000000000140 .L0 
+     /tmp/ccOmYawj.s:195    .text:0000000000000148 .L0 
+     /tmp/ccOmYawj.s:196    .text:0000000000000148 .L0 
+     /tmp/ccOmYawj.s:198    .text:000000000000014c .L0 
+     /tmp/ccOmYawj.s:200    .text:000000000000014c .L0 
+     /tmp/ccOmYawj.s:201    .text:000000000000014c .L0 
+     /tmp/ccOmYawj.s:211    .text:0000000000000170 .L0 
+     /tmp/ccOmYawj.s:212    .text:0000000000000170 .L0 
+     /tmp/ccOmYawj.s:216    .text:000000000000017c .L0 
+     /tmp/ccOmYawj.s:217    .text:0000000000000180 .L0 
+     /tmp/ccOmYawj.s:219    .text:0000000000000184 .L0 
+     /tmp/ccOmYawj.s:220    .text:0000000000000184 .L0 
+     /tmp/ccOmYawj.s:222    .text:0000000000000188 .L0 
+     /tmp/ccOmYawj.s:224    .text:000000000000018c .L0 
+     /tmp/ccOmYawj.s:231    .text:000000000000018c .L0 
+     /tmp/ccOmYawj.s:86     .text:0000000000000090 .L3
+     /tmp/ccOmYawj.s:49     .text:0000000000000044 .L2
+     /tmp/ccOmYawj.s:879    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccOmYawj.s:1674   .debug_str:0000000000000505 .LASF66
+     /tmp/ccOmYawj.s:1616   .debug_str:0000000000000287 .LASF67
+     /tmp/ccOmYawj.s:1586   .debug_str:000000000000015a .LASF68
+     /tmp/ccOmYawj.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccOmYawj.s:227    .text:000000000000018c .Letext0
+     /tmp/ccOmYawj.s:1546   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccOmYawj.s:1634   .debug_str:0000000000000362 .LASF0
+     /tmp/ccOmYawj.s:1644   .debug_str:00000000000003cb .LASF1
+     /tmp/ccOmYawj.s:1628   .debug_str:0000000000000337 .LASF2
+     /tmp/ccOmYawj.s:1598   .debug_str:0000000000000215 .LASF3
+     /tmp/ccOmYawj.s:1612   .debug_str:0000000000000277 .LASF4
+     /tmp/ccOmYawj.s:1662   .debug_str:000000000000048d .LASF5
+     /tmp/ccOmYawj.s:1566   .debug_str:0000000000000092 .LASF6
+     /tmp/ccOmYawj.s:1648   .debug_str:00000000000003f4 .LASF7
+     /tmp/ccOmYawj.s:1632   .debug_str:000000000000034f .LASF8
+     /tmp/ccOmYawj.s:1680   .debug_str:00000000000005f4 .LASF9
+     /tmp/ccOmYawj.s:1606   .debug_str:000000000000024d .LASF10
+     /tmp/ccOmYawj.s:1652   .debug_str:0000000000000415 .LASF11
+     /tmp/ccOmYawj.s:1676   .debug_str:00000000000005c9 .LASF12
+     /tmp/ccOmYawj.s:1572   .debug_str:00000000000000e1 .LASF13
+     /tmp/ccOmYawj.s:1554   .debug_str:0000000000000037 .LASF14
+GAS LISTING /tmp/ccOmYawj.s 			page 8
+
+
+     /tmp/ccOmYawj.s:1576   .debug_str:000000000000011b .LASF15
+     /tmp/ccOmYawj.s:1660   .debug_str:0000000000000477 .LASF16
+     /tmp/ccOmYawj.s:1588   .debug_str:000000000000017d .LASF17
+     /tmp/ccOmYawj.s:1626   .debug_str:0000000000000327 .LASF22
+     /tmp/ccOmYawj.s:1636   .debug_str:000000000000036f .LASF35
+     /tmp/ccOmYawj.s:1568   .debug_str:0000000000000099 .LASF18
+     /tmp/ccOmYawj.s:1578   .debug_str:0000000000000127 .LASF19
+     /tmp/ccOmYawj.s:1592   .debug_str:00000000000001cb .LASF20
+     /tmp/ccOmYawj.s:1604   .debug_str:000000000000023f .LASF21
+     /tmp/ccOmYawj.s:1594   .debug_str:00000000000001d5 .LASF23
+     /tmp/ccOmYawj.s:1678   .debug_str:00000000000005d8 .LASF24
+     /tmp/ccOmYawj.s:1630   .debug_str:0000000000000345 .LASF54
+     /tmp/ccOmYawj.s:1620   .debug_str:00000000000002b0 .LASF56
+     /tmp/ccOmYawj.s:1608   .debug_str:000000000000025b .LASF25
+     /tmp/ccOmYawj.s:1596   .debug_str:00000000000001ee .LASF27
+     /tmp/ccOmYawj.s:1552   .debug_str:000000000000002c .LASF26
+     /tmp/ccOmYawj.s:1624   .debug_str:0000000000000303 .LASF28
+     /tmp/ccOmYawj.s:1638   .debug_str:0000000000000379 .LASF29
+     /tmp/ccOmYawj.s:1690   .debug_str:0000000000000670 .LASF31
+     /tmp/ccOmYawj.s:1580   .debug_str:0000000000000133 .LASF30
+     /tmp/ccOmYawj.s:1688   .debug_str:000000000000064b .LASF32
+     /tmp/ccOmYawj.s:1602   .debug_str:000000000000022d .LASF33
+     /tmp/ccOmYawj.s:1574   .debug_str:00000000000000f1 .LASF34
+     /tmp/ccOmYawj.s:1642   .debug_str:00000000000003b6 .LASF36
+     /tmp/ccOmYawj.s:1692   .debug_str:000000000000069c .LASF37
+     /tmp/ccOmYawj.s:1564   .debug_str:0000000000000082 .LASF38
+     /tmp/ccOmYawj.s:1666   .debug_str:00000000000004a9 .LASF39
+     /tmp/ccOmYawj.s:1658   .debug_str:000000000000046b .LASF40
+     /tmp/ccOmYawj.s:1654   .debug_str:0000000000000424 .LASF42
+     /tmp/ccOmYawj.s:1684   .debug_str:000000000000061f .LASF46
+     /tmp/ccOmYawj.s:1622   .debug_str:00000000000002cc .LASF48
+     /tmp/ccOmYawj.s:1600   .debug_str:000000000000021b .LASF41
+     /tmp/ccOmYawj.s:1590   .debug_str:0000000000000193 .LASF43
+     /tmp/ccOmYawj.s:1556   .debug_str:0000000000000047 .LASF44
+     /tmp/ccOmYawj.s:1570   .debug_str:00000000000000a2 .LASF45
+     /tmp/ccOmYawj.s:1646   .debug_str:00000000000003de .LASF47
+     /tmp/ccOmYawj.s:1672   .debug_str:00000000000004c6 .LASF49
+     /tmp/ccOmYawj.s:1562   .debug_str:0000000000000071 .LASF69
+     /tmp/ccOmYawj.s:1640   .debug_str:000000000000038d .LASF70
+     /tmp/ccOmYawj.s:1560   .debug_str:000000000000006c .LASF50
+     /tmp/ccOmYawj.s:1610   .debug_str:000000000000026a .LASF71
+     /tmp/ccOmYawj.s:1618   .debug_str:0000000000000299 .LASF51
+     /tmp/ccOmYawj.s:1550   .debug_str:0000000000000018 .LASF52
+     /tmp/ccOmYawj.s:1670   .debug_str:00000000000004bc .LASF53
+     /tmp/ccOmYawj.s:1682   .debug_str:0000000000000604 .LASF55
+     /tmp/ccOmYawj.s:1686   .debug_str:000000000000062b .LASF57
+     /tmp/ccOmYawj.s:188    .text:000000000000013c .LFB13
+     /tmp/ccOmYawj.s:225    .text:000000000000018c .LFE13
+     /tmp/ccOmYawj.s:214    .text:000000000000017c .LVL13
+     /tmp/ccOmYawj.s:1656   .debug_str:0000000000000458 .LASF58
+     /tmp/ccOmYawj.s:1548   .debug_str:0000000000000000 .LASF59
+     /tmp/ccOmYawj.s:145    .text:00000000000000ec .LFB12
+     /tmp/ccOmYawj.s:182    .text:000000000000013c .LFE12
+     /tmp/ccOmYawj.s:171    .text:000000000000012c .LVL12
+     /tmp/ccOmYawj.s:1614   .debug_str:000000000000027e .LASF60
+     /tmp/ccOmYawj.s:1650   .debug_str:0000000000000407 .LASF61
+     /tmp/ccOmYawj.s:98     .text:0000000000000098 .LFB11
+GAS LISTING /tmp/ccOmYawj.s 			page 9
+
+
+     /tmp/ccOmYawj.s:139    .text:00000000000000ec .LFE11
+     /tmp/ccOmYawj.s:1485   .debug_loc:0000000000000000 .LLST2
+     /tmp/ccOmYawj.s:127    .text:00000000000000d8 .LVL11
+     /tmp/ccOmYawj.s:1664   .debug_str:000000000000049f .LASF62
+     /tmp/ccOmYawj.s:1582   .debug_str:0000000000000140 .LASF63
+     /tmp/ccOmYawj.s:10     .text:0000000000000000 .LFB10
+     /tmp/ccOmYawj.s:92     .text:0000000000000098 .LFE10
+     /tmp/ccOmYawj.s:1668   .debug_str:00000000000004b7 .LASF64
+     /tmp/ccOmYawj.s:1504   .debug_loc:000000000000004e .LLST0
+     /tmp/ccOmYawj.s:1558   .debug_str:000000000000005d .LASF65
+     /tmp/ccOmYawj.s:1522   .debug_loc:000000000000009a .LLST1
+     /tmp/ccOmYawj.s:31     .text:0000000000000024 .LVL1
+     /tmp/ccOmYawj.s:40     .text:0000000000000034 .LVL3
+     /tmp/ccOmYawj.s:69     .text:0000000000000078 .LVL6
+     /tmp/ccOmYawj.s:1584   .debug_str:000000000000014e .LASF72
+     /tmp/ccOmYawj.s:101    .text:0000000000000098 .LVL9
+     /tmp/ccOmYawj.s:125    .text:00000000000000d0 .LVL10
+     /tmp/ccOmYawj.s:14     .text:0000000000000000 .LVL0
+     /tmp/ccOmYawj.s:43     .text:0000000000000038 .LVL4
+     /tmp/ccOmYawj.s:36     .text:000000000000002c .LVL2
+     /tmp/ccOmYawj.s:81     .text:0000000000000088 .LVL7
+     /tmp/ccOmYawj.s:85     .text:0000000000000090 .LVL8
+     /tmp/ccOmYawj.s:232    .debug_info:0000000000000000 .Ldebug_info0
+
+UNDEFINED SYMBOLS
+_ZN15MemoryAllocator17getSizeOfMetaDataEv
+system_call

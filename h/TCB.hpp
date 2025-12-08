@@ -7,16 +7,17 @@
 #include "ObjectPool.hpp"
 #include "MemoryAllocator.hpp"
 #include "../lib/hw.h"
-extern const size_t NUM_OF_THREADS_IN_POOL;
-extern const size_t DEFAULT_SYSTEM_STACK_SIZE;
+#include "Config.hpp"
+#include "Machine.hpp"
 
-
+class Scheduler;
 class TCB
 {
 public:
     using Body = void(*)(void*);
     TCB() = default;
-    void initializeThread(Body body, void* stack, ObjectPool<TCB, NUM_OF_THREADS_IN_POOL>* pool);
+    void initializeThread(Body body, void*arg, void* stack);
+
 
 private:
 
@@ -24,17 +25,21 @@ private:
     {
         uint64 ra;
         uint64 sp;
-        uint64 ssp;
     } Context;
 
     Body body;
     Context context;
-    ObjectPool<TCB, NUM_OF_THREADS_IN_POOL>* sourcePool;
+    //ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
     size_t timeSlice;
     uint64* stack;
     uint64* systemStack;
+    void* arguments;
     TCB* state;
     bool isFinished;
+    static const size_t DEFAULT_SYSTEM_STACK_SIZE;
+    static size_t numOfTicks;
+    static void threadWrapper();
+    friend class Scheduler;
 };
 
 
