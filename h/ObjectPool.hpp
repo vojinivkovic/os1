@@ -39,7 +39,7 @@ private:
     {
         return headFreeObject;
     }
-    ObjectPool<T, numOfObjects>* findFreePool(void) const;
+    ObjectPool<T, numOfObjects>* findFreePool(void);
     static size_t countOfPools;
     PoolObject pool[numOfObjects];
     PoolObject* headFreeObject;
@@ -62,7 +62,7 @@ void* ObjectPool<T, numOfObjects>::operator new(size_t size)
 }
 
 template<typename T, size_t numOfObjects>
-ObjectPool<T, numOfObjects>* ObjectPool<T, numOfObjects>::findFreePool(void) const
+ObjectPool<T, numOfObjects>* ObjectPool<T, numOfObjects>::findFreePool(void)
 {
     ObjectPool<T, numOfObjects>* curr = this;
     for(; !curr->nextObjectPool && !curr->headFreeObject; curr = curr->nextObjectPool);
@@ -75,9 +75,9 @@ T* ObjectPool<T, numOfObjects>::mallocObject(void)
     ObjectPool<T,numOfObjects>* currentPool = findFreePool();
     if (currentPool->headFreeObject)
     {
-        PoolObject temp = *(currentPool->headFreeObject);
+        PoolObject* temp = currentPool->headFreeObject;
         currentPool->headFreeObject = currentPool->headFreeObject->nextFree;
-        return &(temp.object);
+        return &(temp->object);
     }
     else
     {
@@ -89,23 +89,25 @@ T* ObjectPool<T, numOfObjects>::mallocObject(void)
         newPool->prevObjectPool = currentPool;
         currentPool->nextObjectPool = newPool;
 
-        PoolObject temp = *(newPool->headFreeObject);
+        PoolObject* temp = newPool->headFreeObject;
         newPool->headFreeObject = newPool->headFreeObject->nextFree;
-        return &(temp.object);
+        return &(temp->object);
     }
 }
 
 template<typename T, size_t numOfObjects>
 int ObjectPool<T, numOfObjects>::freeObject(T *obj) {
+    // POTREBNO JE REIMPLEMENTIRATI OVU F-JU
+//    ObjectPool<T, numOfObjects>* curr = this;
+//    for(; curr->nextObjectPool; curr = curr->nextObjectPool){
+//        if(curr == obj->getSourcePool()){
+//            break;
+//        }
+//    }
+//    PoolObject* tempObj = (PoolObject*)obj;
+//    tempObj->nextFree = curr->headFreeObject;
+//    curr->headFreeObject = tempObj;
 
-    ObjectPool<T, numOfObjects>* curr = this;
-    for(; curr->nextObjectPool; curr = curr->nextObjectPool){
-        if(curr == obj->getSourcePool()){
-            break;
-        }
-    }
-    PoolObject* tempObj = (PoolObject*)obj;
-    tempObj->nextFree = curr->headFreeObject;
-    curr->headFreeObject = tempObj;
+    return 0;
 }
 #endif //PROJECT_BASE_V1_1_OBJECTPOOL_H

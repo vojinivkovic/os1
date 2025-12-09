@@ -3,6 +3,7 @@
 //
 
 #include "../h/TCB.hpp"
+#include "../h/Scheduler.hpp"
 const size_t TCB::DEFAULT_SYSTEM_STACK_SIZE = 1024;
 size_t TCB::numOfTicks = 0;
 void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack)
@@ -19,4 +20,8 @@ void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack)
 
     context = {(uint64) &threadWrapper, (uint64) &stack[DEFAULT_STACK_SIZE], (uint64) &systemStack[DEFAULT_SYSTEM_STACK_SIZE]};
     Scheduler::put(this);
+}
+void TCB::threadWrapper()
+{
+
 }

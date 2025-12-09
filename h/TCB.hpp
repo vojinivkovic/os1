@@ -25,6 +25,7 @@ private:
     {
         uint64 ra;
         uint64 sp;
+        uint64 ssp;
     } Context;
 
     Body body;

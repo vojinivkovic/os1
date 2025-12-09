@@ -7,8 +7,8 @@ interrupt_trap:
     ;.irp index, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
     ;sd x\index, \index * 8(sp)
     ;.endr
-    addi sp, sp, -16 ; sp ukazuje na korisnicki stek
-    sd t0, 8(sp) ; korisiticemo t0 kako bi u njega sacuvali sp na korisnicki stek
+    addi sp, sp, -16
+    sd t0, 8(sp)
     addi t0, sp, 0
 
     csrr sp, sscratch
@@ -23,7 +23,7 @@ interrupt_trap:
     ld t0, 8(t0)
     sd t0, 5 * 8(sp)
 
-    addi s0, sp, 0 ; potreban je pokazivac preko kojeg cu dohvatiti sve potrebne vrednosti registara
+    addi s0, sp, 0
     call _ZN6Kernel16interruptHandlerEv
 
 
@@ -35,6 +35,7 @@ interrupt_trap:
     .endr
 
     addi sp, sp, 256
+    csrr t0, sscratch
     csrw sscratch, sp
 
     addi sp, t0, 0

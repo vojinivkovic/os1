@@ -5,7 +5,8 @@
 #ifndef PROJECT_BASE_V1_1_SCHEDULER_H
 #define PROJECT_BASE_V1_1_SCHEDULER_H
 
-#include "TCB.hpp"
+
+class TCB;
 
 class Scheduler {
 public:

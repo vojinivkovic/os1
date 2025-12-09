@@ -67,7 +67,7 @@ uint64 Kernel::sysCreateThread(Kernel::ArgumentsOfSystemCall *arg)
         return -1;
     }
     __asm__ volatile("sd %[ptrThread], 0(%[handle])"::[ptrThread]"r"(newThread), [handle]"r"(arg->a0));
-    newThread->initializeThread(arg->a1, )
+    newThread->initializeThread((TCB::Body) arg->a1, (void*)arg->a2, (void*)arg->a3);
     return 0;
 }
 void Kernel::interruptHandler()
@@ -83,7 +83,7 @@ void Kernel::interruptHandler()
         initializeArguments(&arg, basePointer);
         systemCallsTable[numberOfEntry](&arg);
         __asm__ volatile("sd a0, 80(%[rs])"::[rs]"r"(basePointer));
-        yield;
+        //yield;
         Machine::incrementSepc();
     }
 

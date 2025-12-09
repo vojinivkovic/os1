@@ -3,6 +3,7 @@
 //
 
 #include "../h/Scheduler.hpp"
+#include "../h/TCB.hpp"
 TCB* Scheduler::firstReadyThread = nullptr;
 TCB* Scheduler::lastReadyThread = nullptr;
 
