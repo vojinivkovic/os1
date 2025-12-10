@@ -17,14 +17,7 @@ public:
     Kernel(const Kernel& kernel) = delete;
     Kernel& operator=(const Kernel& kernel) = delete;
     static void initializeKernel(void);
-    enum NumberOfSystemCall
-    {
-        MEM_ALLOC = 0x1,
-        MEM_FREE = 0x2,
-        MEM_FREE_SPACE = 0x3,
-        LARGEST_FREE_BLOCK = 0x4,
-        CREATE_THREAD = 0x11
-    };
+
 
 private:
     typedef struct ArgumentsOfSystemCall
@@ -39,13 +32,16 @@ private:
     static uint64 sysFree(ArgumentsOfSystemCall* arg);
     static uint64 sysGetFreeSpace(ArgumentsOfSystemCall* arg);
     static uint64 sysLargestFreeBlock(ArgumentsOfSystemCall* arg);
-    static uint64 sysCreateThread(ArgumentsOfSystemCall* arg);
+    static uint64 sysThreadCreate(ArgumentsOfSystemCall* arg);
+    static uint64 sysThreadDispatch(ArgumentsOfSystemCall* arg);
+    static uint64 sysThreadExit(ArgumentsOfSystemCall* arg);
 
     static uint64 (*systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(ArgumentsOfSystemCall* arg);
     static void initializeArguments(ArgumentsOfSystemCall* arg, uint64 basePointer);
 
     static ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* poolOfThreads;
-    static TCB* runningThread;
+
+    //static TCB* runningThread;
 
 };
 

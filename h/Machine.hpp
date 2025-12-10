@@ -15,11 +15,23 @@ public:
     Machine() = delete;
     Machine(const Machine& riscv) = delete;
     Machine& operator=(const Machine& riscv) = delete;
+
+    enum BitsMaskSip
+    {
+        SSIP = 1 << 1, // software interrupt
+        SEIP = 1 << 9 // (external) hardware interrupt
+    };
 private:
     static void writeStvec(uint64 interruptAddress);
     static uint64 readScause(void);
-    static void incrementSepc(void);
+    //static void incrementSepc(void);
+    static void writeSepc(uint64 address);
+    static uint64 readSepc();
+    static void writeSstatus(uint64 oldStatus);
+    static uint64 readSstatus();
     static void writeSscratch(uint64 systemSP);
+    static uint64 readSscratch();
+    static void bc_sip(uint64 mask);
     friend class Kernel;
     friend class TCB;
 
@@ -37,16 +49,40 @@ inline uint64 Machine::readScause(void)
     return scause;
 }
 
-inline void Machine::incrementSepc(void)
-{
-    __asm__ volatile ("csrr t0, sepc");
-    __asm__ volatile ("addi t0, t0, 0x4");
-    __asm__ volatile ("csrw sepc, t0");
-}
-
 inline void Machine::writeSscratch(uint64 systemSP)
 {
     __asm__ volatile ("csrw sscratch, %[sp]":: [sp] "r"(systemSP));
+}
+
+inline void Machine::bc_sip(uint64 mask)
+{
+    __asm__ volatile ("csrc sip, %[reg]":: [reg] "r"(mask));
+}
+inline uint64 Machine::readSscratch()
+{
+    uint64 returnValue;
+    __asm__ volatile ("csrr %[reg], sscratch": [reg] "=r"(returnValue));
+    return returnValue;
+}
+inline void Machine::writeSepc(uint64 address)
+{
+    __asm__ volatile("csrw sepc, %[reg]":: [reg] "r"(address));
+}
+inline uint64 Machine::readSepc()
+{
+    uint64 returnAddress;
+    __asm__ volatile ("csrr %[reg], sepc": [reg] "=r"(returnAddress));
+    return returnAddress;
+}
+inline void Machine::writeSstatus(uint64 oldStatus)
+{
+    __asm__ volatile("csrw sstatus, %[reg]":: [reg] "r"(oldStatus));
+}
+inline uint64 Machine::readSstatus()
+{
+    uint64 returnStatus;
+    __asm__ volatile ("csrr %[reg], sstatus": [reg] "=r"(returnStatus));
+    return returnStatus;
 }
 
 #endif //PROJECT_BASE_V1_1_MACHINE_H

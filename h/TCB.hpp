@@ -11,36 +11,41 @@
 #include "Machine.hpp"
 
 class Scheduler;
+class Kernel;
 class TCB
 {
 public:
     using Body = void(*)(void*);
     TCB() = default;
     void initializeThread(Body body, void*arg, void* stack);
-
-
-private:
-
     typedef struct Context
     {
         uint64 ra;
         uint64 sp;
-        uint64 ssp;
     } Context;
+
+private:
 
     Body body;
     Context context;
-    //ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
     size_t timeSlice;
-    uint64* stack;
+    //uint64* stack; // da li je potreban
     uint64* systemStack;
     void* arguments;
     TCB* state;
     bool isFinished;
+
+    static TCB* running;
+
     static const size_t DEFAULT_SYSTEM_STACK_SIZE;
     static size_t numOfTicks;
-    static void threadWrapper();
+    static void threadWrapper();// ova f-ja ce sluziti kako bismo mogli da zavrsimo nit, a i da od nje pocne izvrsavanje svake niti
+    static void dispatch();
+    static void yield(TCB* oldThread, TCB* newThread);
+
     friend class Scheduler;
+    friend class Kernel;
+
 };
 
 

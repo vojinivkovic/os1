@@ -17,6 +17,10 @@ size_t mem_get_free_space();
 
 size_t mem_get_largest_free_block();
 
-int thread_create ( thread_t* handle, void(*start_routine)(void*), void* arg );
+int thread_create(thread_t* handle, void(*start_routine)(void*), void* arg);
+
+int thread_exit();
+
+void thread_dispatch();
 
 #endif //PROJECT_BASE_V1_1_SYSCALL_C_H

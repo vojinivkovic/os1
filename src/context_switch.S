@@ -6,3 +6,4 @@ context_switch:
 
     ld ra, 0 * 8(a1)
     ld sp, 1 * 8(a1)
+    ret
