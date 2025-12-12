@@ -10,41 +10,54 @@
 #include "Config.hpp"
 #include "Machine.hpp"
 
-class Scheduler;
-class Kernel;
+
 class TCB
 {
 public:
     using Body = void(*)(void*);
     TCB() = default;
-    void initializeThread(Body body, void*arg, void* stack);
+    void initializeThread(Body body, void*arg, void* stack, void* systemStack, KernelConfig::Mode mode = KernelConfig::USER_MODE);
+
+    size_t getTimeSlice() const { return timeSlice; }
+    bool isFinished() const { return finished; }
+
+    void addThreadToState(TCB* newThread) { state = newThread; }
+    TCB* getState() const { return state; }
+
+    static void dispatch();
+
+    static TCB* getRunningThread() { return running; }
+    static void setRunningThread(TCB* newRunningThread) { running = newRunningThread; }
+
+    static size_t getNumOfTicks() { return numOfTicks; }
+    static void resetNumOfTicks() { numOfTicks = DEFAULT_TIME_SLICE; }
+
+
+private:
+
     typedef struct Context
     {
         uint64 ra;
         uint64 sp;
+        KernelConfig::Mode mode;
     } Context;
-
-private:
 
     Body body;
     Context context;
     size_t timeSlice;
-    //uint64* stack; // da li je potreban
-    uint64* systemStack;
     void* arguments;
     TCB* state;
-    bool isFinished;
+    bool finished;
 
     static TCB* running;
 
-    static const size_t DEFAULT_SYSTEM_STACK_SIZE;
     static size_t numOfTicks;
     static void threadWrapper();// ova f-ja ce sluziti kako bismo mogli da zavrsimo nit, a i da od nje pocne izvrsavanje svake niti
-    static void dispatch();
+
     static void yield(TCB* oldThread, TCB* newThread);
 
-    friend class Scheduler;
-    friend class Kernel;
+
+
 
 };
 

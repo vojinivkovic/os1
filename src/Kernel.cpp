@@ -4,11 +4,23 @@
 
 #include "../h/Kernel.hpp"
 #include "../h/Scheduler.hpp"
+#include "../h/TCB.hpp"
 extern "C" void interrupt_trap(void);
 
 uint64 (*Kernel::systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(Kernel::ArgumentsOfSystemCall* arg) = {nullptr};
 ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* Kernel::poolOfThreads = new ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>();
-//TCB* Kernel::runningThread = nullptr; // cija odgovornost treba da bude running nit
+TCB* Kernel::deamonThread = nullptr;
+void Kernel::initializeKernelThreads(void)
+{
+    void* kernelSystemStack = Kernel::mallocSystemStack();
+    TCB* kernelThread = poolOfThreads->mallocObject();
+
+    while(kernelThread == nullptr)
+    {
+        kernelThread = poolOfThreads->mallocObject();
+    }
+    kernelThread->initializeThread(&kernelWorker, nullptr, kernelSystemStack, kernelSystemStack, KernelConfig::KERNEL_MODE);
+}
 
 void Kernel::initializeKernel()
 {
@@ -17,6 +29,8 @@ void Kernel::initializeKernel()
     {
      poolOfThreads = new ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>();
     }
+    Kernel::initializeKernelThreads();
+
     systemCallsTable[KernelConfig::MEM_ALLOC] = &sysMalloc;
     systemCallsTable[KernelConfig::MEM_FREE] = &sysFree;
     systemCallsTable[KernelConfig::MEM_FREE_SPACE] = &sysGetFreeSpace;
@@ -84,6 +98,13 @@ uint64 Kernel::sysThreadExit(Kernel::ArgumentsOfSystemCall *arg)
     Kernel::poolOfThreads->freeObject(TCB::running);
     return 0;
 }
+void* Kernel::mallocSystemStack(size_t numOfBytes)
+{
+    size_t numOfBlocks = numOfBytes / MEM_BLOCK_SIZE;
+    numOfBlocks += numOfBytes % MEM_BLOCK_SIZE ? 1 : 0;
+    uint64* systemStack = (uint64*)MemoryAllocator::allocateMemory(numOfBlocks);
+    return (void*)(&systemStack[KernelConfig::DEFAULT_SYSTEM_STACK_SIZE / 64]);
+}
 void Kernel::interruptHandler()
 {
     volatile uint64 basePointer;
@@ -95,6 +116,7 @@ void Kernel::interruptHandler()
         // scause == 0x0000000000000009UL; sotware interrupt(ecall) from kernel(supervised) mode
 
         Machine::bc_sip(Machine::SSIP);
+
         uint64 sepc = Machine::readSepc() + 4;
         uint64 sstatus = Machine::readSstatus();
 
@@ -111,5 +133,29 @@ void Kernel::interruptHandler()
         Machine::writeSepc(sepc);
         Machine::writeSstatus(sstatus);
     }
+    else if (scause == 0x8000000000000001UL)
+    {
+        Machine::bc_sip(Machine::SSIP);
+        TCB::numOfTicks++;
+        if(TCB::numOfTicks >= TCB::running->timeSlice)
+        {
+            TCB::numOfTicks = 0;
+            uint64 sepc = Machine::readSepc() + 4;
+            uint64 sstatus = Machine::readSstatus();
 
+            TCB::dispatch();
+
+            Machine::writeSepc(sepc);
+            Machine::writeSstatus(sstatus);
+        }
+    }
+
+}
+
+void Kernel::kernelWorker(void*)
+{
+    while(1)
+    {
+
+    }
 }

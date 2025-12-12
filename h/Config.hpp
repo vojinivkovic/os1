@@ -9,6 +9,14 @@
 namespace KernelConfig{
     constexpr size_t NUM_OF_THREADS_IN_POOL = 20;
     constexpr size_t NUM_OF_SYSTEM_CALLS = 0x42;
+    constexpr size_t DEFAULT_SYSTEM_STACK_SIZE = 1024;
+
+    enum Mode
+    {
+        USER_MODE = 0x0,
+        KERNEL_MODE = 0x1
+    };
+
     enum NumberOfSystemCall
     {
         MEM_ALLOC = 0x1,

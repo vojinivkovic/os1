@@ -5,10 +5,15 @@
 interrupt_trap:
     addi sp, sp, -16
     sd t0, 8(sp)
-    addi t0, sp, 0
 
+    csrr t0, sstatus
+    andi t0, t0, 0x10
+    bne t0, x0, system_stack
+
+    addi t0, sp, 0
     csrr sp, sscratch
-    addi sp, sp, -256
+
+system_stack:    addi sp, sp, -256
 
     sd x0, 0 * 8(sp)
     sd x1, 1 * 8(sp)
@@ -34,6 +39,7 @@ interrupt_trap:
     .endr
 
     addi sp, sp, 256
+
     csrw sscratch, sp
 
     addi sp, t0, 0
