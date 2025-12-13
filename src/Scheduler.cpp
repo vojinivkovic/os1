@@ -15,7 +15,7 @@ void Scheduler::put(TCB *readyThread)
     }
     else
     {
-        lastReadyThread->state = readyThread;
+        lastReadyThread->setRunningThread(readyThread);
     }
     lastReadyThread = readyThread;
 }
@@ -26,7 +26,8 @@ TCB* Scheduler::get(void)
         return nullptr;
     }
     TCB* newThread = firstReadyThread;
-    firstReadyThread->state = firstReadyThread;
-    newThread->state = nullptr;
+    firstReadyThread = firstReadyThread->getState();
+
+    newThread->addThreadToState(nullptr);
     return newThread;
 }

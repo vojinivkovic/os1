@@ -1,4 +1,4 @@
-GAS LISTING /tmp/cccxiPbL.s 			page 1
+GAS LISTING /tmp/ccaN04iz.s 			page 1
 
 
    1              		.file	"main.cpp"
@@ -58,7 +58,7 @@ GAS LISTING /tmp/cccxiPbL.s 			page 1
   37:src/main.cpp  **** //    void* allocMem7 = (void*)MemoryAllocator::allocateMemory(15);
   38:src/main.cpp  **** //    void* allocMem8 = (void*)MemoryAllocator::allocateMemory(7);
   39:src/main.cpp  **** //    void* allocMem9 = (void*)MemoryAllocator::allocateMemory(8);
-GAS LISTING /tmp/cccxiPbL.s 			page 2
+GAS LISTING /tmp/ccaN04iz.s 			page 2
 
 
   40:src/main.cpp  **** //    void* allocMem10 = (void*)MemoryAllocator::allocateMemory(10);
@@ -102,54 +102,55 @@ GAS LISTING /tmp/cccxiPbL.s 			page 1
   30              	.Letext0:
   31              		.file 2 "src/../h/../lib/hw.h"
   32              		.file 3 "src/../h/Config.hpp"
-GAS LISTING /tmp/cccxiPbL.s 			page 3
+GAS LISTING /tmp/ccaN04iz.s 			page 3
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 main.cpp
-     /tmp/cccxiPbL.s:9      .text:0000000000000000 main
-     /tmp/cccxiPbL.s:13     .text:0000000000000000 .L0 
-     /tmp/cccxiPbL.s:14     .text:0000000000000000 .L0 
-     /tmp/cccxiPbL.s:15     .text:0000000000000004 .L0 
-     /tmp/cccxiPbL.s:17     .text:0000000000000008 .L0 
-     /tmp/cccxiPbL.s:19     .text:000000000000000c .L0 
-     /tmp/cccxiPbL.s:21     .text:000000000000000c .L0 
-     /tmp/cccxiPbL.s:22     .text:0000000000000010 .L0 
-     /tmp/cccxiPbL.s:23     .text:0000000000000010 .L0 
-     /tmp/cccxiPbL.s:25     .text:0000000000000014 .L0 
-     /tmp/cccxiPbL.s:27     .text:0000000000000018 .L0 
-     /tmp/cccxiPbL.s:33     .text:0000000000000018 .L0 
-     /tmp/cccxiPbL.s:199    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
-     /tmp/cccxiPbL.s:442    .debug_str:00000000000000de .LASF20
-     /tmp/cccxiPbL.s:452    .debug_str:00000000000001ee .LASF21
-     /tmp/cccxiPbL.s:426    .debug_str:0000000000000067 .LASF22
-     /tmp/cccxiPbL.s:5      .text:0000000000000000 .Ltext0
-     /tmp/cccxiPbL.s:30     .text:0000000000000018 .Letext0
-     /tmp/cccxiPbL.s:410    .debug_line:0000000000000000 .Ldebug_line0
-     /tmp/cccxiPbL.s:458    .debug_str:000000000000021a .LASF0
-     /tmp/cccxiPbL.s:448    .debug_str:00000000000001cb .LASF1
-     /tmp/cccxiPbL.s:436    .debug_str:00000000000000b5 .LASF2
-     /tmp/cccxiPbL.s:430    .debug_str:000000000000009d .LASF4
-     /tmp/cccxiPbL.s:422    .debug_str:0000000000000041 .LASF3
-     /tmp/cccxiPbL.s:414    .debug_str:000000000000000d .LASF5
-     /tmp/cccxiPbL.s:428    .debug_str:000000000000008a .LASF6
-     /tmp/cccxiPbL.s:446    .debug_str:00000000000001b8 .LASF7
-     /tmp/cccxiPbL.s:456    .debug_str:000000000000020a .LASF8
-     /tmp/cccxiPbL.s:416    .debug_str:0000000000000014 .LASF9
-     /tmp/cccxiPbL.s:418    .debug_str:0000000000000022 .LASF10
-     /tmp/cccxiPbL.s:454    .debug_str:00000000000001fb .LASF11
-     /tmp/cccxiPbL.s:420    .debug_str:0000000000000031 .LASF12
-     /tmp/cccxiPbL.s:450    .debug_str:00000000000001de .LASF13
-     /tmp/cccxiPbL.s:434    .debug_str:00000000000000a9 .LASF14
-     /tmp/cccxiPbL.s:444    .debug_str:00000000000001a2 .LASF15
-     /tmp/cccxiPbL.s:440    .debug_str:00000000000000c8 .LASF16
-     /tmp/cccxiPbL.s:432    .debug_str:00000000000000a4 .LASF17
-     /tmp/cccxiPbL.s:412    .debug_str:0000000000000000 .LASF23
-     /tmp/cccxiPbL.s:460    .debug_str:0000000000000227 .LASF18
-     /tmp/cccxiPbL.s:424    .debug_str:0000000000000053 .LASF19
-     /tmp/cccxiPbL.s:438    .debug_str:00000000000000c3 .LASF24
-     /tmp/cccxiPbL.s:10     .text:0000000000000000 .LFB16
-     /tmp/cccxiPbL.s:28     .text:0000000000000018 .LFE16
-     /tmp/cccxiPbL.s:34     .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/ccaN04iz.s:9      .text:0000000000000000 main
+     /tmp/ccaN04iz.s:13     .text:0000000000000000 .L0 
+     /tmp/ccaN04iz.s:14     .text:0000000000000000 .L0 
+     /tmp/ccaN04iz.s:15     .text:0000000000000004 .L0 
+     /tmp/ccaN04iz.s:17     .text:0000000000000008 .L0 
+     /tmp/ccaN04iz.s:19     .text:000000000000000c .L0 
+     /tmp/ccaN04iz.s:21     .text:000000000000000c .L0 
+     /tmp/ccaN04iz.s:22     .text:0000000000000010 .L0 
+     /tmp/ccaN04iz.s:23     .text:0000000000000010 .L0 
+     /tmp/ccaN04iz.s:25     .text:0000000000000014 .L0 
+     /tmp/ccaN04iz.s:27     .text:0000000000000018 .L0 
+     /tmp/ccaN04iz.s:33     .text:0000000000000018 .L0 
+     /tmp/ccaN04iz.s:208    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccaN04iz.s:472    .debug_str:00000000000000de .LASF21
+     /tmp/ccaN04iz.s:482    .debug_str:00000000000001ee .LASF22
+     /tmp/ccaN04iz.s:456    .debug_str:0000000000000067 .LASF23
+     /tmp/ccaN04iz.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccaN04iz.s:30     .text:0000000000000018 .Letext0
+     /tmp/ccaN04iz.s:440    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccaN04iz.s:488    .debug_str:000000000000021a .LASF0
+     /tmp/ccaN04iz.s:478    .debug_str:00000000000001cb .LASF1
+     /tmp/ccaN04iz.s:466    .debug_str:00000000000000b5 .LASF2
+     /tmp/ccaN04iz.s:460    .debug_str:000000000000009d .LASF4
+     /tmp/ccaN04iz.s:452    .debug_str:0000000000000041 .LASF3
+     /tmp/ccaN04iz.s:444    .debug_str:000000000000000d .LASF5
+     /tmp/ccaN04iz.s:458    .debug_str:000000000000008a .LASF6
+     /tmp/ccaN04iz.s:476    .debug_str:00000000000001b8 .LASF7
+     /tmp/ccaN04iz.s:486    .debug_str:000000000000020a .LASF8
+     /tmp/ccaN04iz.s:446    .debug_str:0000000000000014 .LASF9
+     /tmp/ccaN04iz.s:448    .debug_str:0000000000000022 .LASF10
+     /tmp/ccaN04iz.s:484    .debug_str:00000000000001fb .LASF11
+     /tmp/ccaN04iz.s:450    .debug_str:0000000000000031 .LASF12
+     /tmp/ccaN04iz.s:480    .debug_str:00000000000001de .LASF13
+     /tmp/ccaN04iz.s:464    .debug_str:00000000000000a9 .LASF14
+     /tmp/ccaN04iz.s:474    .debug_str:00000000000001a2 .LASF15
+     /tmp/ccaN04iz.s:470    .debug_str:00000000000000c8 .LASF16
+     /tmp/ccaN04iz.s:462    .debug_str:00000000000000a4 .LASF17
+     /tmp/ccaN04iz.s:442    .debug_str:0000000000000000 .LASF24
+     /tmp/ccaN04iz.s:492    .debug_str:0000000000000241 .LASF18
+     /tmp/ccaN04iz.s:454    .debug_str:0000000000000053 .LASF19
+     /tmp/ccaN04iz.s:490    .debug_str:0000000000000227 .LASF20
+     /tmp/ccaN04iz.s:468    .debug_str:00000000000000c3 .LASF25
+     /tmp/ccaN04iz.s:10     .text:0000000000000000 .LFB16
+     /tmp/ccaN04iz.s:28     .text:0000000000000018 .LFE16
+     /tmp/ccaN04iz.s:34     .debug_info:0000000000000000 .Ldebug_info0
 
 NO UNDEFINED SYMBOLS

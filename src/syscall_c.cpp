@@ -14,7 +14,6 @@ typedef struct Arguments
 
 
 
-
 extern "C" uint64 system_call(Arguments* arg);
 
 void* mem_alloc(size_t size)

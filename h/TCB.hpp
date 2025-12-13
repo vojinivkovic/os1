@@ -10,7 +10,6 @@
 #include "Config.hpp"
 #include "Machine.hpp"
 
-
 class TCB
 {
 public:
@@ -20,9 +19,13 @@ public:
 
     size_t getTimeSlice() const { return timeSlice; }
     bool isFinished() const { return finished; }
+    void setIsFinished() { finished = true; }
 
     void addThreadToState(TCB* newThread) { state = newThread; }
     TCB* getState() const { return state; }
+
+    void* getUserStack() const { return userStack; }
+    void* getSystemStack() const { return systemStack; }
 
     static void dispatch();
 
@@ -31,9 +34,7 @@ public:
 
     static size_t getNumOfTicks() { return numOfTicks; }
     static void resetNumOfTicks() { numOfTicks = DEFAULT_TIME_SLICE; }
-
-
-private:
+    static void incrementNumOfTicks() { numOfTicks++; }
 
     typedef struct Context
     {
@@ -42,8 +43,14 @@ private:
         KernelConfig::Mode mode;
     } Context;
 
+private:
+
+
+
     Body body;
     Context context;
+    void* userStack;
+    void* systemStack;
     size_t timeSlice;
     void* arguments;
     TCB* state;

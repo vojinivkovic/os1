@@ -39,6 +39,7 @@ private:
     static uint64 sysThreadExit(ArgumentsOfSystemCall* arg);
     static void kernelWorker(void*);
     static void initializeKernelThreads(void);
+    static void initializeSystemCalls(void);
     static void* mallocSystemStack(size_t numOfBytes);
 
     static uint64 (*systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(ArgumentsOfSystemCall* arg);
@@ -46,7 +47,6 @@ private:
 
     static ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* poolOfThreads;
 
-    static TCB* deamonThread;
 
     //static TCB* runningThread;
 
