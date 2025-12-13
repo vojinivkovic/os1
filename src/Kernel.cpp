@@ -5,11 +5,14 @@
 #include "../h/Kernel.hpp"
 #include "../h/Scheduler.hpp"
 #include "../h/TCB.hpp"
+#include "../h/KSemaphore.hpp"
+
+
 extern "C" void interrupt_trap(void);
 
 uint64 (*Kernel::systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(Kernel::ArgumentsOfSystemCall* arg) = {nullptr};
 ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* Kernel::poolOfThreads = new ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>();
-
+ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* Kernel::poolOfSemaphores = new ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>();
 void Kernel::initializeKernelThreads(void)
 {
     void* kernelSystemStack = Kernel::mallocSystemStack(KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
@@ -30,6 +33,11 @@ void Kernel::initializeKernel()
     {
      poolOfThreads = new ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>();
     }
+    while(!poolOfSemaphores)
+    {
+        poolOfSemaphores = new ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>();
+    }
+
     Kernel::initializeKernelThreads();
 
 
@@ -74,6 +82,7 @@ void Kernel::interruptHandler()
         ArgumentsOfSystemCall arg;
         initializeArguments(&arg, basePointer);
         systemCallsTable[numberOfEntry](&arg);
+
         __asm__ volatile("sd a0, 80(%[rs])"::[rs]"r"(basePointer));
 
         TCB::dispatch();

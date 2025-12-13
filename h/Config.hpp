@@ -8,6 +8,7 @@
 
 namespace KernelConfig{
     constexpr size_t NUM_OF_THREADS_IN_POOL = 20;
+    constexpr size_t NUM_OF_SEMAPHORES_IN_POOL = 10;
     constexpr size_t NUM_OF_SYSTEM_CALLS = 0x42;
     constexpr size_t DEFAULT_SYSTEM_STACK_SIZE = 1024;
 
@@ -25,7 +26,11 @@ namespace KernelConfig{
         LARGEST_FREE_BLOCK = 0x4,
         THREAD_CREATE = 0x11,
         THREAD_EXIT = 0x12,
-        THREAD_DISPATCH = 0x13
+        THREAD_DISPATCH = 0x13,
+        SEMAPHORE_OPEN = 0X21,
+        SEMAPHORE_CLOSE = 0x22,
+        SEMAPHORE_WAIT = 0x23,
+        SEMAPHORE_SIGNAL = 0x24
     };
 }
 

@@ -11,6 +11,7 @@
 //#include "TCB.hpp"
 
 class TCB;
+class KSemaphore;
 
 class Kernel
 {
@@ -46,7 +47,7 @@ private:
     static void initializeArguments(ArgumentsOfSystemCall* arg, uint64 basePointer);
 
     static ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* poolOfThreads;
-
+    static ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* poolOfSemaphores;
 
     //static TCB* runningThread;
 
