@@ -9,7 +9,7 @@
 
 extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
 
-void KSemaphore::initializeSemaphore(unsigned int value, ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* pool)
+void KSemaphore::initializeSemaphore(unsigned value, ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* pool)
 {
     semaphoreVal = value;
     headBlockedThread = nullptr;
@@ -59,7 +59,7 @@ int KSemaphore::wait()
         TCB* oldThread = TCB::getRunningThread();
         TCB::setRunningThread(Scheduler::get());
         blockThread(oldThread);
-        context_switch(&(oldThread->getContext()), &(TCB::getRunningThread()->getContext()));
+        context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
         if(TCB::getRunningThread()->getWakeUpReason() == KernelConfig::WAKE_UP_SEMAPHORE_SIGNAL)
         {
             return 0;
@@ -80,6 +80,7 @@ int KSemaphore::signal()
     {
         return unblockThread(KernelConfig::WAKE_UP_SEMAPHORE_SIGNAL);
     }
+    return 0;
 }
 
 int KSemaphore::close()

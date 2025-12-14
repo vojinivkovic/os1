@@ -14,10 +14,16 @@ class KSemaphore;
 class TCB
 {
 public:
+    typedef struct Context
+    {
+        uint64 ra;
+        uint64 sp;
+        KernelConfig::Mode mode;
+    } Context;
     using Body = void(*)(void*);
     TCB() = default;
-    void initializeThread(Body body, void*arg, void* stack, void* systemStack, KernelConfig::Mode mode = KernelConfig::USER_MODE,
-                          ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool);
+    void initializeThread(Body body, void*arg, void* stack, void* systemStack, ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool,
+                          KernelConfig::Mode mode = KernelConfig::USER_MODE);
 
     size_t getTimeSlice() const { return timeSlice; }
     bool isFinished() const { return finished; }
@@ -26,12 +32,12 @@ public:
     void addThreadToState(TCB* newThread) { state = newThread; }
     TCB* getState() const { return state; }
     void resetState() {state = nullptr; }
-    Context getContext() const { return context; }
+    Context* getContext() { return &context; }
     void* getUserStack() const { return userStack; }
     void* getSystemStack() const { return systemStack; }
     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* getSourcePool() { return sourcePool; }
 
-    void setWakeUpReason(KernelConfig::WAKE_UP_REASON reason) { wakeUpReason = reason };
+    void setWakeUpReason(KernelConfig::WAKE_UP_REASON reason) { wakeUpReason = reason; };
     KernelConfig::WAKE_UP_REASON getWakeUpReason() {return wakeUpReason; }
     void setSemaphoreOnWait (KSemaphore* semaphore) { waitOnSemaphore = semaphore; }
     KSemaphore* getSemaphoreOnWait() const { return waitOnSemaphore; }
@@ -45,12 +51,7 @@ public:
     static void resetNumOfTicks() { numOfTicks = DEFAULT_TIME_SLICE; }
     static void incrementNumOfTicks() { numOfTicks++; }
 
-    typedef struct Context
-    {
-        uint64 ra;
-        uint64 sp;
-        KernelConfig::Mode mode;
-    } Context;
+
 
 private:
 

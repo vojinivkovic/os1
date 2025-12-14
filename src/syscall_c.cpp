@@ -64,3 +64,27 @@ int thread_exit()
     Arguments arg = {KernelConfig::THREAD_EXIT, 0, 0, 0, 0, 0, 0, 0};
     return (int) system_call(&arg);
 }
+
+int sem_open(sem_t* handle, unsigned init)
+{
+    Arguments arg = {(uint64)KernelConfig::SEMAPHORE_OPEN, (uint64)handle, (uint64)init, 0, 0, 0, 0, 0};
+    return (int) system_call(&arg);
+}
+
+int sem_close(sem_t handle)
+{
+    Arguments arg = {(uint64)KernelConfig::SEMAPHORE_CLOSE, (uint64)handle, 0, 0, 0, 0, 0, 0};
+    return (int) system_call(&arg);
+}
+
+int sem_wait(sem_t handle)
+{
+    Arguments arg = {(uint64)KernelConfig::SEMAPHORE_WAIT, (uint64)handle, 0, 0, 0, 0, 0, 0};
+    return (int) system_call(&arg);
+}
+
+int sem_signal(sem_t handle)
+{
+    Arguments arg = {(uint64)KernelConfig::SEMAPHORE_SIGNAL, (uint64)handle, 0, 0, 0, 0, 0, 0};
+    return (int) system_call(&arg);
+}

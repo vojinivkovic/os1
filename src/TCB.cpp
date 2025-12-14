@@ -10,7 +10,7 @@ extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContex
 
 size_t TCB::numOfTicks = 0;
 TCB* TCB::running = nullptr;
-void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, void* allocatedSystemStack, KernelConfig::Mode mode, ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool)
+void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, void* allocatedSystemStack, ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool, KernelConfig::Mode mode)
 {
 
     body = function;
@@ -37,7 +37,7 @@ void TCB::threadWrapper()
 }
 void TCB::yield(TCB *oldThread, TCB *newThread)
 {
-    context_switch(&(oldThread->getContext()), &(newThread->getContext()));
+    context_switch(oldThread->getContext(), newThread->getContext());
 }
 
 void TCB::dispatch()

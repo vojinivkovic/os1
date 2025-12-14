@@ -22,7 +22,7 @@ public:
     }
 
     static void* operator new(size_t size);
-    T* mallocObject(ObjectPool<T, numOfObjects>* pool);
+    T* mallocObject(ObjectPool<T, numOfObjects>** pool);
     int freeObject(T* obj);
 
 
@@ -101,13 +101,13 @@ template<typename T, size_t numOfObjects>
 int ObjectPool<T, numOfObjects>::freeObject(T *obj) {
 
     ObjectPool<T, numOfObjects>* curr = obj->getSourcePool();
-    for(; curr->nextObjectPool; curr = curr->nextObjectPool)
-//    {
-//        if(((uint64)curr->pool <= (uint64)obj) && ((uint64)obj <= (uint64)&(curr->pool[numOfObjects])))
-//        {
-//            break;
-//        }
-//    }
+//    for(; curr->nextObjectPool; curr = curr->nextObjectPool)
+////    {
+////        if(((uint64)curr->pool <= (uint64)obj) && ((uint64)obj <= (uint64)&(curr->pool[numOfObjects])))
+////        {
+////            break;
+////        }
+////    }
     PoolObject* tempObj = (PoolObject*)obj;
     tempObj->nextFree = curr->headFreeObject;
     curr->headFreeObject = tempObj;

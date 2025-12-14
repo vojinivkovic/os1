@@ -16,13 +16,14 @@ ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* Kernel::poolOfS
 void Kernel::initializeKernelThreads(void)
 {
     void* kernelSystemStack = Kernel::mallocSystemStack(KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
-    TCB* kernelThread = poolOfThreads->mallocObject();
+    ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
+    TCB* kernelThread = poolOfThreads->mallocObject(&sourcePool);
 
     while(kernelThread == nullptr)
     {
-        kernelThread = poolOfThreads->mallocObject();
+        kernelThread = poolOfThreads->mallocObject(&sourcePool);
     }
-    kernelThread->initializeThread(&kernelWorker, nullptr, kernelSystemStack, kernelSystemStack, KernelConfig::KERNEL_MODE);
+    kernelThread->initializeThread(&kernelWorker, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::KERNEL_MODE);
     initializeSystemCalls();
 }
 
@@ -121,27 +122,31 @@ void Kernel::kernelWorker(void*)
 
 uint64 Kernel::sysMalloc(Kernel::ArgumentsOfSystemCall *arg)
 {
-    uint64 returnValue;
-    returnValue = (uint64)MemoryAllocator::allocateMemory(arg->a0);
-    return returnValue;
+//    uint64 returnValue;
+//    returnValue = (uint64)MemoryAllocator::allocateMemory(arg->a0);
+//    return returnValue;
+    return (uint64)MemoryAllocator::allocateMemory(arg->a0);
 }
 uint64 Kernel::sysFree(Kernel::ArgumentsOfSystemCall *arg)
 {
-    uint64 returnValue;
-    returnValue = (uint64)MemoryAllocator::freeMemory((void*)arg->a0);
-    return returnValue;
+//    uint64 returnValue;
+//    returnValue = (uint64)MemoryAllocator::freeMemory((void*)arg->a0);
+//    return returnValue;
+    return (uint64)MemoryAllocator::freeMemory((void*)arg->a0);
 }
 uint64 Kernel::sysGetFreeSpace(Kernel::ArgumentsOfSystemCall *arg)
 {
-    uint64 returnValue;
-    returnValue = (uint64)MemoryAllocator::getFreeSpace();
-    return returnValue;
+//    uint64 returnValue;
+//    returnValue = (uint64)MemoryAllocator::getFreeSpace();
+//    return returnValue;
+    return (uint64)MemoryAllocator::getFreeSpace();
 }
 uint64 Kernel::sysLargestFreeBlock(Kernel::ArgumentsOfSystemCall *arg)
 {
-    uint64 returnValue;
-    returnValue = (uint64)MemoryAllocator::getLargestFreeBlock();
-    return returnValue;
+//    uint64 returnValue;
+//    returnValue = (uint64)MemoryAllocator::getLargestFreeBlock();
+//    return (uint64)MemoryAllocator;
+    return (uint64)MemoryAllocator::getLargestFreeBlock();
 }
 uint64 Kernel::sysThreadCreate(Kernel::ArgumentsOfSystemCall *arg)
 {
@@ -167,40 +172,52 @@ uint64 Kernel::sysThreadExit(Kernel::ArgumentsOfSystemCall *arg)
     {
         return -1;
     }
+
     TCB::getRunningThread()->setIsFinished();
     if(MemoryAllocator::freeMemory(TCB::getRunningThread()->getUserStack()) == -1)
     {
         return -1;
     }
+
     if(!TCB::getRunningThread()->getSemaphoreOnWait())
     {
         KSemaphore* tempSemaphore = TCB::getRunningThread()->getSemaphoreOnWait();
         tempSemaphore->removeThreadFromWaitQueue(TCB::getRunningThread());
     }
+
     Kernel::poolOfThreads->freeObject(TCB::getRunningThread());
     return 0;
 }
 
 uint64 Kernel::sysSemaphoreOpen(ArgumentsOfSystemCall *arg)
 {
-
+    ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* sourcePool;
+    KSemaphore* newSemaphore = poolOfSemaphores->mallocObject(&sourcePool);
+    if(!newSemaphore)
+    {
+        return -1;
+    }
+    __asm__ volatile("sd %[ptrSemaphore], 0(%[handle])"::[ptrSemaphore]"r"(newSemaphore), [handle]"r"(arg->a0));
+    newSemaphore->initializeSemaphore((unsigned)arg->a1, sourcePool);
+    return 0;
 }
 
 uint64 Kernel::sysSemaphoreClose(ArgumentsOfSystemCall *arg)
 {
-
+    KSemaphore* tempSemaphore = (KSemaphore*)(arg->a0);
+    return (uint64)tempSemaphore->close();
 }
 
 uint64 Kernel::sysSemaphoreWait(ArgumentsOfSystemCall *arg)
 {
-    uint64 returnValue;
-    //find_semaphore;
-    //semaphore->wait(&returnValue);
+    KSemaphore* tempSemaphore = (KSemaphore*)(arg->a0);
+    return (uint64)tempSemaphore->wait();
 }
 
 uint64 Kernel::sysSemaphoreSignal(ArgumentsOfSystemCall *arg)
 {
-
+    KSemaphore* tempSemaphore = (KSemaphore*)(arg->a0);
+    return (uint64)tempSemaphore->signal();
 }
 
 void Kernel::initializeSystemCalls(void)

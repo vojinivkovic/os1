@@ -11,10 +11,10 @@ class TCB;
 class KSemaphore {
 public:
     KSemaphore() = default;
-    void initializeSemaphore(unsigned int value, ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* pool);
+    void initializeSemaphore(unsigned value, ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* pool);
     void removeThreadFromWaitQueue(TCB* thread);
     ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* getSourcePool() { return sourcePool; }
-    void wait();
+    int wait();
     int signal();
 	int close();
 private:
