@@ -10,11 +10,14 @@ class KSemaphore {
 public:
     KSemaphore() = default;
     void initializeSemaphore(unsigned int value);
-    int wait();
+    void wait(uint64* returnValue);
     int signal();
+	int close();
 private:
+    void blockThread(TCB* threadToBlock);
+    int unblockThread();
     long semaphoreVal;
-    TCB* headBlockedThreads;
+    TCB* headBlockedThread, *lastBlockedThread;
 };
 
 

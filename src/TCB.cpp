@@ -35,7 +35,7 @@ void TCB::threadWrapper()
 }
 void TCB::yield(TCB *oldThread, TCB *newThread)
 {
-    context_switch(&(oldThread->context), &(newThread->context));
+    context_switch(&(oldThread->getContext()), &(newThread->getContext()));
 }
 
 void TCB::dispatch()

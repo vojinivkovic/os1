@@ -8,6 +8,7 @@
 #include "MemoryAllocator.hpp"
 #include "Config.hpp"
 #include "ObjectPool.hpp"
+
 //#include "TCB.hpp"
 
 class TCB;
@@ -38,6 +39,10 @@ private:
     static uint64 sysThreadCreate(ArgumentsOfSystemCall* arg);
     static uint64 sysThreadDispatch(ArgumentsOfSystemCall* arg);
     static uint64 sysThreadExit(ArgumentsOfSystemCall* arg);
+	static uint64 sysSemaphoreOpen(ArgumentsOfSystemCall* arg);
+	static uint64 sysSemaphoreClose(ArgumentsOfSystemCall* arg);
+    static uint64 sysSemaphoreWait(ArgumentsOfSystemCall* arg);
+    static uint64 sysSemaphoreSignal(ArgumentsOfSystemCall* arg);
     static void kernelWorker(void*);
     static void initializeKernelThreads(void);
     static void initializeSystemCalls(void);

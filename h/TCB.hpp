@@ -23,10 +23,12 @@ public:
 
     void addThreadToState(TCB* newThread) { state = newThread; }
     TCB* getState() const { return state; }
-
+    Context getContext() const { return context; }
     void* getUserStack() const { return userStack; }
     void* getSystemStack() const { return systemStack; }
 
+    void setWakeUpReason(KernelConfig::WAKE_UP_REASON reason) { wakeUpReason = reason };
+    KernelConfig::WAKE_UP_REASON getWakeUpReason() {return wakeUpReason; }
     static void dispatch();
 
     static TCB* getRunningThread() { return running; }
@@ -55,6 +57,7 @@ private:
     void* arguments;
     TCB* state;
     bool finished;
+    KernelConfig::WAKE_UP_REASON wakeUpReason;
 
     static TCB* running;
 

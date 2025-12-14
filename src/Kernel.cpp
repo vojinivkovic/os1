@@ -175,6 +175,28 @@ uint64 Kernel::sysThreadExit(Kernel::ArgumentsOfSystemCall *arg)
     return 0;
 }
 
+uint64 Kernel::sysSemaphoreOpen(ArgumentsOfSystemCall *arg)
+{
+
+}
+
+uint64 Kernel::sysSemaphoreClose(ArgumentsOfSystemCall *arg)
+{
+
+}
+
+uint64 Kernel::sysSemaphoreWait(ArgumentsOfSystemCall *arg)
+{
+    uint64 returnValue;
+    //find_semaphore;
+    //semaphore->wait(&returnValue);
+}
+
+uint64 Kernel::sysSemaphoreSignal(ArgumentsOfSystemCall *arg)
+{
+
+}
+
 void Kernel::initializeSystemCalls(void)
 {
     systemCallsTable[KernelConfig::MEM_ALLOC] = &sysMalloc;
@@ -182,4 +204,8 @@ void Kernel::initializeSystemCalls(void)
     systemCallsTable[KernelConfig::MEM_FREE_SPACE] = &sysGetFreeSpace;
     systemCallsTable[KernelConfig::LARGEST_FREE_BLOCK] = &sysLargestFreeBlock;
     systemCallsTable[KernelConfig::THREAD_CREATE] = &sysThreadCreate;
+    systemCallsTable[KernelConfig::SEMAPHORE_OPEN] = &sysSemaphoreOpen;
+    systemCallsTable[KernelConfig::SEMAPHORE_CLOSE] = &sysSemaphoreClose;
+    systemCallsTable[KernelConfig::SEMAPHORE_SIGNAL] = &sysSemaphoreSignal;
+    systemCallsTable[KernelConfig::SEMAPHORE_WAIT] = &sysSemaphoreWait;
 }

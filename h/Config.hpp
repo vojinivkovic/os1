@@ -17,7 +17,11 @@ namespace KernelConfig{
         USER_MODE = 0x0,
         KERNEL_MODE = 0x1
     };
-
+    enum WAKE_UP_REASON
+    {
+        WAKE_UP_SEMAPHORE_SIGNAL,
+        WAKE_UP_SEMAPHORE_CLOSE
+    };
     enum NumberOfSystemCall
     {
         MEM_ALLOC = 0x1,
