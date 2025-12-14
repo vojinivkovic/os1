@@ -15,7 +15,7 @@ void Scheduler::put(TCB *readyThread)
     }
     else
     {
-        lastReadyThread->setRunningThread(readyThread);
+        lastReadyThread->addThreadToState(readyThread);
     }
     lastReadyThread = readyThread;
 }

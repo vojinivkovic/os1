@@ -10,6 +10,7 @@
 #include "Config.hpp"
 #include "Machine.hpp"
 
+class KSemaphore;
 class TCB
 {
 public:
@@ -23,12 +24,16 @@ public:
 
     void addThreadToState(TCB* newThread) { state = newThread; }
     TCB* getState() const { return state; }
+    void resetState() {state = nullptr; }
     Context getContext() const { return context; }
     void* getUserStack() const { return userStack; }
     void* getSystemStack() const { return systemStack; }
 
     void setWakeUpReason(KernelConfig::WAKE_UP_REASON reason) { wakeUpReason = reason };
     KernelConfig::WAKE_UP_REASON getWakeUpReason() {return wakeUpReason; }
+    void setSemaphoreOnWait (KSemaphore* semaphore) { waitOnSemaphore = semaphore; }
+    KSemaphore* getSemaphoreOnWait() const { return waitOnSemaphore; }
+    void resetSemaphoreOnWait() { waitOnSemaphore = nullptr; }
     static void dispatch();
 
     static TCB* getRunningThread() { return running; }
@@ -55,6 +60,7 @@ private:
     void* systemStack;
     size_t timeSlice;
     void* arguments;
+    KSemaphore* waitOnSemaphore;
     TCB* state;
     bool finished;
     KernelConfig::WAKE_UP_REASON wakeUpReason;
