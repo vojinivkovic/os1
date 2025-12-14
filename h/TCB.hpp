@@ -16,7 +16,8 @@ class TCB
 public:
     using Body = void(*)(void*);
     TCB() = default;
-    void initializeThread(Body body, void*arg, void* stack, void* systemStack, KernelConfig::Mode mode = KernelConfig::USER_MODE);
+    void initializeThread(Body body, void*arg, void* stack, void* systemStack, KernelConfig::Mode mode = KernelConfig::USER_MODE,
+                          ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool);
 
     size_t getTimeSlice() const { return timeSlice; }
     bool isFinished() const { return finished; }
@@ -28,6 +29,7 @@ public:
     Context getContext() const { return context; }
     void* getUserStack() const { return userStack; }
     void* getSystemStack() const { return systemStack; }
+    ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* getSourcePool() { return sourcePool; }
 
     void setWakeUpReason(KernelConfig::WAKE_UP_REASON reason) { wakeUpReason = reason };
     KernelConfig::WAKE_UP_REASON getWakeUpReason() {return wakeUpReason; }
@@ -64,6 +66,8 @@ private:
     TCB* state;
     bool finished;
     KernelConfig::WAKE_UP_REASON wakeUpReason;
+    ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
+
 
     static TCB* running;
 

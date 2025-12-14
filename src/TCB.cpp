@@ -10,7 +10,7 @@ extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContex
 
 size_t TCB::numOfTicks = 0;
 TCB* TCB::running = nullptr;
-void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, void* allocatedSystemStack, KernelConfig::Mode mode)
+void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, void* allocatedSystemStack, KernelConfig::Mode mode, ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool)
 {
 
     body = function;
@@ -19,6 +19,7 @@ void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, v
     finished = false;
     arguments = arg;
     waitOnSemaphore = nullptr;
+    sourcePool = pool;
     userStack = (void*)((uint8*)allocatedStack - DEFAULT_STACK_SIZE);
     systemStack = (void*)((uint8*)allocatedSystemStack - KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
 

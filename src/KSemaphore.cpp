@@ -9,11 +9,12 @@
 
 extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
 
-void KSemaphore::initializeSemaphore(unsigned int value)
+void KSemaphore::initializeSemaphore(unsigned int value, ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* pool)
 {
     semaphoreVal = value;
     headBlockedThread = nullptr;
     lastBlockedThread = nullptr;
+    sourcePool = pool;
 }
 
 void KSemaphore::blockThread(TCB* threadToBlock)

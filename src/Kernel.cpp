@@ -145,14 +145,15 @@ uint64 Kernel::sysLargestFreeBlock(Kernel::ArgumentsOfSystemCall *arg)
 }
 uint64 Kernel::sysThreadCreate(Kernel::ArgumentsOfSystemCall *arg)
 {
-    TCB* newThread = poolOfThreads->mallocObject();
+    ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
+    TCB* newThread = poolOfThreads->mallocObject(&sourcePool);
     if(!newThread)
     {
         return -1;
     }
     __asm__ volatile("sd %[ptrThread], 0(%[handle])"::[ptrThread]"r"(newThread), [handle]"r"(arg->a0));
     void* kernelSystemStack = Kernel::mallocSystemStack(KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
-    newThread->initializeThread((TCB::Body) arg->a1, (void*)arg->a2, (void*)arg->a3, kernelSystemStack);
+    newThread->initializeThread((TCB::Body) arg->a1, (void*)arg->a2, (void*)arg->a3, kernelSystemStack, sourcePool);
     return 0;
 }
 uint64 Kernel::sysThreadDispatch(Kernel::ArgumentsOfSystemCall *arg)
@@ -170,6 +171,11 @@ uint64 Kernel::sysThreadExit(Kernel::ArgumentsOfSystemCall *arg)
     if(MemoryAllocator::freeMemory(TCB::getRunningThread()->getUserStack()) == -1)
     {
         return -1;
+    }
+    if(!TCB::getRunningThread()->getSemaphoreOnWait())
+    {
+        KSemaphore* tempSemaphore = TCB::getRunningThread()->getSemaphoreOnWait();
+        tempSemaphore->removeThreadFromWaitQueue(TCB::getRunningThread());
     }
     Kernel::poolOfThreads->freeObject(TCB::getRunningThread());
     return 0;
