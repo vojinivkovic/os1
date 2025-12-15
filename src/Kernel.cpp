@@ -30,7 +30,15 @@ void Kernel::makeConsumerThread()
 
 void Kernel::makeProducerThread()
 {
-
+    void* kernelSystemStack = Kernel::mallocSystemStack(KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
+    ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
+    TCB* producerThread = poolOfThreads->mallocObject(&sourcePool);
+    while(!producerThread)
+    {
+        producerThread = poolOfThreads->mallocObject(&sourcePool);
+    }
+    producerThread->initializeThread(&KConsole::produceInputBuffer, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::KERNEL_MODE, KernelConfig::BLOCKED);
+    KConsole::setProducerThread(producerThread);
 }
 void Kernel::makeIdleThread()
 {
@@ -47,6 +55,7 @@ void Kernel::makeIdleThread()
 void Kernel::initializeKernelThreads(void)
 {
     makeConsumerThread();
+    makeProducerThread();
     makeIdleThread();
 }
 
@@ -159,8 +168,14 @@ void Kernel::interruptHandler()
             }
             else
             {
-                KConsole::produceInputBuffer();
-                plic_complete(numOfDevice);
+                if(KConsole::isInputBufferFull())
+                {
+                    plic_complete(numOfDevice);
+                }
+                else
+                {
+                    Scheduler::put(KConsole::getProducerThread());
+                }
             }
 
             TCB::dispatch();
@@ -295,19 +310,23 @@ uint64 Kernel::sysGetc(ArgumentsOfSystemCall *arg)
         TCB* oldThread = TCB::getRunningThread();
         TCB::setRunningThread(Scheduler::get());
         oldThread->resetState();
-        KConsole::addThreadToWaitQueue(oldThread);
+        KConsole::addThreadToInputWaitQueue(oldThread);
         context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
     }
     return (uint64)KConsole::getCharFromInputBuffer();
 }
 uint64 Kernel::sysPutc(ArgumentsOfSystemCall *arg)
 {
-    if(!KConsole::isOutputBufferFull())
+    if(KConsole::isOutputBufferFull())
     {
-        KConsole::addCharToOutputBuffer(arg->a0);
-        return 0;
+        TCB* oldThread = TCB::getRunningThread();
+        TCB::setRunningThread(Scheduler::get());
+        oldThread->resetState();
+        KConsole::addThreadToOutputWaitQueue(oldThread);
+        context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
     }
-    return KernelConfig::EOF;
+    KConsole::addCharToOutputBuffer(arg->a0);
+    return 0;
 }
 
 void Kernel::initializeSystemCalls(void)

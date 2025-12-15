@@ -6,13 +6,18 @@
 #include "../h/TCB.hpp"
 #include "../h/Scheduler.hpp"
 
+extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
+
+
 Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>* KConsole::inputBuffer = new Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>();
 Buffer<char, KernelConfig::SIZE_OUTPUT_BUFFER>* KConsole::outputBuffer = new Buffer<char, KernelConfig::SIZE_OUTPUT_BUFFER>();
 TCB* KConsole::consumerThread = nullptr;
 TCB* KConsole::headThreadInputWait = nullptr;
 TCB* KConsole::tailThreadInputWait = nullptr;
+TCB* KConsole::headThreadOutputWait = nullptr;
+TCB* KConsole::tailThreadOutputWait = nullptr
 
-void KConsole::addThreadToWaitQueue(TCB *thread)
+void KConsole::addThreadToInputWaitQueue(TCB *thread)
 {
     if(!headThreadInputWait)
     {
@@ -25,7 +30,20 @@ void KConsole::addThreadToWaitQueue(TCB *thread)
     tailThreadInputWait = thread;
 }
 
-void KConsole::removeThreadFromWaitQueue()
+void KConsole::addThreadToOutputWaitQueue(TCB* thread)
+{
+    if(!headThreadOutputWait)
+    {
+        headThreadOutputWait = thread;
+    }
+    else
+    {
+        tailThreadOutputWait->addThreadToState(thread);
+    }
+    tailThreadOutputWait = thread;
+}
+
+void KConsole::removeThreadFromInputWaitQueue()
 {
     if(!headThreadInputWait)
     {
@@ -40,7 +58,21 @@ void KConsole::removeThreadFromWaitQueue()
     oldThread->resetState();
     Scheduler::put(oldThread);
 }
-
+void KConsole::removeThreadFromOutputWaitQueue()
+{
+    f(!headThreadOutputWait)
+    {
+        return;
+    }
+    TCB* oldThread = headThreadOutputWait;
+    headThreadOutputWait = headThreadOutputWait->getState();
+    if(!headThreadOutputWait)
+    {
+        tailThreadOutputWait = nullptr;
+    }
+    oldThread->resetState();
+    Scheduler::put(oldThread);
+}
 char KConsole::getCharFromInputBuffer()
 {
     return *(inputBuffer->take());
@@ -52,20 +84,45 @@ void KConsole::addCharToOutputBuffer(char c)
 
 void KConsole::consumeOutputBuffer(void *)
 {
+    volatile uint8 data;
+    volatile uint8 statusReg;
+    while(1)
+    {
+        volatile int numOfDevice = plic_claim();
+        do {
 
+            data = *(outputBuffer->take());
+            __asm__ volatile("sb %[regData], 0(%[address])":: [regData]"r"(data), [address]"r"(CONSOLE_TX_DATA));
+            __asm__ volatile("lb %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS));
+            removeThreadFromOutputWaitQueue();
+        } while ((statusReg & CONSOLE_TX_STATUS_BIT) && !outputBuffer->isBufferEmpty());
+        plic_complete(numOfDevice);
+        TCB *oldThread = TCB::getRunningThread();
+        TCB::setRunningThread(Scheduler::get());
+        oldThread->resetState();
+        context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
+    }
 }
 
 void KConsole::produceInputBuffer()
 {
-    uint8 statusReg;
-    uint8 dataReg;
-    if(inputBuffer->isBufferFull())
-    {
-        return;
+    volatile uint8 statusReg;
+    volatile uint8 data;
+    while(1) {
+        volatile int numOfDevice = plic_claim();
+        do {
+            __asm__ volatile("lb %[regData], 0(%[address])" : [regData]"=r"(data): [address]"r"(CONSOLE_RX_DATA));
+            inputBuffer->append(&data);
+            __asm__ volatile("lb %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS));
+            removeThreadFromInputWaitQueue();
+        } while ((statusReg & CONSOLE_RX_STATUS_BIT) && !inputBuffer->isBufferFull());
+        plic_complete(numOfDevice);
+
+        TCB *oldThread = TCB::getRunningThread();
+        TCB::setRunningThread(Scheduler::get());
+        oldThread->resetState();
+        context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
     }
-    do
-    {
-        __asm__ volatile("")
-    }while()
+
 }
 

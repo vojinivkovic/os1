@@ -88,3 +88,15 @@ int sem_signal(sem_t handle)
     Arguments arg = {(uint64)KernelConfig::SEMAPHORE_SIGNAL, (uint64)handle, 0, 0, 0, 0, 0, 0};
     return (int) system_call(&arg);
 }
+
+char getc()
+{
+    Arguments arg = {(uint64)KernelConfig::GETC, 0, 0, 0, 0, 0, 0, 0};
+    return (char) system_call(&arg);
+}
+
+void putc(char c)
+{
+    Arguments arg = {(uint64)KernelConfig::PUTC, (uint64) c, 0, 0, 0, 0, 0, 0};
+    system_call(&arg);
+}

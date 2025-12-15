@@ -21,16 +21,23 @@ public:
     static TCB* getConsumerThread() { return consumerThread; }
     static void setConsumerThread(TCB* thread) { consumerThread = thread; }
 
+    static TCB* getProducerThread() { return producerThread; }
+    static void setProducerThread(TCB* thread) { producerThread = thread; }
+
     static bool isInputBufferEmpty() const { return inputBuffer->isBufferEmpty(); }
+    static bool isInputBufferFull() const { return inputBuffer->isBufferFull(); }
     static bool isOutputBufferFull() const { return outputBuffer->isBufferFull(); }
     static bool isOutputBufferEmpty() const { return outputBuffer->isBufferEmpty(); }
-    static void addThreadToWaitQueue(TCB* thread);
-    static void removeThreadFromWaitQueue();
+    static void addThreadToInputWaitQueue(TCB* thread);
+    static void removeThreadFromInputWaitQueue();
+    static void addThreadToOutputWaitQueue(TCB* thread);
+    static void removeThreadFromOutputWaitQueue();
     static void addCharToOutputBuffer(char c);
     static char getCharFromInputBuffer();
 private:
     static TCB* consumerThread, *producerThread;
     static TCB* headThreadInputWait, *tailThreadInputWait;
+    static TCB* headThreadOutputWait, *tailThreadOutputWait;
     static Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>* inputBuffer;
     static Buffer<char, KernelConfig::SIZE_OUTPUT_BUFFER>* outputBuffer;
 };
