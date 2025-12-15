@@ -10,7 +10,8 @@ extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContex
 
 size_t TCB::numOfTicks = 0;
 TCB* TCB::running = nullptr;
-void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, void* allocatedSystemStack, ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool, KernelConfig::Mode mode)
+void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, void* allocatedSystemStack, ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool,
+                           KernelConfig::Mode mode, KernelConfig::ThreadState stateOfThread)
 {
 
     body = function;
@@ -27,7 +28,10 @@ void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, v
 
     context = {Machine::readSscratch(), (uint64) ((uint64*)allocatedSystemStack - 32), mode};
     Machine::writeSepc((uint64)&threadWrapper);
-    Scheduler::put(this);
+    if(stateOfThread == KernelConfig::ACTIVE)
+    {
+        Scheduler::put(this);
+    }
 }
 void TCB::threadWrapper()
 {

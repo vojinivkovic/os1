@@ -1,0 +1,157 @@
+GAS LISTING /tmp/ccxkhpiM.s 			page 1
+
+
+   1              		.file	"main.cpp"
+   2              		.option pic
+   3              		.option norelax
+   4              		.text
+   5              	.Ltext0:
+   6              		.align	2
+   7              		.globl	main
+   9              	main:
+  10              	.LFB16:
+  11              		.file 1 "src/main.cpp"
+   1:src/main.cpp  **** //
+   2:src/main.cpp  **** // Created by os on 11/29/25.
+   3:src/main.cpp  **** //
+   4:src/main.cpp  **** #include "../h/MemoryAllocator.hpp"
+   5:src/main.cpp  **** #include "../h/Kernel.hpp"
+   6:src/main.cpp  **** #include "../h/syscall_c.hpp"
+   7:src/main.cpp  **** void main(){
+  12              		.loc 1 7 12
+  13              		.cfi_startproc
+  14 0000 130101FF 		addi	sp,sp,-16
+  15              		.cfi_def_cfa_offset 16
+  16 0004 23348100 		sd	s0,8(sp)
+  17              		.cfi_offset 8, -8
+  18 0008 13040101 		addi	s0,sp,16
+  19              		.cfi_def_cfa 8, 0
+   8:src/main.cpp  **** 
+   9:src/main.cpp  **** //    void* allocMem1 = (void*)MemoryAllocator::allocateMemory(2096795);
+  10:src/main.cpp  **** //
+  11:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem1);
+  12:src/main.cpp  **** //    void* allocMem2 = (void*)MemoryAllocator::allocateMemory(10);
+  13:src/main.cpp  **** //    void* allocMem3 = (void*)MemoryAllocator::allocateMemory(20);
+  14:src/main.cpp  **** //    void* allocMem4 = (void*)MemoryAllocator::allocateMemory(10);
+  15:src/main.cpp  **** //    void* allocMem5 = (void*)MemoryAllocator::allocateMemory(20);
+  16:src/main.cpp  **** //    void* allocMem6 = (void*)MemoryAllocator::allocateMemory(10);
+  17:src/main.cpp  **** //    void* allocMem7 = (void*)MemoryAllocator::allocateMemory(20);
+  18:src/main.cpp  **** //    void* allocMem8 = (void*)MemoryAllocator::allocateMemory(20);
+  19:src/main.cpp  **** //    void* allocMem9 = (void*)MemoryAllocator::allocateMemory(20);
+  20:src/main.cpp  **** //    void* allocMem10 = (void*)MemoryAllocator::allocateMemory(20);
+  21:src/main.cpp  **** //    void* allocMem11 = (void*)MemoryAllocator::allocateMemory(20);
+  22:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem2);
+  23:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem3);
+  24:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem4);
+  25:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem5);
+  26:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem6);
+  27:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem7);
+  28:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem8);
+  29:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem9);
+  30:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem10);
+  31:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem11);
+  32:src/main.cpp  **** 
+  33:src/main.cpp  **** //    void* allocMem3 = (void*)MemoryAllocator::allocateMemory(6);
+  34:src/main.cpp  **** //    void* allocMem4 = (void*)MemoryAllocator::allocateMemory(15);
+  35:src/main.cpp  **** //    void* allocMem5 = (void*)MemoryAllocator::allocateMemory(20);
+  36:src/main.cpp  **** //    void* allocMem6 = (void*)MemoryAllocator::allocateMemory(30);
+  37:src/main.cpp  **** //    void* allocMem7 = (void*)MemoryAllocator::allocateMemory(15);
+  38:src/main.cpp  **** //    void* allocMem8 = (void*)MemoryAllocator::allocateMemory(7);
+  39:src/main.cpp  **** //    void* allocMem9 = (void*)MemoryAllocator::allocateMemory(8);
+GAS LISTING /tmp/ccxkhpiM.s 			page 2
+
+
+  40:src/main.cpp  **** //    void* allocMem10 = (void*)MemoryAllocator::allocateMemory(10);
+  41:src/main.cpp  **** //    void* allocMem11 = (void*)MemoryAllocator::allocateMemory(20);
+  42:src/main.cpp  **** //    void* allocMem12 = (void*)MemoryAllocator::allocateMemory(30);
+  43:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem2);
+  44:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem7);
+  45:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem9);
+  46:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem8);
+  47:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem4);
+  48:src/main.cpp  **** //    void* allocMem13 = (void*)MemoryAllocator::allocateMemory(30);
+  49:src/main.cpp  **** //    void* allocMem14 = (void*)MemoryAllocator::allocateMemory(30);
+  50:src/main.cpp  **** //    void* allocMem15 = (void*)MemoryAllocator::allocateMemory(40);
+  51:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem13);
+  52:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem3);
+  53:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem15);
+  54:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem11);
+  55:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem10);
+  56:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem5);
+  57:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem6);
+  58:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem1);
+  59:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem14);
+  60:src/main.cpp  **** //    MemoryAllocator::freeMemory(allocMem12);
+  61:src/main.cpp  **** 
+  62:src/main.cpp  ****     //    Kernel::initializeKernel();
+  63:src/main.cpp  **** ////    __asm__ volatile ("ecall");
+  64:src/main.cpp  **** //    void* allocMem1 = mem_alloc(100);
+  65:src/main.cpp  **** //    mem_free(allocMem1);
+  66:src/main.cpp  **** //    void* allocMem2 = mem_alloc(10);
+  67:src/main.cpp  **** //    mem_free(allocMem2);
+  68:src/main.cpp  **** }...
+  20              		.loc 1 68 1 is_stmt 0
+  21 000c 03348100 		ld	s0,8(sp)
+  22              		.cfi_restore 8
+  23              		.cfi_def_cfa 2, 16
+  24 0010 13010101 		addi	sp,sp,16
+  25              		.cfi_def_cfa_offset 0
+  26 0014 67800000 		jr	ra
+  27              		.cfi_endproc
+  28              	.LFE16:
+  30              	.Letext0:
+  31              		.file 2 "src/../h/../lib/hw.h"
+  32              		.file 3 "src/../h/Config.hpp"
+GAS LISTING /tmp/ccxkhpiM.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.cpp
+     /tmp/ccxkhpiM.s:9      .text:0000000000000000 main
+     /tmp/ccxkhpiM.s:13     .text:0000000000000000 .L0 
+     /tmp/ccxkhpiM.s:14     .text:0000000000000000 .L0 
+     /tmp/ccxkhpiM.s:15     .text:0000000000000004 .L0 
+     /tmp/ccxkhpiM.s:17     .text:0000000000000008 .L0 
+     /tmp/ccxkhpiM.s:19     .text:000000000000000c .L0 
+     /tmp/ccxkhpiM.s:21     .text:000000000000000c .L0 
+     /tmp/ccxkhpiM.s:22     .text:0000000000000010 .L0 
+     /tmp/ccxkhpiM.s:23     .text:0000000000000010 .L0 
+     /tmp/ccxkhpiM.s:25     .text:0000000000000014 .L0 
+     /tmp/ccxkhpiM.s:27     .text:0000000000000018 .L0 
+     /tmp/ccxkhpiM.s:33     .text:0000000000000018 .L0 
+     /tmp/ccxkhpiM.s:217    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccxkhpiM.s:481    .debug_str:00000000000000de .LASF22
+     /tmp/ccxkhpiM.s:493    .debug_str:0000000000000208 .LASF23
+     /tmp/ccxkhpiM.s:465    .debug_str:0000000000000067 .LASF24
+     /tmp/ccxkhpiM.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccxkhpiM.s:30     .text:0000000000000018 .Letext0
+     /tmp/ccxkhpiM.s:449    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccxkhpiM.s:499    .debug_str:0000000000000234 .LASF0
+     /tmp/ccxkhpiM.s:489    .debug_str:00000000000001e5 .LASF1
+     /tmp/ccxkhpiM.s:475    .debug_str:00000000000000b5 .LASF2
+     /tmp/ccxkhpiM.s:469    .debug_str:000000000000009d .LASF4
+     /tmp/ccxkhpiM.s:461    .debug_str:0000000000000041 .LASF3
+     /tmp/ccxkhpiM.s:453    .debug_str:000000000000000d .LASF5
+     /tmp/ccxkhpiM.s:467    .debug_str:000000000000008a .LASF6
+     /tmp/ccxkhpiM.s:487    .debug_str:00000000000001d2 .LASF7
+     /tmp/ccxkhpiM.s:497    .debug_str:0000000000000224 .LASF8
+     /tmp/ccxkhpiM.s:455    .debug_str:0000000000000014 .LASF9
+     /tmp/ccxkhpiM.s:457    .debug_str:0000000000000022 .LASF10
+     /tmp/ccxkhpiM.s:495    .debug_str:0000000000000215 .LASF11
+     /tmp/ccxkhpiM.s:459    .debug_str:0000000000000031 .LASF12
+     /tmp/ccxkhpiM.s:491    .debug_str:00000000000001f8 .LASF13
+     /tmp/ccxkhpiM.s:473    .debug_str:00000000000000a9 .LASF14
+     /tmp/ccxkhpiM.s:483    .debug_str:00000000000001a2 .LASF15
+     /tmp/ccxkhpiM.s:479    .debug_str:00000000000000c8 .LASF16
+     /tmp/ccxkhpiM.s:471    .debug_str:00000000000000a4 .LASF17
+     /tmp/ccxkhpiM.s:451    .debug_str:0000000000000000 .LASF25
+     /tmp/ccxkhpiM.s:503    .debug_str:000000000000025b .LASF18
+     /tmp/ccxkhpiM.s:485    .debug_str:00000000000001b8 .LASF19
+     /tmp/ccxkhpiM.s:463    .debug_str:0000000000000053 .LASF20
+     /tmp/ccxkhpiM.s:501    .debug_str:0000000000000241 .LASF21
+     /tmp/ccxkhpiM.s:477    .debug_str:00000000000000c3 .LASF26
+     /tmp/ccxkhpiM.s:10     .text:0000000000000000 .LFB16
+     /tmp/ccxkhpiM.s:28     .text:0000000000000018 .LFE16
+     /tmp/ccxkhpiM.s:34     .debug_info:0000000000000000 .Ldebug_info0
+
+NO UNDEFINED SYMBOLS

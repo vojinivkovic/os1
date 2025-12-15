@@ -1,0 +1,16 @@
+GAS LISTING /tmp/ccLlfBkX.s 			page 1
+
+
+   1              		.file	"KConsole.cpp"
+   2              		.option pic
+   3              		.option norelax
+   4              		.text
+   5              	.Ltext0:
+   6              	.Letext0:
+GAS LISTING /tmp/ccLlfBkX.s 			page 2
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 KConsole.cpp
+
+NO UNDEFINED SYMBOLS

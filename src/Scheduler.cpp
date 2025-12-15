@@ -4,29 +4,29 @@
 
 #include "../h/Scheduler.hpp"
 #include "../h/TCB.hpp"
-TCB* Scheduler::firstReadyThread = nullptr;
-TCB* Scheduler::lastReadyThread = nullptr;
+TCB* Scheduler::headReadyThread = nullptr;
+TCB* Scheduler::tailReadyThread = nullptr;
 
 void Scheduler::put(TCB *readyThread)
 {
-    if(!firstReadyThread)
+    if(!headReadyThread)
     {
-        firstReadyThread = readyThread;
+        headReadyThread = readyThread;
     }
     else
     {
-        lastReadyThread->addThreadToState(readyThread);
+        tailReadyThread->addThreadToState(readyThread);
     }
-    lastReadyThread = readyThread;
+    tailReadyThread = readyThread;
 }
 TCB* Scheduler::get(void)
 {
-    if(!firstReadyThread)
+    if(!headReadyThread)
     {
-        return nullptr;
+        return idleThread;
     }
-    TCB* newThread = firstReadyThread;
-    firstReadyThread = firstReadyThread->getState();
+    TCB* newThread = headReadyThread;
+    headReadyThread = headReadyThread->getState();
 
     newThread->addThreadToState(nullptr);
     return newThread;

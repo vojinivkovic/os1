@@ -6,25 +6,42 @@
 #include "../h/Scheduler.hpp"
 #include "../h/TCB.hpp"
 #include "../h/KSemaphore.hpp"
-
+#include "../h/KConsole.hpp"
 
 extern "C" void interrupt_trap(void);
 
 uint64 (*Kernel::systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(Kernel::ArgumentsOfSystemCall* arg) = {nullptr};
 ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* Kernel::poolOfThreads = new ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>();
 ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* Kernel::poolOfSemaphores = new ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>();
-void Kernel::initializeKernelThreads(void)
+
+void Kernel::makeConsumerThread()
 {
     void* kernelSystemStack = Kernel::mallocSystemStack(KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
-    TCB* kernelThread = poolOfThreads->mallocObject(&sourcePool);
-
-    while(kernelThread == nullptr)
+    TCB* consumerThread = poolOfThreads->mallocObject(&sourcePool);
+    while(!consumerThread)
     {
-        kernelThread = poolOfThreads->mallocObject(&sourcePool);
+        consumerThread = poolOfThreads->mallocObject(&sourcePool);
     }
-    kernelThread->initializeThread(&kernelWorker, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::KERNEL_MODE);
-    initializeSystemCalls();
+    consumerThread->initializeThread(&KConsole::consume, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::KERNEL_MODE, KernelConfig::BLOCKED);
+    KConsole::setConsumerThread(consumerThread);
+}
+void Kernel::makeIdleThread()
+{
+    void* kernelSystemStack = Kernel::mallocSystemStack(KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
+    ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
+    TCB* idleThread = poolOfThreads->mallocObject(&sourcePool);
+    while(!idleThread)
+    {
+        idleThread = poolOfThreads->mallocObject(&sourcePool);
+    }
+    idleThread->initializeThread(&kernelWorker, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::KERNEL_MODE, KernelConfig::BLOCKED);
+    Scheduler::setIdleThread(idleThread);
+}
+void Kernel::initializeKernelThreads(void)
+{
+    makeConsumerThread();
+    makeIdleThread();
 }
 
 void Kernel::initializeKernel()
@@ -40,7 +57,7 @@ void Kernel::initializeKernel()
     }
 
     Kernel::initializeKernelThreads();
-
+    initializeSystemCalls();
 
 }
 void Kernel::initializeArguments(Kernel::ArgumentsOfSystemCall* arg, uint64 basePointer)
@@ -67,47 +84,54 @@ void Kernel::interruptHandler()
     volatile uint64 basePointer;
     __asm__ volatile ("addi %[reg], s0, 0x0": [reg]"=r"(basePointer)); // Problem: da li mozemo biti 100% sigurni da ce s0 biti nepromenjen; resenje inline f-ja
     uint64 scause = Machine::readScause();
-    if(scause == 0x0000000000000008UL || scause == 0x0000000000000009UL)
+    switch (scause)
     {
-        // scause == 0x0000000000000008UL; software interrupt(ecall) from user mode
-        // scause == 0x0000000000000009UL; sotware interrupt(ecall) from kernel(supervised) mode
+        case 0x0000000000000008UL:
+        case 0x0000000000000009UL:
 
-        Machine::bc_sip(Machine::SSIP);
+            // scause == 0x0000000000000008UL; software interrupt(ecall) from user mode
+            // scause == 0x0000000000000009UL; software interrupt(ecall) from kernel(supervised) mode
 
-        uint64 sepc = Machine::readSepc() + 4;
-        uint64 sstatus = Machine::readSstatus();
+            Machine::bc_sip(Machine::SSIP);
 
-        uint64 numberOfEntry;
-        __asm__ volatile ("ld %[rd], 80(%[rs])": [rd]"=r"(numberOfEntry):[rs]"r"(basePointer));
-
-        ArgumentsOfSystemCall arg;
-        initializeArguments(&arg, basePointer);
-        systemCallsTable[numberOfEntry](&arg);
-
-        __asm__ volatile("sd a0, 80(%[rs])"::[rs]"r"(basePointer));
-
-        TCB::dispatch();
-
-        Machine::writeSepc(sepc);
-        Machine::writeSstatus(sstatus);
-    }
-    else if (scause == 0x8000000000000001UL)
-    {
-        Machine::bc_sip(Machine::SSIP);
-        TCB::incrementNumOfTicks();
-        //TCB::numOfTicks++;
-        if(TCB::getNumOfTicks() >= TCB::getRunningThread()->getTimeSlice())
-        {
-            //TCB::numOfTicks = 0;
-            TCB::resetNumOfTicks();
             uint64 sepc = Machine::readSepc() + 4;
             uint64 sstatus = Machine::readSstatus();
+
+            uint64 numberOfEntry;
+            __asm__ volatile ("ld %[rd], 80(%[rs])": [rd]"=r"(numberOfEntry):[rs]"r"(basePointer));
+
+            ArgumentsOfSystemCall arg;
+            initializeArguments(&arg, basePointer);
+            systemCallsTable[numberOfEntry](&arg);
+
+            __asm__ volatile("sd a0, 80(%[rs])"::[rs]"r"(basePointer));
 
             TCB::dispatch();
 
             Machine::writeSepc(sepc);
             Machine::writeSstatus(sstatus);
-        }
+            break;
+        case 0x8000000000000001UL:
+            // interrupt from timer
+            Machine::bc_sip(Machine::SSIP);
+            TCB::incrementNumOfTicks();
+            //TCB::numOfTicks++;
+            if (TCB::getNumOfTicks() >= TCB::getRunningThread()->getTimeSlice()) {
+                //TCB::numOfTicks = 0;
+                TCB::resetNumOfTicks();
+                uint64 sepc = Machine::readSepc() + 4;
+                uint64 sstatus = Machine::readSstatus();
+
+                TCB::dispatch();
+
+                Machine::writeSepc(sepc);
+                Machine::writeSstatus(sstatus);
+
+            }
+            break;
+        case 0x8000000000000009UL:
+            // hardware interrupt from console
+            pass
     }
 
 }
@@ -204,8 +228,11 @@ uint64 Kernel::sysSemaphoreOpen(ArgumentsOfSystemCall *arg)
 
 uint64 Kernel::sysSemaphoreClose(ArgumentsOfSystemCall *arg)
 {
+    uint64 returnValue;
     KSemaphore* tempSemaphore = (KSemaphore*)(arg->a0);
-    return (uint64)tempSemaphore->close();
+    returnValue = (uint64)tempSemaphore->close();
+    Kernel::poolOfSemaphores->freeObject(tempSemaphore);
+    return returnValue;
 }
 
 uint64 Kernel::sysSemaphoreWait(ArgumentsOfSystemCall *arg)
@@ -218,6 +245,19 @@ uint64 Kernel::sysSemaphoreSignal(ArgumentsOfSystemCall *arg)
 {
     KSemaphore* tempSemaphore = (KSemaphore*)(arg->a0);
     return (uint64)tempSemaphore->signal();
+}
+
+uint64 Kernel::sysTimeSleep(ArgumentsOfSystemCall *arg)
+{
+    return 0;
+}
+uint64 Kernel::sysGetc(ArgumentsOfSystemCall *arg)
+{
+
+}
+uint64 Kernel::sysPutc(ArgumentsOfSystemCall *arg)
+{
+
 }
 
 void Kernel::initializeSystemCalls(void)

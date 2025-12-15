@@ -11,7 +11,7 @@
 template <typename T, size_t numOfObjects>
 class ObjectPool {
 public:
-    ObjectPool(): headFreeObject(pool), nextObjectPool(nullptr), prevObjectPool(nullptr), id(countOfPools++)
+    ObjectPool(): headFreeObject(pool), nextObjectPool(nullptr), prevObjectPool(nullptr)
     {
 
         for(size_t i = 0; i < numOfObjects - 1; i++)
@@ -40,17 +40,14 @@ private:
         return headFreeObject;
     }
     ObjectPool<T, numOfObjects>* findFreePool(void);
-    static size_t countOfPools;
+    //static size_t countOfPools;
     PoolObject pool[numOfObjects];
     PoolObject* headFreeObject;
     ObjectPool<T, numOfObjects>* nextObjectPool;
     ObjectPool<T, numOfObjects>* prevObjectPool;
-    size_t id;
+    //size_t id;
 
 };
-
-template<typename T, size_t numOfObjects>
-size_t ObjectPool<T, numOfObjects>::countOfPools = 0;
 
 
 template<typename T, size_t numOfObjects>

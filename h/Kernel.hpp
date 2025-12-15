@@ -43,9 +43,16 @@ private:
 	static uint64 sysSemaphoreClose(ArgumentsOfSystemCall* arg);
     static uint64 sysSemaphoreWait(ArgumentsOfSystemCall* arg);
     static uint64 sysSemaphoreSignal(ArgumentsOfSystemCall* arg);
+    static uint64 sysTimeSleep(ArgumentsOfSystemCall* arg);
+    static uint64 sysGetc(ArgumentsOfSystemCall* arg);
+    static uint64 sysPutc(ArgumentsOfSystemCall* arg);
+
+
     static void kernelWorker(void*);
     static void initializeKernelThreads(void);
     static void initializeSystemCalls(void);
+    static void makeIdleThread(void);
+    static void makeConsumerThread(void);
     static void* mallocSystemStack(size_t numOfBytes);
 
     static uint64 (*systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(ArgumentsOfSystemCall* arg);

@@ -23,7 +23,7 @@ public:
     using Body = void(*)(void*);
     TCB() = default;
     void initializeThread(Body body, void*arg, void* stack, void* systemStack, ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool,
-                          KernelConfig::Mode mode = KernelConfig::USER_MODE);
+                          KernelConfig::Mode mode = KernelConfig::USER_MODE, KernelConfig::ThreadState stateOfThread = KernelConfig::ACTIVE);
 
     size_t getTimeSlice() const { return timeSlice; }
     bool isFinished() const { return finished; }

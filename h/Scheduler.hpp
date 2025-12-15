@@ -15,9 +15,11 @@ public:
     Scheduler& operator=(const Scheduler& scheduler) = delete;
     static void put(TCB* readyThread);
     static TCB* get(void);
+    static void setIdleThread(TCB* thread) { idleThread = thread; }
 private:
-    static TCB* firstReadyThread;
-    static TCB* lastReadyThread;
+    static TCB* headReadyThread;
+    static TCB* tailReadyThread;
+    static TCB* idleThread;
 };
 
 

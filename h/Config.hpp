@@ -9,18 +9,28 @@
 namespace KernelConfig{
     constexpr size_t NUM_OF_THREADS_IN_POOL = 20;
     constexpr size_t NUM_OF_SEMAPHORES_IN_POOL = 10;
+    constexpr size_t SIZE_INPUT_BUFFER = 100;
+    constexpr size_t SIZE_OUTPUT_BUFFER = 100;
     constexpr size_t NUM_OF_SYSTEM_CALLS = 0x42;
     constexpr size_t DEFAULT_SYSTEM_STACK_SIZE = 1024;
+    const int EOF = -1;
+    enum ThreadState
+    {
+        ACTIVE,
+        BLOCKED
+    };
 
     enum Mode
     {
         USER_MODE = 0x0,
         KERNEL_MODE = 0x1
     };
-    enum WAKE_UP_REASON
+    enum WakeUpReason
     {
         WAKE_UP_SEMAPHORE_SIGNAL,
-        WAKE_UP_SEMAPHORE_CLOSE
+        WAKE_UP_SEMAPHORE_CLOSE,
+        INPUT_BUFFER_FULL,
+        OUTPUT_BUFFER_FULL
     };
     enum NumberOfSystemCall
     {
@@ -34,7 +44,10 @@ namespace KernelConfig{
         SEMAPHORE_OPEN = 0X21,
         SEMAPHORE_CLOSE = 0x22,
         SEMAPHORE_WAIT = 0x23,
-        SEMAPHORE_SIGNAL = 0x24
+        SEMAPHORE_SIGNAL = 0x24,
+        TIME_SLEEP = 0x31,
+        GETC = 0x41,
+        PUTC = 0x42
     };
 }
 

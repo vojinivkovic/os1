@@ -19,9 +19,9 @@ public:
 	int close();
 private:
     void blockThread(TCB* threadToBlock);
-    int unblockThread(KernelConfig::WAKE_UP_REASON reason);
+    int unblockThread(KernelConfig::WakeUpReason reason);
     long semaphoreVal;
-    TCB* headBlockedThread, *lastBlockedThread;
+    TCB* headBlockedThread, *tailBlockedThread;
     ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* sourcePool;
 };
 

@@ -13,7 +13,7 @@ void KSemaphore::initializeSemaphore(unsigned value, ObjectPool<KSemaphore, Kern
 {
     semaphoreVal = value;
     headBlockedThread = nullptr;
-    lastBlockedThread = nullptr;
+    tailBlockedThread = nullptr;
     sourcePool = pool;
 }
 
@@ -26,12 +26,12 @@ void KSemaphore::blockThread(TCB* threadToBlock)
     }
     else
     {
-        lastBlockedThread->addThreadToState(threadToBlock);
+        tailBlockedThread->addThreadToState(threadToBlock);
     }
-    lastBlockedThread = threadToBlock;
+    tailBlockedThread = threadToBlock;
 }
 
-int KSemaphore::unblockThread(KernelConfig::WAKE_UP_REASON reason)
+int KSemaphore::unblockThread(KernelConfig::WakeUpReason reason)
 {
    if(!headBlockedThread)
    {
@@ -41,7 +41,7 @@ int KSemaphore::unblockThread(KernelConfig::WAKE_UP_REASON reason)
    headBlockedThread = headBlockedThread->getState();
    if(!headBlockedThread)
    {
-       lastBlockedThread = nullptr;
+       tailBlockedThread = nullptr;
    }
    oldThread->setWakeUpReason(reason);
    oldThread->resetState();
@@ -114,7 +114,7 @@ void KSemaphore::removeThreadFromWaitQueue(TCB *thread)
         thread->resetState();
         if(!headBlockedThread)
         {
-            lastBlockedThread = nullptr;
+            tailBlockedThread = nullptr;
         }
     }
     else
@@ -122,9 +122,9 @@ void KSemaphore::removeThreadFromWaitQueue(TCB *thread)
         prevThread->addThreadToState(thread->getState());
         thread->resetSemaphoreOnWait();
         thread->resetState();
-        if(thread == lastBlockedThread)
+        if(thread == tailBlockedThread)
         {
-            lastBlockedThread = prevThread;
+            tailBlockedThread = prevThread;
         }
     }
 }
