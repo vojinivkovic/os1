@@ -9,6 +9,7 @@
 #include "../h/KConsole.hpp"
 
 extern "C" void interrupt_trap(void);
+extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
 
 uint64 (*Kernel::systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(Kernel::ArgumentsOfSystemCall* arg) = {nullptr};
 ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* Kernel::poolOfThreads = new ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>();
@@ -23,8 +24,13 @@ void Kernel::makeConsumerThread()
     {
         consumerThread = poolOfThreads->mallocObject(&sourcePool);
     }
-    consumerThread->initializeThread(&KConsole::consume, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::KERNEL_MODE, KernelConfig::BLOCKED);
+    consumerThread->initializeThread(&KConsole::consumeOutputBuffer, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::KERNEL_MODE, KernelConfig::BLOCKED);
     KConsole::setConsumerThread(consumerThread);
+}
+
+void Kernel::makeProducerThread()
+{
+
 }
 void Kernel::makeIdleThread()
 {
@@ -56,7 +62,7 @@ void Kernel::initializeKernel()
         poolOfSemaphores = new ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>();
     }
 
-    Kernel::initializeKernelThreads();
+    initializeKernelThreads();
     initializeSystemCalls();
 
 }
@@ -131,7 +137,38 @@ void Kernel::interruptHandler()
             break;
         case 0x8000000000000009UL:
             // hardware interrupt from console
-            pass
+            Machine::bc_sip(Machine::SEIP);
+
+            uint64 sepc = Machine::readSepc() + 4;
+            uint64 sstatus = Machine::readSstatus();
+
+            int numOfDevice = plic_claim();
+            uint8 statusReg;
+            __asm__ volatile("lb %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS));
+
+            if(statusReg & CONSOLE_TX_STATUS_BIT)
+            {
+                if(KConsole::isOutputBufferEmpty())
+                {
+                    plic_complete(numOfDevice);
+                }
+                else
+                {
+                    Scheduler::put(KConsole::getConsumerThread());
+                }
+            }
+            else
+            {
+                KConsole::produceInputBuffer();
+                plic_complete(numOfDevice);
+            }
+
+            TCB::dispatch();
+
+            Machine::writeSepc(sepc);
+            Machine::writeSstatus(sstatus);
+
+            break;
     }
 
 }
@@ -253,11 +290,24 @@ uint64 Kernel::sysTimeSleep(ArgumentsOfSystemCall *arg)
 }
 uint64 Kernel::sysGetc(ArgumentsOfSystemCall *arg)
 {
-
+    if(KConsole::isInputBufferEmpty())
+    {
+        TCB* oldThread = TCB::getRunningThread();
+        TCB::setRunningThread(Scheduler::get());
+        oldThread->resetState();
+        KConsole::addThreadToWaitQueue(oldThread);
+        context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
+    }
+    return (uint64)KConsole::getCharFromInputBuffer();
 }
 uint64 Kernel::sysPutc(ArgumentsOfSystemCall *arg)
 {
-
+    if(!KConsole::isOutputBufferFull())
+    {
+        KConsole::addCharToOutputBuffer(arg->a0);
+        return 0;
+    }
+    return KernelConfig::EOF;
 }
 
 void Kernel::initializeSystemCalls(void)
@@ -271,4 +321,7 @@ void Kernel::initializeSystemCalls(void)
     systemCallsTable[KernelConfig::SEMAPHORE_CLOSE] = &sysSemaphoreClose;
     systemCallsTable[KernelConfig::SEMAPHORE_SIGNAL] = &sysSemaphoreSignal;
     systemCallsTable[KernelConfig::SEMAPHORE_WAIT] = &sysSemaphoreWait;
+    systemCallsTable[KernelConfig::TIME_SLEEP] = &sysTimeSleep;
+    systemCallsTable[KernelConfig::GETC] = &sysGetc;
+    systemCallsTable[KernelConfig::PUTC] = &sysPutc;
 }

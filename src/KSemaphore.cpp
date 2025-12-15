@@ -58,6 +58,7 @@ int KSemaphore::wait()
 
         TCB* oldThread = TCB::getRunningThread();
         TCB::setRunningThread(Scheduler::get());
+        oldThread->resetState();
         blockThread(oldThread);
         context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
         if(TCB::getRunningThread()->getWakeUpReason() == KernelConfig::WAKE_UP_SEMAPHORE_SIGNAL)

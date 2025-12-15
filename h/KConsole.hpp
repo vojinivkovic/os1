@@ -7,18 +7,29 @@
 #include "Buffer.hpp"
 #include "Config.hpp"
 
+
 class TCB;
+
 class KConsole {
 public:
     KConsole() = delete;
     KConsole(const KConsole& console) = delete;
     KConsole& operator= (const KConsole& console) = delete;
-    static void consume(void*);
+    static void consumeOutputBuffer(void*);
+    static void produceInputBuffer(void*);
+
     static TCB* getConsumerThread() { return consumerThread; }
     static void setConsumerThread(TCB* thread) { consumerThread = thread; }
+
     static bool isInputBufferEmpty() const { return inputBuffer->isBufferEmpty(); }
+    static bool isOutputBufferFull() const { return outputBuffer->isBufferFull(); }
+    static bool isOutputBufferEmpty() const { return outputBuffer->isBufferEmpty(); }
+    static void addThreadToWaitQueue(TCB* thread);
+    static void removeThreadFromWaitQueue();
+    static void addCharToOutputBuffer(char c);
+    static char getCharFromInputBuffer();
 private:
-    static TCB* consumerThread;
+    static TCB* consumerThread, *producerThread;
     static TCB* headThreadInputWait, *tailThreadInputWait;
     static Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>* inputBuffer;
     static Buffer<char, KernelConfig::SIZE_OUTPUT_BUFFER>* outputBuffer;

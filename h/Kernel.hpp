@@ -48,15 +48,18 @@ private:
     static uint64 sysPutc(ArgumentsOfSystemCall* arg);
 
 
-    static void kernelWorker(void*);
+
     static void initializeKernelThreads(void);
-    static void initializeSystemCalls(void);
     static void makeIdleThread(void);
     static void makeConsumerThread(void);
-    static void* mallocSystemStack(size_t numOfBytes);
+    static void makeProducerThread(void);
+    static void kernelWorker(void*);
 
     static uint64 (*systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(ArgumentsOfSystemCall* arg);
+    static void initializeSystemCalls(void);
     static void initializeArguments(ArgumentsOfSystemCall* arg, uint64 basePointer);
+
+    static void* mallocSystemStack(size_t numOfBytes);
 
     static ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* poolOfThreads;
     static ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* poolOfSemaphores;

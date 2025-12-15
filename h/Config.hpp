@@ -11,7 +11,7 @@ namespace KernelConfig{
     constexpr size_t NUM_OF_SEMAPHORES_IN_POOL = 10;
     constexpr size_t SIZE_INPUT_BUFFER = 100;
     constexpr size_t SIZE_OUTPUT_BUFFER = 100;
-    constexpr size_t NUM_OF_SYSTEM_CALLS = 0x42;
+    constexpr size_t NUM_OF_SYSTEM_CALLS = 0x43;
     constexpr size_t DEFAULT_SYSTEM_STACK_SIZE = 1024;
     const int EOF = -1;
     enum ThreadState

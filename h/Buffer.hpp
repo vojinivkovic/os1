@@ -7,43 +7,44 @@
 #include "../lib/hw.h"
 
 
-template<typename T, size_t numOfObjects>
+template<typename T, size_t numOfElements>
 class Buffer {
 public:
     Buffer() = default;
     bool isBufferEmpty() const;
+    bool isBufferFull() const;
     int append(T* element);
     T* take();
 
     static void* operator new(size_t size);
 private:
-    T* array[numOfObjects];
+    T* array[numOfElements];
     size_t head = 0, tail = 0, count = 0;
 };
 
-template<typename T, size_t numOfObjects>
-void* Buffer<T, numOfObjects>::operator new(size_t size)
+template<typename T, size_t numOfElements>
+void* Buffer<T, numOfElements>::operator new(size_t size)
 {
     size_t numOfBlocks = size / MEM_BLOCK_SIZE;
     numOfBlocks += size % MEM_BLOCK_SIZE ? 1 : 0;
     return MemoryAllocator::allocateMemory(numOfBlocks);
 }
 
-template<typename T, size_t numOfObjects>
-int Buffer<T, numOfObjects>::append(T *element)
+template<typename T, size_t numOfElements>
+int Buffer<T, numOfElements>::append(T *element)
 {
-    if(count == numOfObjects)
+    if(count == numOfElements)
     {
         return -1;
     }
     count++;
     array[tail] = element;
-    tail = (tail + 1) % numOfObjects;
+    tail = (tail + 1) % numOfElements;
 
     return 0;
 }
-template<typename T, size_t numOfObjects>
-T* Buffer<T, numOfObjects>::take()
+template<typename T, size_t numOfElements>
+T* Buffer<T, numOfElements>::take()
 {
     if(count == 0)
     {
@@ -52,14 +53,20 @@ T* Buffer<T, numOfObjects>::take()
 
     count--;
     T* tempElem = array[head];
-    head = (head + 1) % numOfObjects;
+    head = (head + 1) % numOfElements;
     return tempElem;
 
 }
 
-template<typename T, size_t numOfObjects>
-bool Buffer<T, numOfObjects>::isBufferEmpty() const
+template<typename T, size_t numOfElements>
+bool Buffer<T, numOfElements>::isBufferEmpty() const
 {
     return count == 0;
 }
+template<typename T, size_t numOfElements>
+bool Buffer<T, numOfElements>::isBufferFull() const
+{
+    return count == numOfElements;
+}
+
 #endif //PROJECT_BASE_V1_1_BUFFER_H
