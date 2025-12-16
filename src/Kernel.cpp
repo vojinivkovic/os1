@@ -103,6 +103,7 @@ void Kernel::interruptHandler()
     {
         case 0x0000000000000008UL:
         case 0x0000000000000009UL:
+        {
 
             // scause == 0x0000000000000008UL; software interrupt(ecall) from user mode
             // scause == 0x0000000000000009UL; software interrupt(ecall) from kernel(supervised) mode
@@ -126,7 +127,9 @@ void Kernel::interruptHandler()
             Machine::writeSepc(sepc);
             Machine::writeSstatus(sstatus);
             break;
+        }
         case 0x8000000000000001UL:
+        {
             // interrupt from timer
             Machine::bc_sip(Machine::SSIP);
             TCB::incrementNumOfTicks();
@@ -144,7 +147,9 @@ void Kernel::interruptHandler()
 
             }
             break;
+        }
         case 0x8000000000000009UL:
+        {
             // hardware interrupt from console
             Machine::bc_sip(Machine::SEIP);
 
@@ -155,25 +160,16 @@ void Kernel::interruptHandler()
             uint8 statusReg;
             __asm__ volatile("lb %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS));
 
-            if(statusReg & CONSOLE_TX_STATUS_BIT)
-            {
-                if(KConsole::isOutputBufferEmpty())
-                {
+            if (statusReg & CONSOLE_TX_STATUS_BIT) {
+                if (KConsole::isOutputBufferEmpty()) {
                     plic_complete(numOfDevice);
-                }
-                else
-                {
+                } else {
                     Scheduler::put(KConsole::getConsumerThread());
                 }
-            }
-            else
-            {
-                if(KConsole::isInputBufferFull())
-                {
+            } else {
+                if (KConsole::isInputBufferFull()) {
                     plic_complete(numOfDevice);
-                }
-                else
-                {
+                } else {
                     Scheduler::put(KConsole::getProducerThread());
                 }
             }
@@ -184,6 +180,7 @@ void Kernel::interruptHandler()
             Machine::writeSstatus(sstatus);
 
             break;
+        }
     }
 
 }

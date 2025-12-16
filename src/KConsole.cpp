@@ -6,16 +6,18 @@
 #include "../h/TCB.hpp"
 #include "../h/Scheduler.hpp"
 
+
 extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
 
 
 Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>* KConsole::inputBuffer = new Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>();
 Buffer<char, KernelConfig::SIZE_OUTPUT_BUFFER>* KConsole::outputBuffer = new Buffer<char, KernelConfig::SIZE_OUTPUT_BUFFER>();
 TCB* KConsole::consumerThread = nullptr;
+TCB* KConsole::producerThread = nullptr;
 TCB* KConsole::headThreadInputWait = nullptr;
 TCB* KConsole::tailThreadInputWait = nullptr;
 TCB* KConsole::headThreadOutputWait = nullptr;
-TCB* KConsole::tailThreadOutputWait = nullptr
+TCB* KConsole::tailThreadOutputWait = nullptr;
 
 void KConsole::addThreadToInputWaitQueue(TCB *thread)
 {
@@ -60,7 +62,7 @@ void KConsole::removeThreadFromInputWaitQueue()
 }
 void KConsole::removeThreadFromOutputWaitQueue()
 {
-    f(!headThreadOutputWait)
+    if(!headThreadOutputWait)
     {
         return;
     }
@@ -82,7 +84,7 @@ void KConsole::addCharToOutputBuffer(char c)
     outputBuffer->append(&c);
 }
 
-void KConsole::consumeOutputBuffer(void *)
+void KConsole::consumeOutputBuffer(void*)
 {
     volatile uint8 data;
     volatile uint8 statusReg;
@@ -104,7 +106,7 @@ void KConsole::consumeOutputBuffer(void *)
     }
 }
 
-void KConsole::produceInputBuffer()
+void KConsole::produceInputBuffer(void*)
 {
     volatile uint8 statusReg;
     volatile uint8 data;
@@ -112,7 +114,8 @@ void KConsole::produceInputBuffer()
         volatile int numOfDevice = plic_claim();
         do {
             __asm__ volatile("lb %[regData], 0(%[address])" : [regData]"=r"(data): [address]"r"(CONSOLE_RX_DATA));
-            inputBuffer->append(&data);
+            char c = data;
+            inputBuffer->append(&c);
             __asm__ volatile("lb %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS));
             removeThreadFromInputWaitQueue();
         } while ((statusReg & CONSOLE_RX_STATUS_BIT) && !inputBuffer->isBufferFull());

@@ -24,10 +24,10 @@ public:
     static TCB* getProducerThread() { return producerThread; }
     static void setProducerThread(TCB* thread) { producerThread = thread; }
 
-    static bool isInputBufferEmpty() const { return inputBuffer->isBufferEmpty(); }
-    static bool isInputBufferFull() const { return inputBuffer->isBufferFull(); }
-    static bool isOutputBufferFull() const { return outputBuffer->isBufferFull(); }
-    static bool isOutputBufferEmpty() const { return outputBuffer->isBufferEmpty(); }
+    static bool isInputBufferEmpty() { return inputBuffer->isBufferEmpty(); }
+    static bool isInputBufferFull() { return inputBuffer->isBufferFull(); }
+    static bool isOutputBufferFull() { return outputBuffer->isBufferFull(); }
+    static bool isOutputBufferEmpty() { return outputBuffer->isBufferEmpty(); }
     static void addThreadToInputWaitQueue(TCB* thread);
     static void removeThreadFromInputWaitQueue();
     static void addThreadToOutputWaitQueue(TCB* thread);

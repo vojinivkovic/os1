@@ -5,12 +5,12 @@
 #ifndef PROJECT_BASE_V1_1_BUFFER_H
 #define PROJECT_BASE_V1_1_BUFFER_H
 #include "../lib/hw.h"
-
+#include "../h/MemoryAllocator.hpp"
 
 template<typename T, size_t numOfElements>
 class Buffer {
 public:
-    Buffer() = default;
+    Buffer();
     bool isBufferEmpty() const;
     bool isBufferFull() const;
     int append(T* element);
@@ -21,7 +21,14 @@ private:
     T* array[numOfElements];
     size_t head = 0, tail = 0, count = 0;
 };
-
+template<typename T, size_t numOfElements>
+Buffer<T, numOfElements>::Buffer()
+{
+    for(size_t i = 0; i < numOfElements; i++)
+    {
+        array[i] = nullptr;
+    }
+}
 template<typename T, size_t numOfElements>
 void* Buffer<T, numOfElements>::operator new(size_t size)
 {

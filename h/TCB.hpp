@@ -37,8 +37,8 @@ public:
     void* getSystemStack() const { return systemStack; }
     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* getSourcePool() { return sourcePool; }
 
-    void setWakeUpReason(KernelConfig::WAKE_UP_REASON reason) { wakeUpReason = reason; };
-    KernelConfig::WAKE_UP_REASON getWakeUpReason() {return wakeUpReason; }
+    void setWakeUpReason(KernelConfig::WakeUpReason reason) { wakeUpReason = reason; }
+    KernelConfig::WakeUpReason getWakeUpReason() { return wakeUpReason; }
     void setSemaphoreOnWait (KSemaphore* semaphore) { waitOnSemaphore = semaphore; }
     KSemaphore* getSemaphoreOnWait() const { return waitOnSemaphore; }
     void resetSemaphoreOnWait() { waitOnSemaphore = nullptr; }
@@ -66,7 +66,8 @@ private:
     KSemaphore* waitOnSemaphore;
     TCB* state;
     bool finished;
-    KernelConfig::WAKE_UP_REASON wakeUpReason;
+    KernelConfig::WakeUpReason wakeUpReason;
+
     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
 
 

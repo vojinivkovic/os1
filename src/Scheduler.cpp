@@ -6,7 +6,7 @@
 #include "../h/TCB.hpp"
 TCB* Scheduler::headReadyThread = nullptr;
 TCB* Scheduler::tailReadyThread = nullptr;
-
+TCB* Scheduler::idleThread = nullptr;
 void Scheduler::put(TCB *readyThread)
 {
     if(!headReadyThread)
