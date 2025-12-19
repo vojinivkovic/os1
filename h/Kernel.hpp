@@ -8,11 +8,14 @@
 #include "MemoryAllocator.hpp"
 #include "Config.hpp"
 #include "ObjectPool.hpp"
-
-//#include "TCB.hpp"
+#include "PriorityQueue.hpp"
 
 class TCB;
 class KSemaphore;
+auto cmp = [](int a, int b)
+{
+    return a < b;
+}
 
 class Kernel
 {
@@ -63,6 +66,7 @@ private:
 
     static ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* poolOfThreads;
     static ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* poolOfSemaphores;
+    static PriorityQueue<TCB, decltype(cmp)>* queueOfAsleepThreads;
 
     //static TCB* runningThread;
 

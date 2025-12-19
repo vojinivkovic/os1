@@ -10,7 +10,7 @@
 template <typename T, typename Compare>
 class PriorityQueue {
 public:
-    PriorityQueue() = default;
+    explicit PriorityQueue(Compare c) : cmp(c) {}
 
     void append(T* newElement);
     T* take();
@@ -30,7 +30,7 @@ void PriorityQueue<T, Compare>::append(T *newElement)
     }
 
     T* curr = head, *prev = nullptr;
-    while(curr && cmp(curr, newElement))
+    while(curr && cmp(curr->getTimeToSleep(), newElement->getTimeToSleep()))
     {
         newElement->setTimeToSleep(newElement->getTimeToSleep() - curr->getTimeToSleep());
         prev = curr;
