@@ -29,6 +29,9 @@ public:
     bool isFinished() const { return finished; }
     void setIsFinished() { finished = true; }
 
+    size_t getTimeToSleep() const { return timeToSleep; }
+    void setTimeToSleep(size_t time) { timeToSleep = time; }
+
     void addThreadToState(TCB* newThread) { state = newThread; }
     TCB* getState() const { return state; }
     void resetState() {state = nullptr; }
@@ -67,7 +70,7 @@ private:
     TCB* state;
     bool finished;
     KernelConfig::WakeUpReason wakeUpReason;
-
+    size_t timeToSleep;
     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
 
 

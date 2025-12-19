@@ -20,6 +20,7 @@ void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, v
     finished = false;
     arguments = arg;
     waitOnSemaphore = nullptr;
+    timeToSleep = 0;
     sourcePool = pool;
     userStack = (void*)((uint8*)allocatedStack - DEFAULT_STACK_SIZE);
     systemStack = (void*)((uint8*)allocatedSystemStack - KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
