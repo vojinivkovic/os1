@@ -5,6 +5,7 @@
 #ifndef PROJECT_BASE_V1_1_QUEUE_H
 #define PROJECT_BASE_V1_1_QUEUE_H
 #include "../lib/hw.h"
+#include "MemoryAllocator.hpp"
 
 template<typename T>
 class Queue {
@@ -15,6 +16,7 @@ public:
     T* take();
     void removeElement(T* element);
     bool isQueueEmpty() const { return !head; }
+    T* top() const { return head; };
 
     static void* operator new(size_t size);
 private:

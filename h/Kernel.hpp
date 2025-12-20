@@ -16,7 +16,7 @@ class KSemaphore;
 auto cmp = [](TCB* threadI, TCB* threadJ)
 {
     return threadI->getTimeToSleep() < threadJ->getTimeToSleep();
-}
+};
 
 class Kernel
 {
@@ -59,12 +59,14 @@ private:
     static void makeProducerThread(void);
     static void kernelWorker(void*);
 
+
     static uint64 (*systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(ArgumentsOfSystemCall* arg);
     static void initializeSystemCalls(void);
     static void initializeArguments(ArgumentsOfSystemCall* arg, uint64 basePointer);
 
     static void* mallocSystemStack(size_t numOfBytes);
 
+    static void wakeUpThreads();
     static ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* poolOfThreads;
     static ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* poolOfSemaphores;
     static PriorityQueue<TCB, decltype(cmp)>* queueOfAsleepThreads;

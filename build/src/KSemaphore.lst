@@ -1,4 +1,4 @@
-GAS LISTING /tmp/ccDHRDh4.s 			page 1
+GAS LISTING /tmp/ccRTy0zu.s 			page 1
 
 
    1              		.file	"KSemaphore.cpp"
@@ -6,11 +6,150 @@ GAS LISTING /tmp/ccDHRDh4.s 			page 1
    3              		.option norelax
    4              		.text
    5              	.Ltext0:
-   6              		.align	2
-   7              		.globl	_ZN10KSemaphore19initializeSemaphoreEjP10ObjectPoolIS_Lm10EE
-   9              	_ZN10KSemaphore19initializeSemaphoreEjP10ObjectPoolIS_Lm10EE:
-  10              	.LFB37:
-  11              		.file 1 "src/KSemaphore.cpp"
+   6              		.section	.text._ZN5QueueI3TCBEnwEm,"axG",@progbits,_ZN5QueueI3TCBEnwEm,comdat
+   7              		.align	2
+   8              		.weak	_ZN5QueueI3TCBEnwEm
+  10              	_ZN5QueueI3TCBEnwEm:
+  11              	.LFB56:
+  12              		.file 1 "src/../h/Queue.hpp"
+   1:src/../h/Queue.hpp **** //
+   2:src/../h/Queue.hpp **** // Created by os on 12/16/25.
+   3:src/../h/Queue.hpp **** //
+   4:src/../h/Queue.hpp **** 
+   5:src/../h/Queue.hpp **** #ifndef PROJECT_BASE_V1_1_QUEUE_H
+   6:src/../h/Queue.hpp **** #define PROJECT_BASE_V1_1_QUEUE_H
+   7:src/../h/Queue.hpp **** #include "../lib/hw.h"
+   8:src/../h/Queue.hpp **** #include "MemoryAllocator.hpp"
+   9:src/../h/Queue.hpp **** 
+  10:src/../h/Queue.hpp **** template<typename T>
+  11:src/../h/Queue.hpp **** class Queue {
+  12:src/../h/Queue.hpp **** public:
+  13:src/../h/Queue.hpp ****     Queue() = default;
+  14:src/../h/Queue.hpp **** 
+  15:src/../h/Queue.hpp ****     void append(T* newElement);
+  16:src/../h/Queue.hpp ****     T* take();
+  17:src/../h/Queue.hpp ****     void removeElement(T* element);
+  18:src/../h/Queue.hpp ****     bool isQueueEmpty() const { return !head; }
+  19:src/../h/Queue.hpp ****     T* top() const { return head; };
+  20:src/../h/Queue.hpp **** 
+  21:src/../h/Queue.hpp ****     static void* operator new(size_t size);
+  22:src/../h/Queue.hpp **** private:
+  23:src/../h/Queue.hpp ****     T* head = nullptr, *tail = nullptr;
+  24:src/../h/Queue.hpp **** };
+  25:src/../h/Queue.hpp **** 
+  26:src/../h/Queue.hpp **** template<typename T>
+  27:src/../h/Queue.hpp **** void Queue<T>::append(T *newElement)
+  28:src/../h/Queue.hpp **** {
+  29:src/../h/Queue.hpp ****     if(!head)
+  30:src/../h/Queue.hpp ****     {
+  31:src/../h/Queue.hpp ****         head = newElement;
+  32:src/../h/Queue.hpp ****     }
+  33:src/../h/Queue.hpp ****     else
+  34:src/../h/Queue.hpp ****     {
+  35:src/../h/Queue.hpp ****         tail->addThreadToState(newElement);
+  36:src/../h/Queue.hpp ****     }
+  37:src/../h/Queue.hpp ****     tail = newElement;
+  38:src/../h/Queue.hpp **** }
+  39:src/../h/Queue.hpp **** template<typename T>
+  40:src/../h/Queue.hpp **** T* Queue<T>::take()
+  41:src/../h/Queue.hpp **** {
+  42:src/../h/Queue.hpp ****     if(!head)
+  43:src/../h/Queue.hpp ****     {
+  44:src/../h/Queue.hpp ****         return nullptr;
+  45:src/../h/Queue.hpp ****     }
+  46:src/../h/Queue.hpp ****     T* oldElement = head;
+GAS LISTING /tmp/ccRTy0zu.s 			page 2
+
+
+  47:src/../h/Queue.hpp ****     head = head->getState();
+  48:src/../h/Queue.hpp ****     if(!head)
+  49:src/../h/Queue.hpp ****     {
+  50:src/../h/Queue.hpp ****         tail = nullptr;
+  51:src/../h/Queue.hpp ****     }
+  52:src/../h/Queue.hpp ****     return oldElement;
+  53:src/../h/Queue.hpp **** }
+  54:src/../h/Queue.hpp **** 
+  55:src/../h/Queue.hpp **** template<typename T>
+  56:src/../h/Queue.hpp **** void Queue<T>::removeElement(T *element)
+  57:src/../h/Queue.hpp **** {
+  58:src/../h/Queue.hpp ****     T* prev = nullptr, * curr = head;
+  59:src/../h/Queue.hpp ****     while(element != curr && curr)
+  60:src/../h/Queue.hpp ****     {
+  61:src/../h/Queue.hpp ****         prev = curr;
+  62:src/../h/Queue.hpp ****         curr = curr->getState();
+  63:src/../h/Queue.hpp ****     }
+  64:src/../h/Queue.hpp ****     if(!prev)
+  65:src/../h/Queue.hpp ****     {
+  66:src/../h/Queue.hpp ****         head = head->getState();
+  67:src/../h/Queue.hpp ****         if(!head)
+  68:src/../h/Queue.hpp ****         {
+  69:src/../h/Queue.hpp ****             tail = nullptr;
+  70:src/../h/Queue.hpp ****         }
+  71:src/../h/Queue.hpp ****     }
+  72:src/../h/Queue.hpp ****     else
+  73:src/../h/Queue.hpp ****     {
+  74:src/../h/Queue.hpp ****         prev->addThreadToState(element->getState());
+  75:src/../h/Queue.hpp ****         if(element == tail)
+  76:src/../h/Queue.hpp ****         {
+  77:src/../h/Queue.hpp ****             tail = prev;
+  78:src/../h/Queue.hpp ****         }
+  79:src/../h/Queue.hpp ****     }
+  80:src/../h/Queue.hpp **** }
+  81:src/../h/Queue.hpp **** template<typename T>
+  82:src/../h/Queue.hpp **** void* Queue<T>::operator new(size_t size)
+  13              		.loc 1 82 7
+  14              		.cfi_startproc
+  15              	.LVL0:
+  16 0000 130101FF 		addi	sp,sp,-16
+  17              		.cfi_def_cfa_offset 16
+  18 0004 23341100 		sd	ra,8(sp)
+  19 0008 23308100 		sd	s0,0(sp)
+  20              		.cfi_offset 1, -8
+  21              		.cfi_offset 8, -16
+  22 000c 13040101 		addi	s0,sp,16
+  23              		.cfi_def_cfa 8, 0
+  83:src/../h/Queue.hpp **** {
+  84:src/../h/Queue.hpp ****     size_t numOfBlocks = size / MEM_BLOCK_SIZE;
+  24              		.loc 1 84 12 is_stmt 0
+  25 0010 93576500 		srli	a5,a0,6
+  26              	.LVL1:
+  85:src/../h/Queue.hpp ****     numOfBlocks += size % MEM_BLOCK_SIZE ? 1 : 0;
+  27              		.loc 1 85 25
+  28 0014 1375F503 		andi	a0,a0,63
+  29              	.LVL2:
+  30              		.loc 1 85 17
+GAS LISTING /tmp/ccRTy0zu.s 			page 3
+
+
+  31 0018 63040500 		beqz	a0,.L2
+  32 001c 13051000 		li	a0,1
+  33              	.L2:
+  34              	.LVL3:
+  86:src/../h/Queue.hpp ****     return MemoryAllocator::allocateMemory(numOfBlocks);
+  35              		.loc 1 86 43 discriminator 4
+  36 0020 3305F500 		add	a0,a0,a5
+  37              	.LVL4:
+  38 0024 97000000 		call	_ZN15MemoryAllocator14allocateMemoryEm@plt
+  38      E7800000 
+  39              	.LVL5:
+  87:src/../h/Queue.hpp **** }
+  40              		.loc 1 87 1 discriminator 4
+  41 002c 83308100 		ld	ra,8(sp)
+  42              		.cfi_restore 1
+  43 0030 03340100 		ld	s0,0(sp)
+  44              		.cfi_restore 8
+  45              		.cfi_def_cfa 2, 16
+  46 0034 13010101 		addi	sp,sp,16
+  47              		.cfi_def_cfa_offset 0
+  48 0038 67800000 		jr	ra
+  49              		.cfi_endproc
+  50              	.LFE56:
+  52              		.text
+  53              		.align	2
+  54              		.globl	_ZN10KSemaphore19initializeSemaphoreEjP10ObjectPoolIS_Lm10EE
+  56              	_ZN10KSemaphore19initializeSemaphoreEjP10ObjectPoolIS_Lm10EE:
+  57              	.LFB46:
+  58              		.file 2 "src/KSemaphore.cpp"
    1:src/KSemaphore.cpp **** //
    2:src/KSemaphore.cpp **** // Created by os on 12/13/25.
    3:src/KSemaphore.cpp **** //
@@ -22,72 +161,104 @@ GAS LISTING /tmp/ccDHRDh4.s 			page 1
    9:src/KSemaphore.cpp **** 
   10:src/KSemaphore.cpp **** extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
   11:src/KSemaphore.cpp **** 
-  12:src/KSemaphore.cpp **** void KSemaphore::initializeSemaphore(unsigned value, ObjectPool<KSemaphore, KernelConfig::NUM_OF_SE
-  13:src/KSemaphore.cpp **** {
-  12              		.loc 1 13 1
-  13              		.cfi_startproc
-  14              	.LVL0:
-  15 0000 130101FF 		addi	sp,sp,-16
-  16              		.cfi_def_cfa_offset 16
-  17 0004 23348100 		sd	s0,8(sp)
-  18              		.cfi_offset 8, -8
-  19 0008 13040101 		addi	s0,sp,16
-  20              		.cfi_def_cfa 8, 0
-  14:src/KSemaphore.cpp ****     semaphoreVal = value;
-  21              		.loc 1 14 5
-  22              		.loc 1 14 20 is_stmt 0
-  23 000c 93950502 		slli	a1,a1,32
-  24              	.LVL1:
-  25 0010 93D50502 		srli	a1,a1,32
-  26              		.loc 1 14 18
-  27 0014 2330B500 		sd	a1,0(a0)
-  15:src/KSemaphore.cpp ****     headBlockedThread = nullptr;
-  28              		.loc 1 15 5 is_stmt 1
-  29              		.loc 1 15 23 is_stmt 0
-  30 0018 23340500 		sd	zero,8(a0)
-  16:src/KSemaphore.cpp ****     tailBlockedThread = nullptr;
-  31              		.loc 1 16 5 is_stmt 1
-  32              		.loc 1 16 23 is_stmt 0
-  33 001c 23380500 		sd	zero,16(a0)
-  17:src/KSemaphore.cpp ****     sourcePool = pool;
-  34              		.loc 1 17 5 is_stmt 1
-  35              		.loc 1 17 16 is_stmt 0
-  36 0020 233CC500 		sd	a2,24(a0)
-  18:src/KSemaphore.cpp **** }
-  37              		.loc 1 18 1
-  38 0024 03348100 		ld	s0,8(sp)
-  39              		.cfi_restore 8
-  40              		.cfi_def_cfa 2, 16
-GAS LISTING /tmp/ccDHRDh4.s 			page 2
+  12:src/KSemaphore.cpp **** 
+  13:src/KSemaphore.cpp **** void KSemaphore::initializeSemaphore(unsigned value, ObjectPool<KSemaphore, KernelConfig::NUM_OF_SE
+  14:src/KSemaphore.cpp **** {
+  59              		.loc 2 14 1 is_stmt 1
+  60              		.cfi_startproc
+  61              	.LVL6:
+  62 0000 130101FE 		addi	sp,sp,-32
+  63              		.cfi_def_cfa_offset 32
+  64 0004 233C1100 		sd	ra,24(sp)
+  65 0008 23388100 		sd	s0,16(sp)
+  66 000c 23349100 		sd	s1,8(sp)
+  67 0010 23302101 		sd	s2,0(sp)
+  68              		.cfi_offset 1, -8
+  69              		.cfi_offset 8, -16
+  70              		.cfi_offset 9, -24
+  71              		.cfi_offset 18, -32
+  72 0014 13040102 		addi	s0,sp,32
+GAS LISTING /tmp/ccRTy0zu.s 			page 4
 
 
-  41 0028 13010101 		addi	sp,sp,16
-  42              		.cfi_def_cfa_offset 0
-  43 002c 67800000 		jr	ra
-  44              		.cfi_endproc
-  45              	.LFE37:
-  47              		.align	2
-  48              		.globl	_ZN10KSemaphore11blockThreadEP3TCB
-  50              	_ZN10KSemaphore11blockThreadEP3TCB:
-  51              	.LFB38:
-  19:src/KSemaphore.cpp **** 
-  20:src/KSemaphore.cpp **** void KSemaphore::blockThread(TCB* threadToBlock)
-  21:src/KSemaphore.cpp **** {
-  52              		.loc 1 21 1 is_stmt 1
-  53              		.cfi_startproc
-  54              	.LVL2:
-  55 0030 130101FF 		addi	sp,sp,-16
-  56              		.cfi_def_cfa_offset 16
-  57 0034 23348100 		sd	s0,8(sp)
-  58              		.cfi_offset 8, -8
-  59 0038 13040101 		addi	s0,sp,16
-  60              		.cfi_def_cfa 8, 0
-  22:src/KSemaphore.cpp ****     threadToBlock->setSemaphoreOnWait(this);
-  61              		.loc 1 22 5
-  62              	.LVL3:
-  63              	.LBB54:
-  64              	.LBB55:
-  65              		.file 2 "src/../h/TCB.hpp"
+  73              		.cfi_def_cfa 8, 0
+  74 0018 93040500 		mv	s1,a0
+  75 001c 13090600 		mv	s2,a2
+  15:src/KSemaphore.cpp ****     semaphoreVal = value;
+  76              		.loc 2 15 5
+  77              		.loc 2 15 20 is_stmt 0
+  78 0020 93950502 		slli	a1,a1,32
+  79              	.LVL7:
+  80 0024 93D50502 		srli	a1,a1,32
+  81              		.loc 2 15 18
+  82 0028 2330B500 		sd	a1,0(a0)
+  16:src/KSemaphore.cpp ****     //headBlockedThread = nullptr;
+  17:src/KSemaphore.cpp ****     //tailBlockedThread = nullptr;
+  18:src/KSemaphore.cpp ****     queueBlockedThreads = new Queue<TCB>();
+  83              		.loc 2 18 5 is_stmt 1
+  84              		.loc 2 18 42 is_stmt 0
+  85 002c 13050001 		li	a0,16
+  86              	.LVL8:
+  87 0030 97000000 		call	_ZN5QueueI3TCBEnwEm
+  87      E7800000 
+  88              	.LVL9:
+  89 0038 23300500 		sd	zero,0(a0)
+  90 003c 23340500 		sd	zero,8(a0)
+  91              		.loc 2 18 25
+  92 0040 23B4A400 		sd	a0,8(s1)
+  19:src/KSemaphore.cpp ****     sourcePool = pool;
+  93              		.loc 2 19 5 is_stmt 1
+  94              		.loc 2 19 16 is_stmt 0
+  95 0044 23B82401 		sd	s2,16(s1)
+  20:src/KSemaphore.cpp **** }
+  96              		.loc 2 20 1
+  97 0048 83308101 		ld	ra,24(sp)
+  98              		.cfi_restore 1
+  99 004c 03340101 		ld	s0,16(sp)
+ 100              		.cfi_restore 8
+ 101              		.cfi_def_cfa 2, 32
+ 102 0050 83348100 		ld	s1,8(sp)
+ 103              		.cfi_restore 9
+ 104              	.LVL10:
+ 105 0054 03390100 		ld	s2,0(sp)
+ 106              		.cfi_restore 18
+ 107              	.LVL11:
+ 108 0058 13010102 		addi	sp,sp,32
+ 109              		.cfi_def_cfa_offset 0
+ 110 005c 67800000 		jr	ra
+ 111              		.cfi_endproc
+ 112              	.LFE46:
+ 114              		.section	.text._ZN5QueueI3TCBE6appendEPS0_,"axG",@progbits,_ZN5QueueI3TCBE6appendEPS0_,comdat
+ 115              		.align	2
+ 116              		.weak	_ZN5QueueI3TCBE6appendEPS0_
+ 118              	_ZN5QueueI3TCBE6appendEPS0_:
+ 119              	.LFB57:
+  27:src/../h/Queue.hpp **** {
+ 120              		.loc 1 27 6 is_stmt 1
+ 121              		.cfi_startproc
+ 122              	.LVL12:
+ 123 0000 130101FF 		addi	sp,sp,-16
+GAS LISTING /tmp/ccRTy0zu.s 			page 5
+
+
+ 124              		.cfi_def_cfa_offset 16
+ 125 0004 23348100 		sd	s0,8(sp)
+ 126              		.cfi_offset 8, -8
+ 127 0008 13040101 		addi	s0,sp,16
+ 128              		.cfi_def_cfa 8, 0
+  29:src/../h/Queue.hpp ****     {
+ 129              		.loc 1 29 9 is_stmt 0
+ 130 000c 83370500 		ld	a5,0(a0)
+  29:src/../h/Queue.hpp ****     {
+ 131              		.loc 1 29 5
+ 132 0010 638E0700 		beqz	a5,.L10
+  35:src/../h/Queue.hpp ****     }
+ 133              		.loc 1 35 9
+ 134 0014 83378500 		ld	a5,8(a0)
+ 135              	.LVL13:
+ 136              	.LBB55:
+ 137              	.LBB56:
+ 138              		.file 3 "src/../h/TCB.hpp"
    1:src/../h/TCB.hpp **** //
    2:src/../h/TCB.hpp **** // Created by os on 12/5/25.
    3:src/../h/TCB.hpp **** //
@@ -118,1481 +289,1759 @@ GAS LISTING /tmp/ccDHRDh4.s 			page 1
   28:src/../h/TCB.hpp ****     size_t getTimeSlice() const { return timeSlice; }
   29:src/../h/TCB.hpp ****     bool isFinished() const { return finished; }
   30:src/../h/TCB.hpp ****     void setIsFinished() { finished = true; }
-GAS LISTING /tmp/ccDHRDh4.s 			page 3
-
-
   31:src/../h/TCB.hpp **** 
-  32:src/../h/TCB.hpp ****     void addThreadToState(TCB* newThread) { state = newThread; }
-  33:src/../h/TCB.hpp ****     TCB* getState() const { return state; }
-  34:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
-  35:src/../h/TCB.hpp ****     Context* getContext() { return &context; }
-  36:src/../h/TCB.hpp ****     void* getUserStack() const { return userStack; }
-  37:src/../h/TCB.hpp ****     void* getSystemStack() const { return systemStack; }
-  38:src/../h/TCB.hpp ****     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* getSourcePool() { return sourcePool; }
-  39:src/../h/TCB.hpp **** 
-  40:src/../h/TCB.hpp ****     void setWakeUpReason(KernelConfig::WakeUpReason reason) { wakeUpReason = reason; }
-  41:src/../h/TCB.hpp ****     KernelConfig::WakeUpReason getWakeUpReason() { return wakeUpReason; }
-  42:src/../h/TCB.hpp ****     void setSemaphoreOnWait (KSemaphore* semaphore) { waitOnSemaphore = semaphore; }
-  66              		.loc 2 42 55
-  67              		.loc 2 42 71 is_stmt 0
-  68 003c 23B0A504 		sd	a0,64(a1)
-  69              	.LVL4:
-  70              	.LBE55:
-  71              	.LBE54:
-  23:src/KSemaphore.cpp ****     if(!headBlockedThread)
-  72              		.loc 1 23 5 is_stmt 1
-  73              		.loc 1 23 9 is_stmt 0
-  74 0040 83378500 		ld	a5,8(a0)
-  75              		.loc 1 23 5
-  76 0044 638E0700 		beqz	a5,.L7
-  24:src/KSemaphore.cpp ****     {
-  25:src/KSemaphore.cpp ****         headBlockedThread = threadToBlock;
-  26:src/KSemaphore.cpp ****     }
-  27:src/KSemaphore.cpp ****     else
-  28:src/KSemaphore.cpp ****     {
-  29:src/KSemaphore.cpp ****         tailBlockedThread->addThreadToState(threadToBlock);
-  77              		.loc 1 29 9 is_stmt 1
-  78 0048 83370501 		ld	a5,16(a0)
-  79              	.LVL5:
-  80              	.LBB56:
-  81              	.LBB57:
-  32:src/../h/TCB.hpp ****     TCB* getState() const { return state; }
-  82              		.loc 2 32 45
-  32:src/../h/TCB.hpp ****     TCB* getState() const { return state; }
-  83              		.loc 2 32 51 is_stmt 0
-  84 004c 23B4B704 		sd	a1,72(a5)
-  85              	.LVL6:
-  86              	.L5:
-  87              	.LBE57:
-  88              	.LBE56:
-  30:src/KSemaphore.cpp ****     }
-  31:src/KSemaphore.cpp ****     tailBlockedThread = threadToBlock;
-  89              		.loc 1 31 5 is_stmt 1
-  90              		.loc 1 31 23 is_stmt 0
-  91 0050 2338B500 		sd	a1,16(a0)
-  32:src/KSemaphore.cpp **** }
-  92              		.loc 1 32 1
-  93 0054 03348100 		ld	s0,8(sp)
-  94              		.cfi_remember_state
-  95              		.cfi_restore 8
-  96              		.cfi_def_cfa 2, 16
-  97 0058 13010101 		addi	sp,sp,16
-  98              		.cfi_def_cfa_offset 0
-GAS LISTING /tmp/ccDHRDh4.s 			page 4
+  32:src/../h/TCB.hpp ****     size_t getTimeToSleep() const { return timeToSleep; }
+  33:src/../h/TCB.hpp ****     void setTimeToSleep(size_t time) { timeToSleep = time; }
+  34:src/../h/TCB.hpp **** 
+  35:src/../h/TCB.hpp ****     void decrementTimeToSleep() { timeToSleep--; };
+  36:src/../h/TCB.hpp ****     void addThreadToState(TCB* newThread) { state = newThread; }
+ 139              		.loc 3 36 45 is_stmt 1
+ 140              		.loc 3 36 51 is_stmt 0
+ 141 0018 23B4B704 		sd	a1,72(a5)
+GAS LISTING /tmp/ccRTy0zu.s 			page 6
 
 
-  99 005c 67800000 		jr	ra
- 100              	.L7:
- 101              		.cfi_restore_state
-  25:src/KSemaphore.cpp ****     }
- 102              		.loc 1 25 9 is_stmt 1
-  25:src/KSemaphore.cpp ****     }
- 103              		.loc 1 25 27 is_stmt 0
- 104 0060 2334B500 		sd	a1,8(a0)
- 105 0064 6FF0DFFE 		j	.L5
- 106              		.cfi_endproc
- 107              	.LFE38:
- 109              		.align	2
- 110              		.globl	_ZN10KSemaphore13unblockThreadEN12KernelConfig12WakeUpReasonE
- 112              	_ZN10KSemaphore13unblockThreadEN12KernelConfig12WakeUpReasonE:
- 113              	.LFB39:
-  33:src/KSemaphore.cpp **** 
-  34:src/KSemaphore.cpp **** int KSemaphore::unblockThread(KernelConfig::WakeUpReason reason)
-  35:src/KSemaphore.cpp **** {
- 114              		.loc 1 35 1 is_stmt 1
- 115              		.cfi_startproc
- 116              	.LVL7:
- 117 0068 93070500 		mv	a5,a0
-  36:src/KSemaphore.cpp ****    if(!headBlockedThread)
- 118              		.loc 1 36 4
- 119              		.loc 1 36 8 is_stmt 0
- 120 006c 03358500 		ld	a0,8(a0)
- 121              	.LVL8:
- 122              		.loc 1 36 4
- 123 0070 63080504 		beqz	a0,.L11
-  35:src/KSemaphore.cpp ****    if(!headBlockedThread)
- 124              		.loc 1 35 1
- 125 0074 130101FF 		addi	sp,sp,-16
- 126              		.cfi_def_cfa_offset 16
- 127 0078 23341100 		sd	ra,8(sp)
- 128 007c 23308100 		sd	s0,0(sp)
- 129              		.cfi_offset 1, -8
- 130              		.cfi_offset 8, -16
- 131 0080 13040101 		addi	s0,sp,16
- 132              		.cfi_def_cfa 8, 0
-  37:src/KSemaphore.cpp ****    {
-  38:src/KSemaphore.cpp ****        return -1;
-  39:src/KSemaphore.cpp ****    }
-  40:src/KSemaphore.cpp ****    TCB* oldThread = headBlockedThread;
- 133              		.loc 1 40 4 is_stmt 1
- 134              	.LVL9:
-  41:src/KSemaphore.cpp ****    headBlockedThread = headBlockedThread->getState();
- 135              		.loc 1 41 4
- 136              	.LBB58:
- 137              	.LBB59:
-  33:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
- 138              		.loc 2 33 29
-  33:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
- 139              		.loc 2 33 36 is_stmt 0
- 140 0084 03378504 		ld	a4,72(a0)
- 141              	.LVL10:
- 142              	.LBE59:
- 143              	.LBE58:
-GAS LISTING /tmp/ccDHRDh4.s 			page 5
+ 142              	.LVL14:
+ 143              	.L8:
+ 144              	.LBE56:
+ 145              	.LBE55:
+  37:src/../h/Queue.hpp **** }
+ 146              		.loc 1 37 5
+ 147 001c 2334B500 		sd	a1,8(a0)
+  38:src/../h/Queue.hpp **** template<typename T>
+ 148              		.loc 1 38 1
+ 149 0020 03348100 		ld	s0,8(sp)
+ 150              		.cfi_remember_state
+ 151              		.cfi_restore 8
+ 152              		.cfi_def_cfa 2, 16
+ 153 0024 13010101 		addi	sp,sp,16
+ 154              		.cfi_def_cfa_offset 0
+ 155 0028 67800000 		jr	ra
+ 156              	.L10:
+ 157              		.cfi_restore_state
+  31:src/../h/Queue.hpp ****     }
+ 158              		.loc 1 31 9
+ 159 002c 2330B500 		sd	a1,0(a0)
+ 160 0030 6FF0DFFE 		j	.L8
+ 161              		.cfi_endproc
+ 162              	.LFE57:
+ 164              		.text
+ 165              		.align	2
+ 166              		.globl	_ZN10KSemaphore11blockThreadEP3TCB
+ 168              	_ZN10KSemaphore11blockThreadEP3TCB:
+ 169              	.LFB50:
+  21:src/KSemaphore.cpp **** 
+  22:src/KSemaphore.cpp **** void KSemaphore::blockThread(TCB* threadToBlock)
+  23:src/KSemaphore.cpp **** {
+ 170              		.loc 2 23 1 is_stmt 1
+ 171              		.cfi_startproc
+ 172              	.LVL15:
+ 173 0060 130101FF 		addi	sp,sp,-16
+ 174              		.cfi_def_cfa_offset 16
+ 175 0064 23341100 		sd	ra,8(sp)
+ 176 0068 23308100 		sd	s0,0(sp)
+ 177              		.cfi_offset 1, -8
+ 178              		.cfi_offset 8, -16
+ 179 006c 13040101 		addi	s0,sp,16
+ 180              		.cfi_def_cfa 8, 0
+  24:src/KSemaphore.cpp ****     threadToBlock->setSemaphoreOnWait(this);
+ 181              		.loc 2 24 5
+ 182              	.LVL16:
+ 183              	.LBB57:
+ 184              	.LBB58:
+  37:src/../h/TCB.hpp ****     TCB* getState() const { return state; }
+  38:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
+  39:src/../h/TCB.hpp ****     Context* getContext() { return &context; }
+  40:src/../h/TCB.hpp ****     void* getUserStack() const { return userStack; }
+  41:src/../h/TCB.hpp ****     void* getSystemStack() const { return systemStack; }
+  42:src/../h/TCB.hpp ****     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* getSourcePool() { return sourcePool; }
+  43:src/../h/TCB.hpp **** 
+  44:src/../h/TCB.hpp ****     void setWakeUpReason(KernelConfig::WakeUpReason reason) { wakeUpReason = reason; }
+  45:src/../h/TCB.hpp ****     KernelConfig::WakeUpReason getWakeUpReason() { return wakeUpReason; }
+GAS LISTING /tmp/ccRTy0zu.s 			page 7
 
 
- 144              		.loc 1 41 22
- 145 0088 23B4E700 		sd	a4,8(a5)
-  42:src/KSemaphore.cpp ****    if(!headBlockedThread)
- 146              		.loc 1 42 4 is_stmt 1
- 147 008c 63060702 		beqz	a4,.L16
- 148              	.L10:
-  43:src/KSemaphore.cpp ****    {
-  44:src/KSemaphore.cpp ****        tailBlockedThread = nullptr;
-  45:src/KSemaphore.cpp ****    }
-  46:src/KSemaphore.cpp ****    oldThread->setWakeUpReason(reason);
- 149              		.loc 1 46 4
- 150              	.LVL11:
- 151              	.LBB60:
- 152              	.LBB61:
-  40:src/../h/TCB.hpp ****     KernelConfig::WakeUpReason getWakeUpReason() { return wakeUpReason; }
- 153              		.loc 2 40 63
-  40:src/../h/TCB.hpp ****     KernelConfig::WakeUpReason getWakeUpReason() { return wakeUpReason; }
- 154              		.loc 2 40 76 is_stmt 0
- 155 0090 232AB504 		sw	a1,84(a0)
- 156              	.LVL12:
- 157              	.LBE61:
- 158              	.LBE60:
-  47:src/KSemaphore.cpp ****    oldThread->resetState();
- 159              		.loc 1 47 4 is_stmt 1
- 160              	.LBB62:
- 161              	.LBB63:
-  34:src/../h/TCB.hpp ****     Context* getContext() { return &context; }
- 162              		.loc 2 34 24
-  34:src/../h/TCB.hpp ****     Context* getContext() { return &context; }
- 163              		.loc 2 34 30 is_stmt 0
- 164 0094 23340504 		sd	zero,72(a0)
- 165              	.LVL13:
- 166              	.LBE63:
- 167              	.LBE62:
-  48:src/KSemaphore.cpp ****    oldThread->resetSemaphoreOnWait();
- 168              		.loc 1 48 4 is_stmt 1
- 169              	.LBB64:
- 170              	.LBB65:
-  43:src/../h/TCB.hpp ****     KSemaphore* getSemaphoreOnWait() const { return waitOnSemaphore; }
-  44:src/../h/TCB.hpp ****     void resetSemaphoreOnWait() { waitOnSemaphore = nullptr; }
- 171              		.loc 2 44 35
- 172              		.loc 2 44 51 is_stmt 0
- 173 0098 23300504 		sd	zero,64(a0)
- 174              	.LVL14:
- 175              	.LBE65:
- 176              	.LBE64:
-  49:src/KSemaphore.cpp ****    Scheduler::put(oldThread);
- 177              		.loc 1 49 4 is_stmt 1
- 178              		.loc 1 49 18 is_stmt 0
- 179 009c 97000000 		call	_ZN9Scheduler3putEP3TCB@plt
- 179      E7800000 
- 180              	.LVL15:
-  50:src/KSemaphore.cpp ****    return 0;
- 181              		.loc 1 50 4 is_stmt 1
- 182              		.loc 1 50 11 is_stmt 0
- 183 00a4 13050000 		li	a0,0
-  51:src/KSemaphore.cpp **** }
-GAS LISTING /tmp/ccDHRDh4.s 			page 6
+  46:src/../h/TCB.hpp ****     void setSemaphoreOnWait (KSemaphore* semaphore) { waitOnSemaphore = semaphore; }
+ 185              		.loc 3 46 55
+ 186              		.loc 3 46 71 is_stmt 0
+ 187 0070 23B0A504 		sd	a0,64(a1)
+ 188              	.LVL17:
+ 189              	.LBE58:
+ 190              	.LBE57:
+  25:src/KSemaphore.cpp **** //    if(!headBlockedThread)
+  26:src/KSemaphore.cpp **** //    {
+  27:src/KSemaphore.cpp **** //        headBlockedThread = threadToBlock;
+  28:src/KSemaphore.cpp **** //    }
+  29:src/KSemaphore.cpp **** //    else
+  30:src/KSemaphore.cpp **** //    {
+  31:src/KSemaphore.cpp **** //        tailBlockedThread->addThreadToState(threadToBlock);
+  32:src/KSemaphore.cpp **** //    }
+  33:src/KSemaphore.cpp **** //    tailBlockedThread = threadToBlock;
+  34:src/KSemaphore.cpp ****     queueBlockedThreads->append(threadToBlock);
+ 191              		.loc 2 34 5 is_stmt 1
+ 192              		.loc 2 34 32 is_stmt 0
+ 193 0074 03358500 		ld	a0,8(a0)
+ 194              	.LVL18:
+ 195 0078 97000000 		call	_ZN5QueueI3TCBE6appendEPS0_
+ 195      E7800000 
+ 196              	.LVL19:
+  35:src/KSemaphore.cpp **** }
+ 197              		.loc 2 35 1
+ 198 0080 83308100 		ld	ra,8(sp)
+ 199              		.cfi_restore 1
+ 200 0084 03340100 		ld	s0,0(sp)
+ 201              		.cfi_restore 8
+ 202              		.cfi_def_cfa 2, 16
+ 203 0088 13010101 		addi	sp,sp,16
+ 204              		.cfi_def_cfa_offset 0
+ 205 008c 67800000 		jr	ra
+ 206              		.cfi_endproc
+ 207              	.LFE50:
+ 209              		.align	2
+ 210              		.globl	_ZN10KSemaphore4waitEv
+ 212              	_ZN10KSemaphore4waitEv:
+ 213              	.LFB52:
+  36:src/KSemaphore.cpp **** 
+  37:src/KSemaphore.cpp **** int KSemaphore::unblockThread(KernelConfig::WakeUpReason reason)
+  38:src/KSemaphore.cpp **** {
+  39:src/KSemaphore.cpp **** //   if(!headBlockedThread)
+  40:src/KSemaphore.cpp **** //   {
+  41:src/KSemaphore.cpp **** //       return -1;
+  42:src/KSemaphore.cpp **** //   }
+  43:src/KSemaphore.cpp ****    TCB* oldThread = queueBlockedThreads->take();
+  44:src/KSemaphore.cpp **** //   headBlockedThread = headBlockedThread->getState();
+  45:src/KSemaphore.cpp **** //   if(!headBlockedThread)
+  46:src/KSemaphore.cpp **** //   {
+  47:src/KSemaphore.cpp **** //       tailBlockedThread = nullptr;
+  48:src/KSemaphore.cpp **** //   }
+  49:src/KSemaphore.cpp ****     if(oldThread)
+  50:src/KSemaphore.cpp ****     {
+  51:src/KSemaphore.cpp ****         oldThread->setWakeUpReason(reason);
+  52:src/KSemaphore.cpp ****         oldThread->resetState();
+GAS LISTING /tmp/ccRTy0zu.s 			page 8
 
 
- 184              		.loc 1 51 1
- 185 00a8 83308100 		ld	ra,8(sp)
- 186              		.cfi_remember_state
- 187              		.cfi_restore 1
- 188 00ac 03340100 		ld	s0,0(sp)
- 189              		.cfi_restore 8
- 190              		.cfi_def_cfa 2, 16
- 191 00b0 13010101 		addi	sp,sp,16
- 192              		.cfi_def_cfa_offset 0
- 193 00b4 67800000 		jr	ra
- 194              	.LVL16:
- 195              	.L16:
- 196              		.cfi_restore_state
-  44:src/KSemaphore.cpp ****    }
- 197              		.loc 1 44 8 is_stmt 1
-  44:src/KSemaphore.cpp ****    }
- 198              		.loc 1 44 26 is_stmt 0
- 199 00b8 23B80700 		sd	zero,16(a5)
- 200 00bc 6FF05FFD 		j	.L10
- 201              	.LVL17:
- 202              	.L11:
- 203              		.cfi_def_cfa_register 2
- 204              		.cfi_restore 1
- 205              		.cfi_restore 8
-  38:src/KSemaphore.cpp ****    }
- 206              		.loc 1 38 16
- 207 00c0 1305F0FF 		li	a0,-1
- 208              		.loc 1 51 1
- 209 00c4 67800000 		ret
- 210              		.cfi_endproc
- 211              	.LFE39:
- 213              		.align	2
- 214              		.globl	_ZN10KSemaphore4waitEv
- 216              	_ZN10KSemaphore4waitEv:
- 217              	.LFB40:
-  52:src/KSemaphore.cpp **** 
-  53:src/KSemaphore.cpp **** int KSemaphore::wait()
-  54:src/KSemaphore.cpp **** {
- 218              		.loc 1 54 1 is_stmt 1
- 219              		.cfi_startproc
- 220              	.LVL18:
-  55:src/KSemaphore.cpp ****     semaphoreVal--;
- 221              		.loc 1 55 5
- 222 00c8 83370500 		ld	a5,0(a0)
- 223              		.loc 1 55 17 is_stmt 0
- 224 00cc 9387F7FF 		addi	a5,a5,-1
- 225 00d0 2330F500 		sd	a5,0(a0)
-  56:src/KSemaphore.cpp ****     if(semaphoreVal < 0)
- 226              		.loc 1 56 5 is_stmt 1
- 227              	.LBB66:
- 228 00d4 63C60700 		bltz	a5,.L26
- 229              	.LBE66:
-  57:src/KSemaphore.cpp ****     {
+  53:src/KSemaphore.cpp ****         oldThread->resetSemaphoreOnWait();
+  54:src/KSemaphore.cpp ****         Scheduler::put(oldThread);
+  55:src/KSemaphore.cpp ****         return 0;
+  56:src/KSemaphore.cpp ****     }
+  57:src/KSemaphore.cpp ****     return -1;
   58:src/KSemaphore.cpp **** 
-  59:src/KSemaphore.cpp ****         TCB* oldThread = TCB::getRunningThread();
-  60:src/KSemaphore.cpp ****         TCB::setRunningThread(Scheduler::get());
-  61:src/KSemaphore.cpp ****         oldThread->resetState();
-GAS LISTING /tmp/ccDHRDh4.s 			page 7
+  59:src/KSemaphore.cpp **** }
+  60:src/KSemaphore.cpp **** 
+  61:src/KSemaphore.cpp **** int KSemaphore::wait()
+  62:src/KSemaphore.cpp **** {
+ 214              		.loc 2 62 1 is_stmt 1
+ 215              		.cfi_startproc
+ 216              	.LVL20:
+  63:src/KSemaphore.cpp ****     semaphoreVal--;
+ 217              		.loc 2 63 5
+ 218 0090 83370500 		ld	a5,0(a0)
+ 219              		.loc 2 63 17 is_stmt 0
+ 220 0094 9387F7FF 		addi	a5,a5,-1
+ 221 0098 2330F500 		sd	a5,0(a0)
+  64:src/KSemaphore.cpp ****     if(semaphoreVal < 0)
+ 222              		.loc 2 64 5 is_stmt 1
+ 223              	.LBB59:
+ 224 009c 63C60700 		bltz	a5,.L22
+ 225              	.LBE59:
+  65:src/KSemaphore.cpp ****     {
+  66:src/KSemaphore.cpp **** 
+  67:src/KSemaphore.cpp ****         TCB* oldThread = TCB::getRunningThread();
+  68:src/KSemaphore.cpp ****         TCB::setRunningThread(Scheduler::get());
+  69:src/KSemaphore.cpp ****         oldThread->resetState();
+  70:src/KSemaphore.cpp ****         blockThread(oldThread);
+  71:src/KSemaphore.cpp ****         context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
+  72:src/KSemaphore.cpp ****         if(TCB::getRunningThread()->getWakeUpReason() == KernelConfig::WAKE_UP_SEMAPHORE_SIGNAL)
+  73:src/KSemaphore.cpp ****         {
+  74:src/KSemaphore.cpp ****             return 0;
+  75:src/KSemaphore.cpp ****         }
+  76:src/KSemaphore.cpp ****         if(TCB::getRunningThread()->getWakeUpReason() == KernelConfig::WAKE_UP_SEMAPHORE_CLOSE)
+  77:src/KSemaphore.cpp ****         {
+  78:src/KSemaphore.cpp ****             return -1;
+  79:src/KSemaphore.cpp ****         }
+  80:src/KSemaphore.cpp **** 
+  81:src/KSemaphore.cpp ****     }
+  82:src/KSemaphore.cpp ****     return 0;
+ 226              		.loc 2 82 12 is_stmt 0
+ 227 00a0 13050000 		li	a0,0
+ 228              	.LVL21:
+  83:src/KSemaphore.cpp **** }
+ 229              		.loc 2 83 1
+ 230 00a4 67800000 		ret
+ 231              	.LVL22:
+ 232              	.L22:
+  62:src/KSemaphore.cpp ****     semaphoreVal--;
+ 233              		.loc 2 62 1
+ 234 00a8 130101FD 		addi	sp,sp,-48
+ 235              		.cfi_def_cfa_offset 48
+ 236 00ac 23341102 		sd	ra,40(sp)
+ 237 00b0 23308102 		sd	s0,32(sp)
+ 238 00b4 233C9100 		sd	s1,24(sp)
+GAS LISTING /tmp/ccRTy0zu.s 			page 9
 
 
-  62:src/KSemaphore.cpp ****         blockThread(oldThread);
-  63:src/KSemaphore.cpp ****         context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
-  64:src/KSemaphore.cpp ****         if(TCB::getRunningThread()->getWakeUpReason() == KernelConfig::WAKE_UP_SEMAPHORE_SIGNAL)
-  65:src/KSemaphore.cpp ****         {
-  66:src/KSemaphore.cpp ****             return 0;
-  67:src/KSemaphore.cpp ****         }
-  68:src/KSemaphore.cpp ****         if(TCB::getRunningThread()->getWakeUpReason() == KernelConfig::WAKE_UP_SEMAPHORE_CLOSE)
-  69:src/KSemaphore.cpp ****         {
-  70:src/KSemaphore.cpp ****             return -1;
-  71:src/KSemaphore.cpp ****         }
-  72:src/KSemaphore.cpp **** 
-  73:src/KSemaphore.cpp ****     }
-  74:src/KSemaphore.cpp ****     return 0;
- 230              		.loc 1 74 12 is_stmt 0
- 231 00d8 13050000 		li	a0,0
- 232              	.LVL19:
-  75:src/KSemaphore.cpp **** }
- 233              		.loc 1 75 1
- 234 00dc 67800000 		ret
- 235              	.LVL20:
- 236              	.L26:
-  54:src/KSemaphore.cpp ****     semaphoreVal--;
- 237              		.loc 1 54 1
- 238 00e0 130101FD 		addi	sp,sp,-48
- 239              		.cfi_def_cfa_offset 48
- 240 00e4 23341102 		sd	ra,40(sp)
- 241 00e8 23308102 		sd	s0,32(sp)
- 242 00ec 233C9100 		sd	s1,24(sp)
- 243 00f0 23382101 		sd	s2,16(sp)
- 244 00f4 23343101 		sd	s3,8(sp)
- 245              		.cfi_offset 1, -8
- 246              		.cfi_offset 8, -16
- 247              		.cfi_offset 9, -24
- 248              		.cfi_offset 18, -32
- 249              		.cfi_offset 19, -40
- 250 00f8 13040103 		addi	s0,sp,48
- 251              		.cfi_def_cfa 8, 0
- 252 00fc 93040500 		mv	s1,a0
- 253              	.LBB86:
- 254              	.LBB67:
-  59:src/KSemaphore.cpp ****         TCB::setRunningThread(Scheduler::get());
- 255              		.loc 1 59 9 is_stmt 1
- 256              	.LBB68:
- 257              	.LBB69:
-  45:src/../h/TCB.hpp ****     static void dispatch();
-  46:src/../h/TCB.hpp **** 
-  47:src/../h/TCB.hpp ****     static TCB* getRunningThread() { return running; }
- 258              		.loc 2 47 38
- 259              		.loc 2 47 45 is_stmt 0
- 260 0100 17090000 		la	s2,_ZN3TCB7runningE
- 260      03390900 
- 261 0108 83390900 		ld	s3,0(s2)
- 262              	.LVL21:
- 263              	.LBE69:
- 264              	.LBE68:
-  60:src/KSemaphore.cpp ****         oldThread->resetState();
- 265              		.loc 1 60 9 is_stmt 1
-GAS LISTING /tmp/ccDHRDh4.s 			page 8
+ 239 00b8 23382101 		sd	s2,16(sp)
+ 240 00bc 23343101 		sd	s3,8(sp)
+ 241              		.cfi_offset 1, -8
+ 242              		.cfi_offset 8, -16
+ 243              		.cfi_offset 9, -24
+ 244              		.cfi_offset 18, -32
+ 245              		.cfi_offset 19, -40
+ 246 00c0 13040103 		addi	s0,sp,48
+ 247              		.cfi_def_cfa 8, 0
+ 248 00c4 93040500 		mv	s1,a0
+ 249              	.LBB79:
+ 250              	.LBB60:
+  67:src/KSemaphore.cpp ****         TCB::setRunningThread(Scheduler::get());
+ 251              		.loc 2 67 9 is_stmt 1
+ 252              	.LBB61:
+ 253              	.LBB62:
+  47:src/../h/TCB.hpp ****     KSemaphore* getSemaphoreOnWait() const { return waitOnSemaphore; }
+  48:src/../h/TCB.hpp ****     void resetSemaphoreOnWait() { waitOnSemaphore = nullptr; }
+  49:src/../h/TCB.hpp ****     static void dispatch();
+  50:src/../h/TCB.hpp **** 
+  51:src/../h/TCB.hpp ****     static TCB* getRunningThread() { return running; }
+ 254              		.loc 3 51 38
+ 255              		.loc 3 51 45 is_stmt 0
+ 256 00c8 17090000 		la	s2,_ZN3TCB7runningE
+ 256      03390900 
+ 257 00d0 83390900 		ld	s3,0(s2)
+ 258              	.LVL23:
+ 259              	.LBE62:
+ 260              	.LBE61:
+  68:src/KSemaphore.cpp ****         oldThread->resetState();
+ 261              		.loc 2 68 9 is_stmt 1
+  68:src/KSemaphore.cpp ****         oldThread->resetState();
+ 262              		.loc 2 68 30 is_stmt 0
+ 263 00d4 97000000 		call	_ZN9Scheduler3getEv@plt
+ 263      E7800000 
+ 264              	.LVL24:
+ 265              	.LBB63:
+ 266              	.LBB64:
+  52:src/../h/TCB.hpp ****     static void setRunningThread(TCB* newRunningThread) { running = newRunningThread; }
+ 267              		.loc 3 52 59 is_stmt 1
+ 268              		.loc 3 52 67 is_stmt 0
+ 269 00dc 2330A900 		sd	a0,0(s2)
+ 270              	.LVL25:
+ 271              	.LBE64:
+ 272              	.LBE63:
+  69:src/KSemaphore.cpp ****         blockThread(oldThread);
+ 273              		.loc 2 69 9 is_stmt 1
+ 274              	.LBB65:
+ 275              	.LBB66:
+  38:src/../h/TCB.hpp ****     Context* getContext() { return &context; }
+ 276              		.loc 3 38 24
+  38:src/../h/TCB.hpp ****     Context* getContext() { return &context; }
+ 277              		.loc 3 38 30 is_stmt 0
+ 278 00e0 23B40904 		sd	zero,72(s3)
+ 279              	.LVL26:
+ 280              	.LBE66:
+ 281              	.LBE65:
+GAS LISTING /tmp/ccRTy0zu.s 			page 10
 
 
-  60:src/KSemaphore.cpp ****         oldThread->resetState();
- 266              		.loc 1 60 30 is_stmt 0
- 267 010c 97000000 		call	_ZN9Scheduler3getEv@plt
- 267      E7800000 
- 268              	.LVL22:
- 269              	.LBB70:
- 270              	.LBB71:
-  48:src/../h/TCB.hpp ****     static void setRunningThread(TCB* newRunningThread) { running = newRunningThread; }
- 271              		.loc 2 48 59 is_stmt 1
- 272              		.loc 2 48 67 is_stmt 0
- 273 0114 2330A900 		sd	a0,0(s2)
- 274              	.LVL23:
- 275              	.LBE71:
- 276              	.LBE70:
-  61:src/KSemaphore.cpp ****         blockThread(oldThread);
- 277              		.loc 1 61 9 is_stmt 1
- 278              	.LBB72:
- 279              	.LBB73:
-  34:src/../h/TCB.hpp ****     Context* getContext() { return &context; }
- 280              		.loc 2 34 24
-  34:src/../h/TCB.hpp ****     Context* getContext() { return &context; }
- 281              		.loc 2 34 30 is_stmt 0
- 282 0118 23B40904 		sd	zero,72(s3)
- 283              	.LVL24:
- 284              	.LBE73:
- 285              	.LBE72:
-  62:src/KSemaphore.cpp ****         context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
- 286              		.loc 1 62 9 is_stmt 1
-  62:src/KSemaphore.cpp ****         context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
- 287              		.loc 1 62 20 is_stmt 0
- 288 011c 93850900 		mv	a1,s3
- 289 0120 13850400 		mv	a0,s1
- 290 0124 97000000 		call	_ZN10KSemaphore11blockThreadEP3TCB
- 290      E7800000 
- 291              	.LVL25:
-  63:src/KSemaphore.cpp ****         if(TCB::getRunningThread()->getWakeUpReason() == KernelConfig::WAKE_UP_SEMAPHORE_SIGNAL)
- 292              		.loc 1 63 9 is_stmt 1
- 293              	.LBB74:
- 294              	.LBB75:
-  35:src/../h/TCB.hpp ****     void* getUserStack() const { return userStack; }
- 295              		.loc 2 35 29
- 296              	.LBE75:
- 297              	.LBE74:
- 298              	.LBB76:
- 299              	.LBB77:
-  47:src/../h/TCB.hpp ****     static void setRunningThread(TCB* newRunningThread) { running = newRunningThread; }
- 300              		.loc 2 47 38
-  47:src/../h/TCB.hpp ****     static void setRunningThread(TCB* newRunningThread) { running = newRunningThread; }
- 301              		.loc 2 47 45 is_stmt 0
- 302 012c 83350900 		ld	a1,0(s2)
- 303              	.LVL26:
- 304              	.LBE77:
- 305              	.LBE76:
- 306              	.LBB78:
- 307              	.LBB79:
-  35:src/../h/TCB.hpp ****     void* getUserStack() const { return userStack; }
- 308              		.loc 2 35 29 is_stmt 1
-GAS LISTING /tmp/ccDHRDh4.s 			page 9
+  70:src/KSemaphore.cpp ****         context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
+ 282              		.loc 2 70 9 is_stmt 1
+  70:src/KSemaphore.cpp ****         context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
+ 283              		.loc 2 70 20 is_stmt 0
+ 284 00e4 93850900 		mv	a1,s3
+ 285 00e8 13850400 		mv	a0,s1
+ 286 00ec 97000000 		call	_ZN10KSemaphore11blockThreadEP3TCB
+ 286      E7800000 
+ 287              	.LVL27:
+  71:src/KSemaphore.cpp ****         if(TCB::getRunningThread()->getWakeUpReason() == KernelConfig::WAKE_UP_SEMAPHORE_SIGNAL)
+ 288              		.loc 2 71 9 is_stmt 1
+ 289              	.LBB67:
+ 290              	.LBB68:
+  39:src/../h/TCB.hpp ****     void* getUserStack() const { return userStack; }
+ 291              		.loc 3 39 29
+ 292              	.LBE68:
+ 293              	.LBE67:
+ 294              	.LBB69:
+ 295              	.LBB70:
+  51:src/../h/TCB.hpp ****     static void setRunningThread(TCB* newRunningThread) { running = newRunningThread; }
+ 296              		.loc 3 51 38
+  51:src/../h/TCB.hpp ****     static void setRunningThread(TCB* newRunningThread) { running = newRunningThread; }
+ 297              		.loc 3 51 45 is_stmt 0
+ 298 00f4 83350900 		ld	a1,0(s2)
+ 299              	.LVL28:
+ 300              	.LBE70:
+ 301              	.LBE69:
+ 302              	.LBB71:
+ 303              	.LBB72:
+  39:src/../h/TCB.hpp ****     void* getUserStack() const { return userStack; }
+ 304              		.loc 3 39 29 is_stmt 1
+ 305              	.LBE72:
+ 306              	.LBE71:
+  71:src/KSemaphore.cpp ****         if(TCB::getRunningThread()->getWakeUpReason() == KernelConfig::WAKE_UP_SEMAPHORE_SIGNAL)
+ 307              		.loc 2 71 23 is_stmt 0
+ 308 00f8 93858500 		addi	a1,a1,8
+ 309 00fc 13858900 		addi	a0,s3,8
+ 310 0100 97000000 		call	context_switch@plt
+ 310      E7800000 
+ 311              	.LVL29:
+  72:src/KSemaphore.cpp ****         {
+ 312              		.loc 2 72 9 is_stmt 1
+ 313              	.LBB73:
+ 314              	.LBB74:
+  51:src/../h/TCB.hpp ****     static void setRunningThread(TCB* newRunningThread) { running = newRunningThread; }
+ 315              		.loc 3 51 38
+  51:src/../h/TCB.hpp ****     static void setRunningThread(TCB* newRunningThread) { running = newRunningThread; }
+ 316              		.loc 3 51 45 is_stmt 0
+ 317 0108 83370900 		ld	a5,0(s2)
+ 318              	.LVL30:
+ 319              	.LBE74:
+ 320              	.LBE73:
+ 321              	.LBB75:
+ 322              	.LBB76:
+  45:src/../h/TCB.hpp ****     void setSemaphoreOnWait (KSemaphore* semaphore) { waitOnSemaphore = semaphore; }
+ 323              		.loc 3 45 52 is_stmt 1
+  45:src/../h/TCB.hpp ****     void setSemaphoreOnWait (KSemaphore* semaphore) { waitOnSemaphore = semaphore; }
+GAS LISTING /tmp/ccRTy0zu.s 			page 11
 
 
- 309              	.LBE79:
- 310              	.LBE78:
-  63:src/KSemaphore.cpp ****         if(TCB::getRunningThread()->getWakeUpReason() == KernelConfig::WAKE_UP_SEMAPHORE_SIGNAL)
- 311              		.loc 1 63 23 is_stmt 0
- 312 0130 93858500 		addi	a1,a1,8
- 313 0134 13858900 		addi	a0,s3,8
- 314 0138 97000000 		call	context_switch@plt
- 314      E7800000 
- 315              	.LVL27:
-  64:src/KSemaphore.cpp ****         {
- 316              		.loc 1 64 9 is_stmt 1
- 317              	.LBB80:
- 318              	.LBB81:
-  47:src/../h/TCB.hpp ****     static void setRunningThread(TCB* newRunningThread) { running = newRunningThread; }
- 319              		.loc 2 47 38
-  47:src/../h/TCB.hpp ****     static void setRunningThread(TCB* newRunningThread) { running = newRunningThread; }
- 320              		.loc 2 47 45 is_stmt 0
- 321 0140 83370900 		ld	a5,0(s2)
- 322              	.LVL28:
- 323              	.LBE81:
- 324              	.LBE80:
- 325              	.LBB82:
- 326              	.LBB83:
-  41:src/../h/TCB.hpp ****     void setSemaphoreOnWait (KSemaphore* semaphore) { waitOnSemaphore = semaphore; }
- 327              		.loc 2 41 52 is_stmt 1
-  41:src/../h/TCB.hpp ****     void setSemaphoreOnWait (KSemaphore* semaphore) { waitOnSemaphore = semaphore; }
- 328              		.loc 2 41 59 is_stmt 0
- 329 0144 83A74705 		lw	a5,84(a5)
- 330              	.LVL29:
- 331              	.LBE83:
- 332              	.LBE82:
-  64:src/KSemaphore.cpp ****         {
- 333              		.loc 1 64 9
- 334 0148 63860702 		beqz	a5,.L20
-  68:src/KSemaphore.cpp ****         {
- 335              		.loc 1 68 9 is_stmt 1
- 336              	.LBE67:
- 337              	.LBE86:
-  47:src/../h/TCB.hpp ****     static void setRunningThread(TCB* newRunningThread) { running = newRunningThread; }
- 338              		.loc 2 47 38
- 339              	.LVL30:
-  41:src/../h/TCB.hpp ****     void setSemaphoreOnWait (KSemaphore* semaphore) { waitOnSemaphore = semaphore; }
- 340              		.loc 2 41 52
- 341              	.LBB87:
- 342              	.LBB84:
-  68:src/KSemaphore.cpp ****         {
- 343              		.loc 1 68 9 is_stmt 0
- 344 014c 13071000 		li	a4,1
- 345 0150 6386E702 		beq	a5,a4,.L21
- 346              	.LBE84:
- 347              	.LBE87:
-  74:src/KSemaphore.cpp **** }
- 348              		.loc 1 74 12
- 349 0154 13050000 		li	a0,0
- 350              	.L18:
- 351              		.loc 1 75 1
- 352 0158 83308102 		ld	ra,40(sp)
-GAS LISTING /tmp/ccDHRDh4.s 			page 10
+ 324              		.loc 3 45 59 is_stmt 0
+ 325 010c 83A74705 		lw	a5,84(a5)
+ 326              	.LVL31:
+ 327              	.LBE76:
+ 328              	.LBE75:
+  72:src/KSemaphore.cpp ****         {
+ 329              		.loc 2 72 9
+ 330 0110 63860702 		beqz	a5,.L16
+  76:src/KSemaphore.cpp ****         {
+ 331              		.loc 2 76 9 is_stmt 1
+ 332              	.LBE60:
+ 333              	.LBE79:
+  51:src/../h/TCB.hpp ****     static void setRunningThread(TCB* newRunningThread) { running = newRunningThread; }
+ 334              		.loc 3 51 38
+ 335              	.LVL32:
+  45:src/../h/TCB.hpp ****     void setSemaphoreOnWait (KSemaphore* semaphore) { waitOnSemaphore = semaphore; }
+ 336              		.loc 3 45 52
+ 337              	.LBB80:
+ 338              	.LBB77:
+  76:src/KSemaphore.cpp ****         {
+ 339              		.loc 2 76 9 is_stmt 0
+ 340 0114 13071000 		li	a4,1
+ 341 0118 6386E702 		beq	a5,a4,.L17
+ 342              	.LBE77:
+ 343              	.LBE80:
+  82:src/KSemaphore.cpp **** }
+ 344              		.loc 2 82 12
+ 345 011c 13050000 		li	a0,0
+ 346              	.L14:
+ 347              		.loc 2 83 1
+ 348 0120 83308102 		ld	ra,40(sp)
+ 349              		.cfi_remember_state
+ 350              		.cfi_restore 1
+ 351 0124 03340102 		ld	s0,32(sp)
+ 352              		.cfi_restore 8
+ 353              		.cfi_def_cfa 2, 48
+ 354 0128 83348101 		ld	s1,24(sp)
+ 355              		.cfi_restore 9
+ 356              	.LVL33:
+ 357 012c 03390101 		ld	s2,16(sp)
+ 358              		.cfi_restore 18
+ 359 0130 83398100 		ld	s3,8(sp)
+ 360              		.cfi_restore 19
+ 361              	.LVL34:
+ 362 0134 13010103 		addi	sp,sp,48
+ 363              		.cfi_def_cfa_offset 0
+ 364 0138 67800000 		jr	ra
+ 365              	.LVL35:
+ 366              	.L16:
+ 367              		.cfi_restore_state
+ 368              	.LBB81:
+ 369              	.LBB78:
+  74:src/KSemaphore.cpp ****         }
+ 370              		.loc 2 74 20
+ 371 013c 13050000 		li	a0,0
+ 372 0140 6FF01FFE 		j	.L14
+ 373              	.L17:
+GAS LISTING /tmp/ccRTy0zu.s 			page 12
 
 
- 353              		.cfi_remember_state
- 354              		.cfi_restore 1
- 355 015c 03340102 		ld	s0,32(sp)
- 356              		.cfi_restore 8
- 357              		.cfi_def_cfa 2, 48
- 358 0160 83348101 		ld	s1,24(sp)
- 359              		.cfi_restore 9
- 360              	.LVL31:
- 361 0164 03390101 		ld	s2,16(sp)
- 362              		.cfi_restore 18
- 363 0168 83398100 		ld	s3,8(sp)
- 364              		.cfi_restore 19
- 365              	.LVL32:
- 366 016c 13010103 		addi	sp,sp,48
- 367              		.cfi_def_cfa_offset 0
- 368 0170 67800000 		jr	ra
- 369              	.LVL33:
- 370              	.L20:
- 371              		.cfi_restore_state
- 372              	.LBB88:
- 373              	.LBB85:
-  66:src/KSemaphore.cpp ****         }
- 374              		.loc 1 66 20
- 375 0174 13050000 		li	a0,0
- 376 0178 6FF01FFE 		j	.L18
- 377              	.L21:
-  70:src/KSemaphore.cpp ****         }
- 378              		.loc 1 70 21
- 379 017c 1305F0FF 		li	a0,-1
- 380 0180 6FF09FFD 		j	.L18
- 381              	.LBE85:
- 382              	.LBE88:
- 383              		.cfi_endproc
- 384              	.LFE40:
- 386              		.align	2
- 387              		.globl	_ZN10KSemaphore6signalEv
- 389              	_ZN10KSemaphore6signalEv:
- 390              	.LFB41:
-  76:src/KSemaphore.cpp **** 
-  77:src/KSemaphore.cpp **** int KSemaphore::signal()
-  78:src/KSemaphore.cpp **** {
- 391              		.loc 1 78 1 is_stmt 1
- 392              		.cfi_startproc
- 393              	.LVL34:
-  79:src/KSemaphore.cpp ****     semaphoreVal++;
- 394              		.loc 1 79 5
- 395 0184 83370500 		ld	a5,0(a0)
- 396              		.loc 1 79 17 is_stmt 0
- 397 0188 93871700 		addi	a5,a5,1
- 398 018c 2330F500 		sd	a5,0(a0)
-  80:src/KSemaphore.cpp ****     if(semaphoreVal <= 0)
- 399              		.loc 1 80 5 is_stmt 1
- 400 0190 6356F000 		blez	a5,.L34
-  81:src/KSemaphore.cpp ****     {
-  82:src/KSemaphore.cpp ****         return unblockThread(KernelConfig::WAKE_UP_SEMAPHORE_SIGNAL);
-  83:src/KSemaphore.cpp ****     }
-  84:src/KSemaphore.cpp ****     return 0;
-GAS LISTING /tmp/ccDHRDh4.s 			page 11
+  78:src/KSemaphore.cpp ****         }
+ 374              		.loc 2 78 21
+ 375 0144 1305F0FF 		li	a0,-1
+ 376 0148 6FF09FFD 		j	.L14
+ 377              	.LBE78:
+ 378              	.LBE81:
+ 379              		.cfi_endproc
+ 380              	.LFE52:
+ 382              		.section	.text._ZN5QueueI3TCBE4takeEv,"axG",@progbits,_ZN5QueueI3TCBE4takeEv,comdat
+ 383              		.align	2
+ 384              		.weak	_ZN5QueueI3TCBE4takeEv
+ 386              	_ZN5QueueI3TCBE4takeEv:
+ 387              	.LFB58:
+  40:src/../h/Queue.hpp **** {
+ 388              		.loc 1 40 4 is_stmt 1
+ 389              		.cfi_startproc
+ 390              	.LVL36:
+ 391 0000 130101FF 		addi	sp,sp,-16
+ 392              		.cfi_def_cfa_offset 16
+ 393 0004 23348100 		sd	s0,8(sp)
+ 394              		.cfi_offset 8, -8
+ 395 0008 13040101 		addi	s0,sp,16
+ 396              		.cfi_def_cfa 8, 0
+ 397 000c 93070500 		mv	a5,a0
+  42:src/../h/Queue.hpp ****     {
+ 398              		.loc 1 42 9 is_stmt 0
+ 399 0010 03350500 		ld	a0,0(a0)
+ 400              	.LVL37:
+  42:src/../h/Queue.hpp ****     {
+ 401              		.loc 1 42 5
+ 402 0014 63080500 		beqz	a0,.L23
+ 403              	.LVL38:
+ 404              	.LBB82:
+ 405              	.LBB83:
+  37:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
+ 406              		.loc 3 37 29 is_stmt 1
+  37:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
+ 407              		.loc 3 37 36 is_stmt 0
+ 408 0018 03378504 		ld	a4,72(a0)
+ 409              	.LVL39:
+ 410              	.LBE83:
+ 411              	.LBE82:
+  47:src/../h/Queue.hpp ****     if(!head)
+ 412              		.loc 1 47 5
+ 413 001c 23B0E700 		sd	a4,0(a5)
+  48:src/../h/Queue.hpp ****     {
+ 414              		.loc 1 48 5
+ 415 0020 63080700 		beqz	a4,.L26
+ 416              	.LVL40:
+ 417              	.L23:
+  53:src/../h/Queue.hpp **** 
+ 418              		.loc 1 53 1
+ 419 0024 03348100 		ld	s0,8(sp)
+ 420              		.cfi_remember_state
+ 421              		.cfi_restore 8
+ 422              		.cfi_def_cfa 2, 16
+ 423 0028 13010101 		addi	sp,sp,16
+GAS LISTING /tmp/ccRTy0zu.s 			page 13
 
 
- 401              		.loc 1 84 12 is_stmt 0
- 402 0194 13050000 		li	a0,0
- 403              	.LVL35:
-  85:src/KSemaphore.cpp **** }
- 404              		.loc 1 85 1
- 405 0198 67800000 		ret
- 406              	.LVL36:
- 407              	.L34:
-  78:src/KSemaphore.cpp ****     semaphoreVal++;
- 408              		.loc 1 78 1
- 409 019c 130101FF 		addi	sp,sp,-16
- 410              		.cfi_def_cfa_offset 16
- 411 01a0 23341100 		sd	ra,8(sp)
- 412 01a4 23308100 		sd	s0,0(sp)
- 413              		.cfi_offset 1, -8
- 414              		.cfi_offset 8, -16
- 415 01a8 13040101 		addi	s0,sp,16
- 416              		.cfi_def_cfa 8, 0
-  82:src/KSemaphore.cpp ****     }
- 417              		.loc 1 82 9 is_stmt 1
-  82:src/KSemaphore.cpp ****     }
- 418              		.loc 1 82 29 is_stmt 0
- 419 01ac 93050000 		li	a1,0
- 420 01b0 97000000 		call	_ZN10KSemaphore13unblockThreadEN12KernelConfig12WakeUpReasonE
- 420      E7800000 
- 421              	.LVL37:
- 422              		.loc 1 85 1
- 423 01b8 83308100 		ld	ra,8(sp)
- 424              		.cfi_restore 1
- 425 01bc 03340100 		ld	s0,0(sp)
- 426              		.cfi_restore 8
- 427              		.cfi_def_cfa 2, 16
- 428 01c0 13010101 		addi	sp,sp,16
- 429              		.cfi_def_cfa_offset 0
- 430 01c4 67800000 		jr	ra
- 431              		.cfi_endproc
- 432              	.LFE41:
- 434              		.align	2
- 435              		.globl	_ZN10KSemaphore5closeEv
- 437              	_ZN10KSemaphore5closeEv:
- 438              	.LFB42:
-  86:src/KSemaphore.cpp **** 
-  87:src/KSemaphore.cpp **** int KSemaphore::close()
-  88:src/KSemaphore.cpp **** {
- 439              		.loc 1 88 1 is_stmt 1
- 440              		.cfi_startproc
- 441              	.LVL38:
- 442 01c8 130101FE 		addi	sp,sp,-32
- 443              		.cfi_def_cfa_offset 32
- 444 01cc 233C1100 		sd	ra,24(sp)
- 445 01d0 23388100 		sd	s0,16(sp)
- 446 01d4 23349100 		sd	s1,8(sp)
- 447 01d8 23302101 		sd	s2,0(sp)
- 448              		.cfi_offset 1, -8
- 449              		.cfi_offset 8, -16
- 450              		.cfi_offset 9, -24
- 451              		.cfi_offset 18, -32
-GAS LISTING /tmp/ccDHRDh4.s 			page 12
-
-
- 452 01dc 13040102 		addi	s0,sp,32
+ 424              		.cfi_def_cfa_offset 0
+ 425 002c 67800000 		jr	ra
+ 426              	.LVL41:
+ 427              	.L26:
+ 428              		.cfi_restore_state
+  50:src/../h/Queue.hpp ****     }
+ 429              		.loc 1 50 9
+ 430 0030 23B40700 		sd	zero,8(a5)
+ 431 0034 6FF01FFF 		j	.L23
+ 432              		.cfi_endproc
+ 433              	.LFE58:
+ 435              		.text
+ 436              		.align	2
+ 437              		.globl	_ZN10KSemaphore13unblockThreadEN12KernelConfig12WakeUpReasonE
+ 439              	_ZN10KSemaphore13unblockThreadEN12KernelConfig12WakeUpReasonE:
+ 440              	.LFB51:
+  38:src/KSemaphore.cpp **** //   if(!headBlockedThread)
+ 441              		.loc 2 38 1 is_stmt 1
+ 442              		.cfi_startproc
+ 443              	.LVL42:
+ 444 014c 130101FE 		addi	sp,sp,-32
+ 445              		.cfi_def_cfa_offset 32
+ 446 0150 233C1100 		sd	ra,24(sp)
+ 447 0154 23388100 		sd	s0,16(sp)
+ 448 0158 23349100 		sd	s1,8(sp)
+ 449              		.cfi_offset 1, -8
+ 450              		.cfi_offset 8, -16
+ 451              		.cfi_offset 9, -24
+ 452 015c 13040102 		addi	s0,sp,32
  453              		.cfi_def_cfa 8, 0
- 454 01e0 13090500 		mv	s2,a0
-  89:src/KSemaphore.cpp ****     TCB* tempThread = headBlockedThread;
- 455              		.loc 1 89 5
- 456              		.loc 1 89 10 is_stmt 0
- 457 01e4 83348500 		ld	s1,8(a0)
- 458              	.LVL39:
-  90:src/KSemaphore.cpp ****     if(!tempThread)
- 459              		.loc 1 90 5 is_stmt 1
- 460 01e8 63800402 		beqz	s1,.L38
- 461              	.LVL40:
- 462              	.L37:
-  91:src/KSemaphore.cpp ****     {
-  92:src/KSemaphore.cpp ****         return 0;
-  93:src/KSemaphore.cpp ****     }
-  94:src/KSemaphore.cpp ****     for(;tempThread; tempThread = tempThread->getState())
- 463              		.loc 1 94 5 discriminator 2
- 464              		.loc 1 94 10 discriminator 2
- 465 01ec 63820402 		beqz	s1,.L39
-  95:src/KSemaphore.cpp ****     {
-  96:src/KSemaphore.cpp ****         unblockThread(KernelConfig::WAKE_UP_SEMAPHORE_CLOSE);
- 466              		.loc 1 96 9 discriminator 1
- 467              		.loc 1 96 22 is_stmt 0 discriminator 1
- 468 01f0 93051000 		li	a1,1
- 469 01f4 13050900 		mv	a0,s2
- 470 01f8 97000000 		call	_ZN10KSemaphore13unblockThreadEN12KernelConfig12WakeUpReasonE
- 470      E7800000 
- 471              	.LVL41:
-  94:src/KSemaphore.cpp ****     {
- 472              		.loc 1 94 5 is_stmt 1 discriminator 1
- 473              	.LBB89:
- 474              	.LBB90:
-  33:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
- 475              		.loc 2 33 29 discriminator 1
-  33:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
- 476              		.loc 2 33 36 is_stmt 0 discriminator 1
- 477 0200 83B48404 		ld	s1,72(s1)
- 478              	.LVL42:
- 479              	.LBE90:
- 480              	.LBE89:
-  94:src/KSemaphore.cpp ****     {
- 481              		.loc 1 94 5 discriminator 1
- 482 0204 6FF09FFE 		j	.L37
- 483              	.LVL43:
- 484              	.L38:
-  92:src/KSemaphore.cpp ****     }
- 485              		.loc 1 92 16
- 486 0208 13050000 		li	a0,0
- 487              	.LVL44:
- 488 020c 6F008000 		j	.L36
- 489              	.L39:
-  97:src/KSemaphore.cpp ****     }
-  98:src/KSemaphore.cpp ****     return -1;
- 490              		.loc 1 98 13
- 491 0210 1305F0FF 		li	a0,-1
- 492              	.L36:
-GAS LISTING /tmp/ccDHRDh4.s 			page 13
+ 454 0160 93840500 		mv	s1,a1
+  43:src/KSemaphore.cpp **** //   headBlockedThread = headBlockedThread->getState();
+ 455              		.loc 2 43 4
+  43:src/KSemaphore.cpp **** //   headBlockedThread = headBlockedThread->getState();
+ 456              		.loc 2 43 46 is_stmt 0
+ 457 0164 03358500 		ld	a0,8(a0)
+ 458              	.LVL43:
+ 459 0168 97000000 		call	_ZN5QueueI3TCBE4takeEv
+ 459      E7800000 
+ 460              	.LVL44:
+  49:src/KSemaphore.cpp ****     {
+ 461              		.loc 2 49 5 is_stmt 1
+ 462 0170 63080502 		beqz	a0,.L29
+  51:src/KSemaphore.cpp ****         oldThread->resetState();
+ 463              		.loc 2 51 9
+ 464              	.LVL45:
+ 465              	.LBB84:
+ 466              	.LBB85:
+  44:src/../h/TCB.hpp ****     KernelConfig::WakeUpReason getWakeUpReason() { return wakeUpReason; }
+ 467              		.loc 3 44 63
+  44:src/../h/TCB.hpp ****     KernelConfig::WakeUpReason getWakeUpReason() { return wakeUpReason; }
+ 468              		.loc 3 44 76 is_stmt 0
+ 469 0174 232A9504 		sw	s1,84(a0)
+ 470              	.LVL46:
+ 471              	.LBE85:
+ 472              	.LBE84:
+  52:src/KSemaphore.cpp ****         oldThread->resetSemaphoreOnWait();
+GAS LISTING /tmp/ccRTy0zu.s 			page 14
 
 
-  99:src/KSemaphore.cpp **** 
- 100:src/KSemaphore.cpp **** }
- 493              		.loc 1 100 1
- 494 0214 83308101 		ld	ra,24(sp)
- 495              		.cfi_restore 1
- 496 0218 03340101 		ld	s0,16(sp)
- 497              		.cfi_restore 8
- 498              		.cfi_def_cfa 2, 32
- 499 021c 83348100 		ld	s1,8(sp)
- 500              		.cfi_restore 9
- 501              	.LVL45:
- 502 0220 03390100 		ld	s2,0(sp)
- 503              		.cfi_restore 18
- 504              	.LVL46:
- 505 0224 13010102 		addi	sp,sp,32
- 506              		.cfi_def_cfa_offset 0
- 507 0228 67800000 		jr	ra
- 508              		.cfi_endproc
- 509              	.LFE42:
- 511              		.align	2
- 512              		.globl	_ZN10KSemaphore25removeThreadFromWaitQueueEP3TCB
- 514              	_ZN10KSemaphore25removeThreadFromWaitQueueEP3TCB:
- 515              	.LFB43:
- 101:src/KSemaphore.cpp **** void KSemaphore::removeThreadFromWaitQueue(TCB *thread)
- 102:src/KSemaphore.cpp **** {
- 516              		.loc 1 102 1 is_stmt 1
- 517              		.cfi_startproc
- 518              	.LVL47:
- 519 022c 130101FF 		addi	sp,sp,-16
- 520              		.cfi_def_cfa_offset 16
- 521 0230 23348100 		sd	s0,8(sp)
- 522              		.cfi_offset 8, -8
- 523 0234 13040101 		addi	s0,sp,16
- 524              		.cfi_def_cfa 8, 0
- 103:src/KSemaphore.cpp ****     TCB* currThread = headBlockedThread, *prevThread = nullptr;
- 525              		.loc 1 103 5
- 526              		.loc 1 103 10 is_stmt 0
- 527 0238 83368500 		ld	a3,8(a0)
- 528              	.LVL48:
- 529 023c 93870600 		mv	a5,a3
- 530              		.loc 1 103 43
- 531 0240 13070000 		li	a4,0
- 532              	.LVL49:
- 533              	.L43:
- 104:src/KSemaphore.cpp **** 
- 105:src/KSemaphore.cpp ****     while(thread != currThread && currThread)
- 534              		.loc 1 105 5 is_stmt 1
- 535              		.loc 1 105 32
- 536 0244 638AB700 		beq	a5,a1,.L42
- 537              		.loc 1 105 32 is_stmt 0 discriminator 1
- 538 0248 63880700 		beqz	a5,.L42
- 106:src/KSemaphore.cpp ****     {
- 107:src/KSemaphore.cpp ****         prevThread = currThread;
- 539              		.loc 1 107 9 is_stmt 1
- 540              	.LVL50:
- 108:src/KSemaphore.cpp ****         currThread = currThread->getState();
- 541              		.loc 1 108 9
-GAS LISTING /tmp/ccDHRDh4.s 			page 14
+ 473              		.loc 2 52 9 is_stmt 1
+ 474              	.LBB86:
+ 475              	.LBB87:
+  38:src/../h/TCB.hpp ****     Context* getContext() { return &context; }
+ 476              		.loc 3 38 24
+  38:src/../h/TCB.hpp ****     Context* getContext() { return &context; }
+ 477              		.loc 3 38 30 is_stmt 0
+ 478 0178 23340504 		sd	zero,72(a0)
+ 479              	.LVL47:
+ 480              	.LBE87:
+ 481              	.LBE86:
+  53:src/KSemaphore.cpp ****         Scheduler::put(oldThread);
+ 482              		.loc 2 53 9 is_stmt 1
+ 483              	.LBB88:
+ 484              	.LBB89:
+  48:src/../h/TCB.hpp ****     static void dispatch();
+ 485              		.loc 3 48 35
+  48:src/../h/TCB.hpp ****     static void dispatch();
+ 486              		.loc 3 48 51 is_stmt 0
+ 487 017c 23300504 		sd	zero,64(a0)
+ 488              	.LVL48:
+ 489              	.LBE89:
+ 490              	.LBE88:
+  54:src/KSemaphore.cpp ****         return 0;
+ 491              		.loc 2 54 9 is_stmt 1
+  54:src/KSemaphore.cpp ****         return 0;
+ 492              		.loc 2 54 23 is_stmt 0
+ 493 0180 97000000 		call	_ZN9Scheduler3putEP3TCB@plt
+ 493      E7800000 
+ 494              	.LVL49:
+  55:src/KSemaphore.cpp ****     }
+ 495              		.loc 2 55 9 is_stmt 1
+  55:src/KSemaphore.cpp ****     }
+ 496              		.loc 2 55 16 is_stmt 0
+ 497 0188 13050000 		li	a0,0
+ 498              	.L28:
+  59:src/KSemaphore.cpp **** 
+ 499              		.loc 2 59 1
+ 500 018c 83308101 		ld	ra,24(sp)
+ 501              		.cfi_remember_state
+ 502              		.cfi_restore 1
+ 503 0190 03340101 		ld	s0,16(sp)
+ 504              		.cfi_restore 8
+ 505              		.cfi_def_cfa 2, 32
+ 506 0194 83348100 		ld	s1,8(sp)
+ 507              		.cfi_restore 9
+ 508 0198 13010102 		addi	sp,sp,32
+ 509              		.cfi_def_cfa_offset 0
+ 510 019c 67800000 		jr	ra
+ 511              	.LVL50:
+ 512              	.L29:
+ 513              		.cfi_restore_state
+  57:src/KSemaphore.cpp **** 
+ 514              		.loc 2 57 13
+ 515 01a0 1305F0FF 		li	a0,-1
+ 516              	.LVL51:
+ 517 01a4 6FF09FFE 		j	.L28
+GAS LISTING /tmp/ccRTy0zu.s 			page 15
 
 
- 542              	.LBB91:
- 543              	.LBB92:
-  33:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
- 544              		.loc 2 33 29
- 545              	.LBE92:
- 546              	.LBE91:
- 107:src/KSemaphore.cpp ****         currThread = currThread->getState();
- 547              		.loc 1 107 20 is_stmt 0
- 548 024c 13870700 		mv	a4,a5
- 549              		.loc 1 108 42
- 550 0250 83B78704 		ld	a5,72(a5)
- 551              	.LVL51:
- 105:src/KSemaphore.cpp ****     {
- 552              		.loc 1 105 5
- 553 0254 6FF01FFF 		j	.L43
- 554              	.L42:
- 109:src/KSemaphore.cpp ****     }
- 110:src/KSemaphore.cpp **** 
- 111:src/KSemaphore.cpp ****     if(!prevThread)
- 555              		.loc 1 111 5 is_stmt 1
- 556 0258 63040702 		beqz	a4,.L47
- 112:src/KSemaphore.cpp ****     {
- 113:src/KSemaphore.cpp ****         headBlockedThread = headBlockedThread->getState();
- 114:src/KSemaphore.cpp ****         thread->resetSemaphoreOnWait();
- 115:src/KSemaphore.cpp ****         thread->resetState();
- 116:src/KSemaphore.cpp ****         if(!headBlockedThread)
- 117:src/KSemaphore.cpp ****         {
- 118:src/KSemaphore.cpp ****             tailBlockedThread = nullptr;
- 119:src/KSemaphore.cpp ****         }
- 120:src/KSemaphore.cpp ****     }
- 121:src/KSemaphore.cpp ****     else
- 122:src/KSemaphore.cpp ****     {
- 123:src/KSemaphore.cpp ****         prevThread->addThreadToState(thread->getState());
- 557              		.loc 1 123 9
- 558              	.LVL52:
- 559              	.LBB93:
- 560              	.LBB94:
-  33:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
- 561              		.loc 2 33 29
-  33:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
- 562              		.loc 2 33 36 is_stmt 0
- 563 025c 83B78504 		ld	a5,72(a1)
- 564              	.LVL53:
- 565              	.LBE94:
- 566              	.LBE93:
- 567              	.LBB95:
- 568              	.LBB96:
-  32:src/../h/TCB.hpp ****     TCB* getState() const { return state; }
- 569              		.loc 2 32 45 is_stmt 1
-  32:src/../h/TCB.hpp ****     TCB* getState() const { return state; }
- 570              		.loc 2 32 51 is_stmt 0
- 571 0260 2334F704 		sd	a5,72(a4)
- 572              	.LVL54:
- 573              	.LBE96:
- 574              	.LBE95:
- 124:src/KSemaphore.cpp ****         thread->resetSemaphoreOnWait();
- 575              		.loc 1 124 9 is_stmt 1
-GAS LISTING /tmp/ccDHRDh4.s 			page 15
+ 518              		.cfi_endproc
+ 519              	.LFE51:
+ 521              		.align	2
+ 522              		.globl	_ZN10KSemaphore6signalEv
+ 524              	_ZN10KSemaphore6signalEv:
+ 525              	.LFB53:
+  84:src/KSemaphore.cpp **** 
+  85:src/KSemaphore.cpp **** int KSemaphore::signal()
+  86:src/KSemaphore.cpp **** {
+ 526              		.loc 2 86 1 is_stmt 1
+ 527              		.cfi_startproc
+ 528              	.LVL52:
+  87:src/KSemaphore.cpp ****     semaphoreVal++;
+ 529              		.loc 2 87 5
+ 530 01a8 83370500 		ld	a5,0(a0)
+ 531              		.loc 2 87 17 is_stmt 0
+ 532 01ac 93871700 		addi	a5,a5,1
+ 533 01b0 2330F500 		sd	a5,0(a0)
+  88:src/KSemaphore.cpp ****     if(semaphoreVal <= 0)
+ 534              		.loc 2 88 5 is_stmt 1
+ 535 01b4 6356F000 		blez	a5,.L38
+  89:src/KSemaphore.cpp ****     {
+  90:src/KSemaphore.cpp ****         return unblockThread(KernelConfig::WAKE_UP_SEMAPHORE_SIGNAL);
+  91:src/KSemaphore.cpp ****     }
+  92:src/KSemaphore.cpp ****     return 0;
+ 536              		.loc 2 92 12 is_stmt 0
+ 537 01b8 13050000 		li	a0,0
+ 538              	.LVL53:
+  93:src/KSemaphore.cpp **** }
+ 539              		.loc 2 93 1
+ 540 01bc 67800000 		ret
+ 541              	.LVL54:
+ 542              	.L38:
+  86:src/KSemaphore.cpp ****     semaphoreVal++;
+ 543              		.loc 2 86 1
+ 544 01c0 130101FF 		addi	sp,sp,-16
+ 545              		.cfi_def_cfa_offset 16
+ 546 01c4 23341100 		sd	ra,8(sp)
+ 547 01c8 23308100 		sd	s0,0(sp)
+ 548              		.cfi_offset 1, -8
+ 549              		.cfi_offset 8, -16
+ 550 01cc 13040101 		addi	s0,sp,16
+ 551              		.cfi_def_cfa 8, 0
+  90:src/KSemaphore.cpp ****     }
+ 552              		.loc 2 90 9 is_stmt 1
+  90:src/KSemaphore.cpp ****     }
+ 553              		.loc 2 90 29 is_stmt 0
+ 554 01d0 93050000 		li	a1,0
+ 555 01d4 97000000 		call	_ZN10KSemaphore13unblockThreadEN12KernelConfig12WakeUpReasonE
+ 555      E7800000 
+ 556              	.LVL55:
+ 557              		.loc 2 93 1
+ 558 01dc 83308100 		ld	ra,8(sp)
+ 559              		.cfi_restore 1
+ 560 01e0 03340100 		ld	s0,0(sp)
+ 561              		.cfi_restore 8
+ 562              		.cfi_def_cfa 2, 16
+GAS LISTING /tmp/ccRTy0zu.s 			page 16
 
 
- 576              	.LBB97:
- 577              	.LBB98:
-  44:src/../h/TCB.hpp ****     static void dispatch();
- 578              		.loc 2 44 35
-  44:src/../h/TCB.hpp ****     static void dispatch();
- 579              		.loc 2 44 51 is_stmt 0
- 580 0264 23B00504 		sd	zero,64(a1)
- 581              	.LVL55:
- 582              	.LBE98:
- 583              	.LBE97:
- 125:src/KSemaphore.cpp ****         thread->resetState();
- 584              		.loc 1 125 9 is_stmt 1
- 585              	.LBB99:
- 586              	.LBB100:
-  34:src/../h/TCB.hpp ****     Context* getContext() { return &context; }
- 587              		.loc 2 34 24
-  34:src/../h/TCB.hpp ****     Context* getContext() { return &context; }
- 588              		.loc 2 34 30 is_stmt 0
- 589 0268 23B40504 		sd	zero,72(a1)
- 590              	.LVL56:
- 591              	.LBE100:
- 592              	.LBE99:
- 126:src/KSemaphore.cpp ****         if(thread == tailBlockedThread)
- 593              		.loc 1 126 9 is_stmt 1
- 594              		.loc 1 126 22 is_stmt 0
- 595 026c 83370501 		ld	a5,16(a0)
- 596              		.loc 1 126 9
- 597 0270 6388B702 		beq	a5,a1,.L48
- 598              	.L41:
- 127:src/KSemaphore.cpp ****         {
- 128:src/KSemaphore.cpp ****             tailBlockedThread = prevThread;
- 129:src/KSemaphore.cpp ****         }
- 130:src/KSemaphore.cpp ****     }
- 131:src/KSemaphore.cpp **** }...
- 599              		.loc 1 131 1
- 600 0274 03348100 		ld	s0,8(sp)
- 601              		.cfi_remember_state
- 602              		.cfi_restore 8
- 603              		.cfi_def_cfa 2, 16
- 604 0278 13010101 		addi	sp,sp,16
- 605              		.cfi_def_cfa_offset 0
- 606 027c 67800000 		jr	ra
- 607              	.LVL57:
- 608              	.L47:
- 609              		.cfi_restore_state
- 113:src/KSemaphore.cpp ****         headBlockedThread = headBlockedThread->getState();
- 610              		.loc 1 113 9 is_stmt 1
- 611              	.LBB101:
- 612              	.LBB102:
-  33:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
- 613              		.loc 2 33 29
-  33:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
- 614              		.loc 2 33 36 is_stmt 0
- 615 0280 83B78604 		ld	a5,72(a3)
- 616              	.LVL58:
- 617              	.LBE102:
- 618              	.LBE101:
-GAS LISTING /tmp/ccDHRDh4.s 			page 16
+ 563 01e4 13010101 		addi	sp,sp,16
+ 564              		.cfi_def_cfa_offset 0
+ 565 01e8 67800000 		jr	ra
+ 566              		.cfi_endproc
+ 567              	.LFE53:
+ 569              		.align	2
+ 570              		.globl	_ZN10KSemaphore5closeEv
+ 572              	_ZN10KSemaphore5closeEv:
+ 573              	.LFB54:
+  94:src/KSemaphore.cpp **** 
+  95:src/KSemaphore.cpp **** int KSemaphore::close()
+  96:src/KSemaphore.cpp **** {
+ 574              		.loc 2 96 1 is_stmt 1
+ 575              		.cfi_startproc
+ 576              	.LVL56:
+ 577 01ec 130101FE 		addi	sp,sp,-32
+ 578              		.cfi_def_cfa_offset 32
+ 579 01f0 233C1100 		sd	ra,24(sp)
+ 580 01f4 23388100 		sd	s0,16(sp)
+ 581 01f8 23349100 		sd	s1,8(sp)
+ 582 01fc 23302101 		sd	s2,0(sp)
+ 583              		.cfi_offset 1, -8
+ 584              		.cfi_offset 8, -16
+ 585              		.cfi_offset 9, -24
+ 586              		.cfi_offset 18, -32
+ 587 0200 13040102 		addi	s0,sp,32
+ 588              		.cfi_def_cfa 8, 0
+ 589 0204 13090500 		mv	s2,a0
+  97:src/KSemaphore.cpp ****     TCB* tempThread = queueBlockedThreads->top();
+ 590              		.loc 2 97 5
+ 591              		.loc 2 97 23 is_stmt 0
+ 592 0208 83378500 		ld	a5,8(a0)
+ 593              	.LVL57:
+ 594              	.LBB90:
+ 595              	.LBB91:
+  19:src/../h/Queue.hpp **** 
+ 596              		.loc 1 19 29
+ 597 020c 83B40700 		ld	s1,0(a5)
+ 598              	.LVL58:
+ 599              	.LBE91:
+ 600              	.LBE90:
+  98:src/KSemaphore.cpp ****     if(!tempThread)
+ 601              		.loc 2 98 5 is_stmt 1
+ 602 0210 63800402 		beqz	s1,.L42
+ 603              	.LVL59:
+ 604              	.L41:
+  99:src/KSemaphore.cpp ****     {
+ 100:src/KSemaphore.cpp ****         return 0;
+ 101:src/KSemaphore.cpp ****     }
+ 102:src/KSemaphore.cpp ****     for(;tempThread; tempThread = tempThread->getState())
+ 605              		.loc 2 102 5 discriminator 2
+ 606              		.loc 2 102 10 discriminator 2
+ 607 0214 63820402 		beqz	s1,.L43
+ 103:src/KSemaphore.cpp ****     {
+ 104:src/KSemaphore.cpp ****         unblockThread(KernelConfig::WAKE_UP_SEMAPHORE_CLOSE);
+ 608              		.loc 2 104 9 discriminator 1
+ 609              		.loc 2 104 22 is_stmt 0 discriminator 1
+GAS LISTING /tmp/ccRTy0zu.s 			page 17
 
 
- 113:src/KSemaphore.cpp ****         headBlockedThread = headBlockedThread->getState();
- 619              		.loc 1 113 27
- 620 0284 2334F500 		sd	a5,8(a0)
- 114:src/KSemaphore.cpp ****         thread->resetSemaphoreOnWait();
- 621              		.loc 1 114 9 is_stmt 1
- 622              	.LVL59:
- 623              	.LBB103:
- 624              	.LBB104:
-  44:src/../h/TCB.hpp ****     static void dispatch();
- 625              		.loc 2 44 35
-  44:src/../h/TCB.hpp ****     static void dispatch();
- 626              		.loc 2 44 51 is_stmt 0
- 627 0288 23B00504 		sd	zero,64(a1)
- 628              	.LVL60:
- 629              	.LBE104:
- 630              	.LBE103:
- 115:src/KSemaphore.cpp ****         thread->resetState();
- 631              		.loc 1 115 9 is_stmt 1
- 632              	.LBB105:
- 633              	.LBB106:
-  34:src/../h/TCB.hpp ****     Context* getContext() { return &context; }
- 634              		.loc 2 34 24
-  34:src/../h/TCB.hpp ****     Context* getContext() { return &context; }
- 635              		.loc 2 34 30 is_stmt 0
- 636 028c 23B40504 		sd	zero,72(a1)
- 637              	.LVL61:
- 638              	.LBE106:
- 639              	.LBE105:
- 116:src/KSemaphore.cpp ****         if(!headBlockedThread)
- 640              		.loc 1 116 9 is_stmt 1
- 116:src/KSemaphore.cpp ****         if(!headBlockedThread)
- 641              		.loc 1 116 13 is_stmt 0
- 642 0290 83378500 		ld	a5,8(a0)
- 116:src/KSemaphore.cpp ****         if(!headBlockedThread)
- 643              		.loc 1 116 9
- 644 0294 E39007FE 		bnez	a5,.L41
- 118:src/KSemaphore.cpp ****             tailBlockedThread = nullptr;
- 645              		.loc 1 118 13 is_stmt 1
- 118:src/KSemaphore.cpp ****             tailBlockedThread = nullptr;
- 646              		.loc 1 118 31 is_stmt 0
- 647 0298 23380500 		sd	zero,16(a0)
- 648 029c 6FF09FFD 		j	.L41
- 649              	.L48:
- 128:src/KSemaphore.cpp ****             tailBlockedThread = prevThread;
- 650              		.loc 1 128 13 is_stmt 1
- 128:src/KSemaphore.cpp ****             tailBlockedThread = prevThread;
- 651              		.loc 1 128 31 is_stmt 0
- 652 02a0 2338E500 		sd	a4,16(a0)
- 653              		.loc 1 131 1
- 654 02a4 6FF01FFD 		j	.L41
- 655              		.cfi_endproc
- 656              	.LFE43:
- 658              	.Letext0:
- 659              		.file 3 "src/../h/../lib/hw.h"
- 660              		.file 4 "src/../h/Config.hpp"
- 661              		.file 5 "src/../h/KSemaphore.hpp"
- 662              		.file 6 "src/../h/Scheduler.hpp"
-GAS LISTING /tmp/ccDHRDh4.s 			page 17
+ 610 0218 93051000 		li	a1,1
+ 611 021c 13050900 		mv	a0,s2
+ 612 0220 97000000 		call	_ZN10KSemaphore13unblockThreadEN12KernelConfig12WakeUpReasonE
+ 612      E7800000 
+ 613              	.LVL60:
+ 102:src/KSemaphore.cpp ****     {
+ 614              		.loc 2 102 5 is_stmt 1 discriminator 1
+ 615              	.LBB92:
+ 616              	.LBB93:
+  37:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
+ 617              		.loc 3 37 29 discriminator 1
+  37:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
+ 618              		.loc 3 37 36 is_stmt 0 discriminator 1
+ 619 0228 83B48404 		ld	s1,72(s1)
+ 620              	.LVL61:
+ 621              	.LBE93:
+ 622              	.LBE92:
+ 102:src/KSemaphore.cpp ****     {
+ 623              		.loc 2 102 5 discriminator 1
+ 624 022c 6FF09FFE 		j	.L41
+ 625              	.LVL62:
+ 626              	.L42:
+ 100:src/KSemaphore.cpp ****     }
+ 627              		.loc 2 100 16
+ 628 0230 13050000 		li	a0,0
+ 629              	.LVL63:
+ 630 0234 6F008000 		j	.L40
+ 631              	.L43:
+ 105:src/KSemaphore.cpp ****     }
+ 106:src/KSemaphore.cpp ****     return -1;
+ 632              		.loc 2 106 13
+ 633 0238 1305F0FF 		li	a0,-1
+ 634              	.L40:
+ 107:src/KSemaphore.cpp **** 
+ 108:src/KSemaphore.cpp **** }
+ 635              		.loc 2 108 1
+ 636 023c 83308101 		ld	ra,24(sp)
+ 637              		.cfi_restore 1
+ 638 0240 03340101 		ld	s0,16(sp)
+ 639              		.cfi_restore 8
+ 640              		.cfi_def_cfa 2, 32
+ 641 0244 83348100 		ld	s1,8(sp)
+ 642              		.cfi_restore 9
+ 643              	.LVL64:
+ 644 0248 03390100 		ld	s2,0(sp)
+ 645              		.cfi_restore 18
+ 646              	.LVL65:
+ 647 024c 13010102 		addi	sp,sp,32
+ 648              		.cfi_def_cfa_offset 0
+ 649 0250 67800000 		jr	ra
+ 650              		.cfi_endproc
+ 651              	.LFE54:
+ 653              		.section	.text._ZN5QueueI3TCBE13removeElementEPS0_,"axG",@progbits,_ZN5QueueI3TCBE13removeElementE
+ 654              		.align	2
+ 655              		.weak	_ZN5QueueI3TCBE13removeElementEPS0_
+ 657              	_ZN5QueueI3TCBE13removeElementEPS0_:
+ 658              	.LFB60:
+GAS LISTING /tmp/ccRTy0zu.s 			page 18
 
 
-GAS LISTING /tmp/ccDHRDh4.s 			page 18
+  56:src/../h/Queue.hpp **** {
+ 659              		.loc 1 56 6 is_stmt 1
+ 660              		.cfi_startproc
+ 661              	.LVL66:
+ 662 0000 130101FF 		addi	sp,sp,-16
+ 663              		.cfi_def_cfa_offset 16
+ 664 0004 23348100 		sd	s0,8(sp)
+ 665              		.cfi_offset 8, -8
+ 666 0008 13040101 		addi	s0,sp,16
+ 667              		.cfi_def_cfa 8, 0
+ 668              	.LVL67:
+  58:src/../h/Queue.hpp ****     while(element != curr && curr)
+ 669              		.loc 1 58 26 is_stmt 0
+ 670 000c 83360500 		ld	a3,0(a0)
+ 671              	.LVL68:
+ 672 0010 93870600 		mv	a5,a3
+  58:src/../h/Queue.hpp ****     while(element != curr && curr)
+ 673              		.loc 1 58 8
+ 674 0014 13070000 		li	a4,0
+ 675              	.LVL69:
+ 676              	.L47:
+  59:src/../h/Queue.hpp ****     {
+ 677              		.loc 1 59 27 is_stmt 1
+ 678 0018 638AB700 		beq	a5,a1,.L46
+  59:src/../h/Queue.hpp ****     {
+ 679              		.loc 1 59 27 is_stmt 0 discriminator 1
+ 680 001c 63880700 		beqz	a5,.L46
+ 681              	.LVL70:
+ 682              	.LBB94:
+ 683              	.LBB95:
+  37:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
+ 684              		.loc 3 37 29 is_stmt 1
+ 685              	.LBE95:
+ 686              	.LBE94:
+  61:src/../h/Queue.hpp ****         curr = curr->getState();
+ 687              		.loc 1 61 9 is_stmt 0
+ 688 0020 13870700 		mv	a4,a5
+  62:src/../h/Queue.hpp ****     }
+ 689              		.loc 1 62 14
+ 690 0024 83B78704 		ld	a5,72(a5)
+ 691              	.LVL71:
+  59:src/../h/Queue.hpp ****     {
+ 692              		.loc 1 59 5
+ 693 0028 6FF01FFF 		j	.L47
+ 694              	.L46:
+  64:src/../h/Queue.hpp ****     {
+ 695              		.loc 1 64 5
+ 696 002c 63000702 		beqz	a4,.L51
+ 697              	.LVL72:
+ 698              	.LBB96:
+ 699              	.LBB97:
+  37:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
+ 700              		.loc 3 37 29 is_stmt 1
+  37:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
+ 701              		.loc 3 37 36 is_stmt 0
+ 702 0030 83B78504 		ld	a5,72(a1)
+ 703              	.LVL73:
+GAS LISTING /tmp/ccRTy0zu.s 			page 19
+
+
+ 704              	.LBE97:
+ 705              	.LBE96:
+ 706              	.LBB98:
+ 707              	.LBB99:
+  36:src/../h/TCB.hpp ****     TCB* getState() const { return state; }
+ 708              		.loc 3 36 45 is_stmt 1
+  36:src/../h/TCB.hpp ****     TCB* getState() const { return state; }
+ 709              		.loc 3 36 51 is_stmt 0
+ 710 0034 2334F704 		sd	a5,72(a4)
+ 711              	.LVL74:
+ 712              	.LBE99:
+ 713              	.LBE98:
+  75:src/../h/Queue.hpp ****         {
+ 714              		.loc 1 75 23
+ 715 0038 83378500 		ld	a5,8(a0)
+  75:src/../h/Queue.hpp ****         {
+ 716              		.loc 1 75 9
+ 717 003c 6382B702 		beq	a5,a1,.L52
+ 718              	.L45:
+  80:src/../h/Queue.hpp **** template<typename T>
+ 719              		.loc 1 80 1
+ 720 0040 03348100 		ld	s0,8(sp)
+ 721              		.cfi_remember_state
+ 722              		.cfi_restore 8
+ 723              		.cfi_def_cfa 2, 16
+ 724 0044 13010101 		addi	sp,sp,16
+ 725              		.cfi_def_cfa_offset 0
+ 726 0048 67800000 		jr	ra
+ 727              	.LVL75:
+ 728              	.L51:
+ 729              		.cfi_restore_state
+ 730              	.LBB100:
+ 731              	.LBB101:
+  37:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
+ 732              		.loc 3 37 29 is_stmt 1
+  37:src/../h/TCB.hpp ****     void resetState() {state = nullptr; }
+ 733              		.loc 3 37 36 is_stmt 0
+ 734 004c 83B78604 		ld	a5,72(a3)
+ 735              	.LVL76:
+ 736              	.LBE101:
+ 737              	.LBE100:
+  66:src/../h/Queue.hpp ****         if(!head)
+ 738              		.loc 1 66 9
+ 739 0050 2330F500 		sd	a5,0(a0)
+  67:src/../h/Queue.hpp ****         {
+ 740              		.loc 1 67 9
+ 741 0054 E39607FE 		bnez	a5,.L45
+  69:src/../h/Queue.hpp ****         }
+ 742              		.loc 1 69 13
+ 743 0058 23340500 		sd	zero,8(a0)
+ 744 005c 6FF05FFE 		j	.L45
+ 745              	.L52:
+  77:src/../h/Queue.hpp ****         }
+ 746              		.loc 1 77 13
+ 747 0060 2334E500 		sd	a4,8(a0)
+  80:src/../h/Queue.hpp **** template<typename T>
+ 748              		.loc 1 80 1
+GAS LISTING /tmp/ccRTy0zu.s 			page 20
+
+
+ 749 0064 6FF0DFFD 		j	.L45
+ 750              		.cfi_endproc
+ 751              	.LFE60:
+ 753              		.text
+ 754              		.align	2
+ 755              		.globl	_ZN10KSemaphore28removeThreadFromBlockedQueueEP3TCB
+ 757              	_ZN10KSemaphore28removeThreadFromBlockedQueueEP3TCB:
+ 758              	.LFB55:
+ 109:src/KSemaphore.cpp **** void KSemaphore::removeThreadFromBlockedQueue(TCB *thread)
+ 110:src/KSemaphore.cpp **** {
+ 759              		.loc 2 110 1 is_stmt 1
+ 760              		.cfi_startproc
+ 761              	.LVL77:
+ 762 0254 130101FE 		addi	sp,sp,-32
+ 763              		.cfi_def_cfa_offset 32
+ 764 0258 233C1100 		sd	ra,24(sp)
+ 765 025c 23388100 		sd	s0,16(sp)
+ 766 0260 23349100 		sd	s1,8(sp)
+ 767              		.cfi_offset 1, -8
+ 768              		.cfi_offset 8, -16
+ 769              		.cfi_offset 9, -24
+ 770 0264 13040102 		addi	s0,sp,32
+ 771              		.cfi_def_cfa 8, 0
+ 772 0268 93840500 		mv	s1,a1
+ 111:src/KSemaphore.cpp **** 
+ 112:src/KSemaphore.cpp **** //    TCB* currThread = headBlockedThread, *prevThread = nullptr;
+ 113:src/KSemaphore.cpp **** //
+ 114:src/KSemaphore.cpp **** //    while(thread != currThread && currThread)
+ 115:src/KSemaphore.cpp **** //    {
+ 116:src/KSemaphore.cpp **** //        prevThread = currThread;
+ 117:src/KSemaphore.cpp **** //        currThread = currThread->getState();
+ 118:src/KSemaphore.cpp **** //    }
+ 119:src/KSemaphore.cpp **** //
+ 120:src/KSemaphore.cpp **** //    if(!prevThread)
+ 121:src/KSemaphore.cpp **** //    {
+ 122:src/KSemaphore.cpp **** //        headBlockedThread = headBlockedThread->getState();
+ 123:src/KSemaphore.cpp **** //        thread->resetSemaphoreOnWait();
+ 124:src/KSemaphore.cpp **** //        thread->resetState();
+ 125:src/KSemaphore.cpp **** //        if(!headBlockedThread)
+ 126:src/KSemaphore.cpp **** //        {
+ 127:src/KSemaphore.cpp **** //            tailBlockedThread = nullptr;
+ 128:src/KSemaphore.cpp **** //        }
+ 129:src/KSemaphore.cpp **** //    }
+ 130:src/KSemaphore.cpp **** //    else
+ 131:src/KSemaphore.cpp **** //    {
+ 132:src/KSemaphore.cpp **** //        prevThread->addThreadToState(thread->getState());
+ 133:src/KSemaphore.cpp **** //        thread->resetSemaphoreOnWait();
+ 134:src/KSemaphore.cpp **** //        thread->resetState();
+ 135:src/KSemaphore.cpp **** //        if(thread == tailBlockedThread)
+ 136:src/KSemaphore.cpp **** //        {
+ 137:src/KSemaphore.cpp **** //            tailBlockedThread = prevThread;
+ 138:src/KSemaphore.cpp **** //        }
+ 139:src/KSemaphore.cpp **** //    }
+ 140:src/KSemaphore.cpp **** 
+ 141:src/KSemaphore.cpp ****     queueBlockedThreads->removeElement(thread);
+ 773              		.loc 2 141 5
+ 774              		.loc 2 141 39 is_stmt 0
+GAS LISTING /tmp/ccRTy0zu.s 			page 21
+
+
+ 775 026c 03358500 		ld	a0,8(a0)
+ 776              	.LVL78:
+ 777 0270 97000000 		call	_ZN5QueueI3TCBE13removeElementEPS0_
+ 777      E7800000 
+ 778              	.LVL79:
+ 142:src/KSemaphore.cpp ****     thread->resetSemaphoreOnWait();
+ 779              		.loc 2 142 5 is_stmt 1
+ 780              	.LBB102:
+ 781              	.LBB103:
+  48:src/../h/TCB.hpp ****     static void dispatch();
+ 782              		.loc 3 48 35
+  48:src/../h/TCB.hpp ****     static void dispatch();
+ 783              		.loc 3 48 51 is_stmt 0
+ 784 0278 23B00404 		sd	zero,64(s1)
+ 785              	.LVL80:
+ 786              	.LBE103:
+ 787              	.LBE102:
+ 143:src/KSemaphore.cpp ****     thread->resetState();
+ 788              		.loc 2 143 5 is_stmt 1
+ 789              	.LBB104:
+ 790              	.LBB105:
+  38:src/../h/TCB.hpp ****     Context* getContext() { return &context; }
+ 791              		.loc 3 38 24
+  38:src/../h/TCB.hpp ****     Context* getContext() { return &context; }
+ 792              		.loc 3 38 30 is_stmt 0
+ 793 027c 23B40404 		sd	zero,72(s1)
+ 794              	.LVL81:
+ 795              	.LBE105:
+ 796              	.LBE104:
+ 144:src/KSemaphore.cpp **** 
+ 145:src/KSemaphore.cpp **** }...
+ 797              		.loc 2 145 1
+ 798 0280 83308101 		ld	ra,24(sp)
+ 799              		.cfi_restore 1
+ 800 0284 03340101 		ld	s0,16(sp)
+ 801              		.cfi_restore 8
+ 802              		.cfi_def_cfa 2, 32
+ 803 0288 83348100 		ld	s1,8(sp)
+ 804              		.cfi_restore 9
+ 805              	.LVL82:
+ 806 028c 13010102 		addi	sp,sp,32
+ 807              		.cfi_def_cfa_offset 0
+ 808 0290 67800000 		jr	ra
+ 809              		.cfi_endproc
+ 810              	.LFE55:
+ 812              	.Letext0:
+ 813              		.file 4 "src/../h/../lib/hw.h"
+ 814              		.file 5 "src/../h/Config.hpp"
+ 815              		.file 6 "src/../h/MemoryAllocator.hpp"
+ 816              		.file 7 "src/../h/KSemaphore.hpp"
+ 817              		.file 8 "src/../h/Scheduler.hpp"
+GAS LISTING /tmp/ccRTy0zu.s 			page 22
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 KSemaphore.cpp
-     /tmp/ccDHRDh4.s:9      .text:0000000000000000 _ZN10KSemaphore19initializeSemaphoreEjP10ObjectPoolIS_Lm10EE
-     /tmp/ccDHRDh4.s:13     .text:0000000000000000 .L0 
-     /tmp/ccDHRDh4.s:15     .text:0000000000000000 .L0 
-     /tmp/ccDHRDh4.s:16     .text:0000000000000004 .L0 
-     /tmp/ccDHRDh4.s:18     .text:0000000000000008 .L0 
-     /tmp/ccDHRDh4.s:20     .text:000000000000000c .L0 
-     /tmp/ccDHRDh4.s:22     .text:000000000000000c .L0 
-     /tmp/ccDHRDh4.s:23     .text:000000000000000c .L0 
-     /tmp/ccDHRDh4.s:27     .text:0000000000000014 .L0 
-     /tmp/ccDHRDh4.s:29     .text:0000000000000018 .L0 
-     /tmp/ccDHRDh4.s:30     .text:0000000000000018 .L0 
-     /tmp/ccDHRDh4.s:32     .text:000000000000001c .L0 
-     /tmp/ccDHRDh4.s:33     .text:000000000000001c .L0 
-     /tmp/ccDHRDh4.s:35     .text:0000000000000020 .L0 
-     /tmp/ccDHRDh4.s:36     .text:0000000000000020 .L0 
-     /tmp/ccDHRDh4.s:38     .text:0000000000000024 .L0 
-     /tmp/ccDHRDh4.s:39     .text:0000000000000028 .L0 
-     /tmp/ccDHRDh4.s:40     .text:0000000000000028 .L0 
-     /tmp/ccDHRDh4.s:42     .text:000000000000002c .L0 
-     /tmp/ccDHRDh4.s:44     .text:0000000000000030 .L0 
-     /tmp/ccDHRDh4.s:50     .text:0000000000000030 _ZN10KSemaphore11blockThreadEP3TCB
-     /tmp/ccDHRDh4.s:53     .text:0000000000000030 .L0 
-     /tmp/ccDHRDh4.s:55     .text:0000000000000030 .L0 
-     /tmp/ccDHRDh4.s:56     .text:0000000000000034 .L0 
-     /tmp/ccDHRDh4.s:58     .text:0000000000000038 .L0 
-     /tmp/ccDHRDh4.s:60     .text:000000000000003c .L0 
-     /tmp/ccDHRDh4.s:66     .text:000000000000003c .L0 
-     /tmp/ccDHRDh4.s:67     .text:000000000000003c .L0 
-     /tmp/ccDHRDh4.s:68     .text:000000000000003c .L0 
-     /tmp/ccDHRDh4.s:73     .text:0000000000000040 .L0 
-     /tmp/ccDHRDh4.s:74     .text:0000000000000040 .L0 
-     /tmp/ccDHRDh4.s:76     .text:0000000000000044 .L0 
-     /tmp/ccDHRDh4.s:78     .text:0000000000000048 .L0 
-     /tmp/ccDHRDh4.s:83     .text:000000000000004c .L0 
-     /tmp/ccDHRDh4.s:84     .text:000000000000004c .L0 
-     /tmp/ccDHRDh4.s:90     .text:0000000000000050 .L0 
-     /tmp/ccDHRDh4.s:91     .text:0000000000000050 .L0 
-     /tmp/ccDHRDh4.s:93     .text:0000000000000054 .L0 
-     /tmp/ccDHRDh4.s:94     .text:0000000000000058 .L0 
-     /tmp/ccDHRDh4.s:95     .text:0000000000000058 .L0 
-     /tmp/ccDHRDh4.s:96     .text:0000000000000058 .L0 
-     /tmp/ccDHRDh4.s:98     .text:000000000000005c .L0 
-     /tmp/ccDHRDh4.s:101    .text:0000000000000060 .L0 
-     /tmp/ccDHRDh4.s:103    .text:0000000000000060 .L0 
-     /tmp/ccDHRDh4.s:104    .text:0000000000000060 .L0 
-     /tmp/ccDHRDh4.s:106    .text:0000000000000068 .L0 
-     /tmp/ccDHRDh4.s:112    .text:0000000000000068 _ZN10KSemaphore13unblockThreadEN12KernelConfig12WakeUpReasonE
-     /tmp/ccDHRDh4.s:115    .text:0000000000000068 .L0 
-     /tmp/ccDHRDh4.s:117    .text:0000000000000068 .L0 
-     /tmp/ccDHRDh4.s:119    .text:000000000000006c .L0 
-     /tmp/ccDHRDh4.s:120    .text:000000000000006c .L0 
-     /tmp/ccDHRDh4.s:123    .text:0000000000000070 .L0 
-     /tmp/ccDHRDh4.s:125    .text:0000000000000074 .L0 
-     /tmp/ccDHRDh4.s:126    .text:0000000000000078 .L0 
-     /tmp/ccDHRDh4.s:129    .text:0000000000000080 .L0 
-GAS LISTING /tmp/ccDHRDh4.s 			page 19
+     /tmp/ccRTy0zu.s:10     .text._ZN5QueueI3TCBEnwEm:0000000000000000 _ZN5QueueI3TCBEnwEm
+     /tmp/ccRTy0zu.s:14     .text._ZN5QueueI3TCBEnwEm:0000000000000000 .L0 
+     /tmp/ccRTy0zu.s:16     .text._ZN5QueueI3TCBEnwEm:0000000000000000 .L0 
+     /tmp/ccRTy0zu.s:17     .text._ZN5QueueI3TCBEnwEm:0000000000000004 .L0 
+     /tmp/ccRTy0zu.s:20     .text._ZN5QueueI3TCBEnwEm:000000000000000c .L0 
+     /tmp/ccRTy0zu.s:21     .text._ZN5QueueI3TCBEnwEm:000000000000000c .L0 
+     /tmp/ccRTy0zu.s:23     .text._ZN5QueueI3TCBEnwEm:0000000000000010 .L0 
+     /tmp/ccRTy0zu.s:25     .text._ZN5QueueI3TCBEnwEm:0000000000000010 .L0 
+     /tmp/ccRTy0zu.s:28     .text._ZN5QueueI3TCBEnwEm:0000000000000014 .L0 
+     /tmp/ccRTy0zu.s:31     .text._ZN5QueueI3TCBEnwEm:0000000000000018 .L0 
+     /tmp/ccRTy0zu.s:36     .text._ZN5QueueI3TCBEnwEm:0000000000000020 .L0 
+     /tmp/ccRTy0zu.s:41     .text._ZN5QueueI3TCBEnwEm:000000000000002c .L0 
+     /tmp/ccRTy0zu.s:42     .text._ZN5QueueI3TCBEnwEm:0000000000000030 .L0 
+     /tmp/ccRTy0zu.s:44     .text._ZN5QueueI3TCBEnwEm:0000000000000034 .L0 
+     /tmp/ccRTy0zu.s:45     .text._ZN5QueueI3TCBEnwEm:0000000000000034 .L0 
+     /tmp/ccRTy0zu.s:47     .text._ZN5QueueI3TCBEnwEm:0000000000000038 .L0 
+     /tmp/ccRTy0zu.s:49     .text._ZN5QueueI3TCBEnwEm:000000000000003c .L0 
+     /tmp/ccRTy0zu.s:56     .text:0000000000000000 _ZN10KSemaphore19initializeSemaphoreEjP10ObjectPoolIS_Lm10EE
+     /tmp/ccRTy0zu.s:60     .text:0000000000000000 .L0 
+     /tmp/ccRTy0zu.s:62     .text:0000000000000000 .L0 
+     /tmp/ccRTy0zu.s:63     .text:0000000000000004 .L0 
+     /tmp/ccRTy0zu.s:68     .text:0000000000000014 .L0 
+     /tmp/ccRTy0zu.s:69     .text:0000000000000014 .L0 
+     /tmp/ccRTy0zu.s:70     .text:0000000000000014 .L0 
+     /tmp/ccRTy0zu.s:71     .text:0000000000000014 .L0 
+     /tmp/ccRTy0zu.s:73     .text:0000000000000018 .L0 
+     /tmp/ccRTy0zu.s:77     .text:0000000000000020 .L0 
+     /tmp/ccRTy0zu.s:78     .text:0000000000000020 .L0 
+     /tmp/ccRTy0zu.s:82     .text:0000000000000028 .L0 
+     /tmp/ccRTy0zu.s:84     .text:000000000000002c .L0 
+     /tmp/ccRTy0zu.s:85     .text:000000000000002c .L0 
+     /tmp/ccRTy0zu.s:92     .text:0000000000000040 .L0 
+     /tmp/ccRTy0zu.s:94     .text:0000000000000044 .L0 
+     /tmp/ccRTy0zu.s:95     .text:0000000000000044 .L0 
+     /tmp/ccRTy0zu.s:97     .text:0000000000000048 .L0 
+     /tmp/ccRTy0zu.s:98     .text:000000000000004c .L0 
+     /tmp/ccRTy0zu.s:100    .text:0000000000000050 .L0 
+     /tmp/ccRTy0zu.s:101    .text:0000000000000050 .L0 
+     /tmp/ccRTy0zu.s:103    .text:0000000000000054 .L0 
+     /tmp/ccRTy0zu.s:106    .text:0000000000000058 .L0 
+     /tmp/ccRTy0zu.s:109    .text:000000000000005c .L0 
+     /tmp/ccRTy0zu.s:111    .text:0000000000000060 .L0 
+     /tmp/ccRTy0zu.s:118    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000000 _ZN5QueueI3TCBE6appendEPS0_
+     /tmp/ccRTy0zu.s:121    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000000 .L0 
+     /tmp/ccRTy0zu.s:123    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000000 .L0 
+     /tmp/ccRTy0zu.s:124    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000004 .L0 
+     /tmp/ccRTy0zu.s:126    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000008 .L0 
+     /tmp/ccRTy0zu.s:128    .text._ZN5QueueI3TCBE6appendEPS0_:000000000000000c .L0 
+     /tmp/ccRTy0zu.s:130    .text._ZN5QueueI3TCBE6appendEPS0_:000000000000000c .L0 
+     /tmp/ccRTy0zu.s:132    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000010 .L0 
+     /tmp/ccRTy0zu.s:134    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000014 .L0 
+     /tmp/ccRTy0zu.s:140    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000018 .L0 
+     /tmp/ccRTy0zu.s:141    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000018 .L0 
+     /tmp/ccRTy0zu.s:147    .text._ZN5QueueI3TCBE6appendEPS0_:000000000000001c .L0 
+     /tmp/ccRTy0zu.s:149    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000020 .L0 
+GAS LISTING /tmp/ccRTy0zu.s 			page 23
 
 
-     /tmp/ccDHRDh4.s:130    .text:0000000000000080 .L0 
-     /tmp/ccDHRDh4.s:132    .text:0000000000000084 .L0 
-     /tmp/ccDHRDh4.s:135    .text:0000000000000084 .L0 
-     /tmp/ccDHRDh4.s:138    .text:0000000000000084 .L0 
-     /tmp/ccDHRDh4.s:139    .text:0000000000000084 .L0 
-     /tmp/ccDHRDh4.s:140    .text:0000000000000084 .L0 
-     /tmp/ccDHRDh4.s:145    .text:0000000000000088 .L0 
-     /tmp/ccDHRDh4.s:147    .text:000000000000008c .L0 
-     /tmp/ccDHRDh4.s:153    .text:0000000000000090 .L0 
-     /tmp/ccDHRDh4.s:154    .text:0000000000000090 .L0 
-     /tmp/ccDHRDh4.s:155    .text:0000000000000090 .L0 
-     /tmp/ccDHRDh4.s:162    .text:0000000000000094 .L0 
-     /tmp/ccDHRDh4.s:163    .text:0000000000000094 .L0 
-     /tmp/ccDHRDh4.s:164    .text:0000000000000094 .L0 
-     /tmp/ccDHRDh4.s:171    .text:0000000000000098 .L0 
-     /tmp/ccDHRDh4.s:172    .text:0000000000000098 .L0 
-     /tmp/ccDHRDh4.s:173    .text:0000000000000098 .L0 
-     /tmp/ccDHRDh4.s:178    .text:000000000000009c .L0 
-     /tmp/ccDHRDh4.s:179    .text:000000000000009c .L0 
-     /tmp/ccDHRDh4.s:182    .text:00000000000000a4 .L0 
-     /tmp/ccDHRDh4.s:183    .text:00000000000000a4 .L0 
-     /tmp/ccDHRDh4.s:185    .text:00000000000000a8 .L0 
-     /tmp/ccDHRDh4.s:186    .text:00000000000000ac .L0 
-     /tmp/ccDHRDh4.s:187    .text:00000000000000ac .L0 
-     /tmp/ccDHRDh4.s:189    .text:00000000000000b0 .L0 
-     /tmp/ccDHRDh4.s:190    .text:00000000000000b0 .L0 
-     /tmp/ccDHRDh4.s:192    .text:00000000000000b4 .L0 
-     /tmp/ccDHRDh4.s:196    .text:00000000000000b8 .L0 
-     /tmp/ccDHRDh4.s:198    .text:00000000000000b8 .L0 
-     /tmp/ccDHRDh4.s:199    .text:00000000000000b8 .L0 
-     /tmp/ccDHRDh4.s:203    .text:00000000000000c0 .L0 
-     /tmp/ccDHRDh4.s:204    .text:00000000000000c0 .L0 
-     /tmp/ccDHRDh4.s:205    .text:00000000000000c0 .L0 
-     /tmp/ccDHRDh4.s:207    .text:00000000000000c0 .L0 
-     /tmp/ccDHRDh4.s:209    .text:00000000000000c4 .L0 
-     /tmp/ccDHRDh4.s:210    .text:00000000000000c8 .L0 
-     /tmp/ccDHRDh4.s:216    .text:00000000000000c8 _ZN10KSemaphore4waitEv
-     /tmp/ccDHRDh4.s:219    .text:00000000000000c8 .L0 
-     /tmp/ccDHRDh4.s:221    .text:00000000000000c8 .L0 
-     /tmp/ccDHRDh4.s:222    .text:00000000000000c8 .L0 
-     /tmp/ccDHRDh4.s:224    .text:00000000000000cc .L0 
-     /tmp/ccDHRDh4.s:228    .text:00000000000000d4 .L0 
-     /tmp/ccDHRDh4.s:231    .text:00000000000000d8 .L0 
-     /tmp/ccDHRDh4.s:234    .text:00000000000000dc .L0 
-     /tmp/ccDHRDh4.s:238    .text:00000000000000e0 .L0 
-     /tmp/ccDHRDh4.s:239    .text:00000000000000e4 .L0 
-     /tmp/ccDHRDh4.s:245    .text:00000000000000f8 .L0 
-     /tmp/ccDHRDh4.s:246    .text:00000000000000f8 .L0 
-     /tmp/ccDHRDh4.s:247    .text:00000000000000f8 .L0 
-     /tmp/ccDHRDh4.s:248    .text:00000000000000f8 .L0 
-     /tmp/ccDHRDh4.s:249    .text:00000000000000f8 .L0 
-     /tmp/ccDHRDh4.s:251    .text:00000000000000fc .L0 
-     /tmp/ccDHRDh4.s:258    .text:0000000000000100 .L0 
-     /tmp/ccDHRDh4.s:259    .text:0000000000000100 .L0 
-     /tmp/ccDHRDh4.s:260    .text:0000000000000100 .L0 
-     /tmp/ccDHRDh4.s:266    .text:000000000000010c .L0 
-     /tmp/ccDHRDh4.s:267    .text:000000000000010c .L0 
-GAS LISTING /tmp/ccDHRDh4.s 			page 20
+     /tmp/ccRTy0zu.s:150    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000024 .L0 
+     /tmp/ccRTy0zu.s:151    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000024 .L0 
+     /tmp/ccRTy0zu.s:152    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000024 .L0 
+     /tmp/ccRTy0zu.s:154    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000028 .L0 
+     /tmp/ccRTy0zu.s:157    .text._ZN5QueueI3TCBE6appendEPS0_:000000000000002c .L0 
+     /tmp/ccRTy0zu.s:159    .text._ZN5QueueI3TCBE6appendEPS0_:000000000000002c .L0 
+     /tmp/ccRTy0zu.s:161    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000034 .L0 
+     /tmp/ccRTy0zu.s:168    .text:0000000000000060 _ZN10KSemaphore11blockThreadEP3TCB
+     /tmp/ccRTy0zu.s:171    .text:0000000000000060 .L0 
+     /tmp/ccRTy0zu.s:173    .text:0000000000000060 .L0 
+     /tmp/ccRTy0zu.s:174    .text:0000000000000064 .L0 
+     /tmp/ccRTy0zu.s:177    .text:000000000000006c .L0 
+     /tmp/ccRTy0zu.s:178    .text:000000000000006c .L0 
+     /tmp/ccRTy0zu.s:180    .text:0000000000000070 .L0 
+     /tmp/ccRTy0zu.s:185    .text:0000000000000070 .L0 
+     /tmp/ccRTy0zu.s:186    .text:0000000000000070 .L0 
+     /tmp/ccRTy0zu.s:187    .text:0000000000000070 .L0 
+     /tmp/ccRTy0zu.s:192    .text:0000000000000074 .L0 
+     /tmp/ccRTy0zu.s:193    .text:0000000000000074 .L0 
+     /tmp/ccRTy0zu.s:198    .text:0000000000000080 .L0 
+     /tmp/ccRTy0zu.s:199    .text:0000000000000084 .L0 
+     /tmp/ccRTy0zu.s:201    .text:0000000000000088 .L0 
+     /tmp/ccRTy0zu.s:202    .text:0000000000000088 .L0 
+     /tmp/ccRTy0zu.s:204    .text:000000000000008c .L0 
+     /tmp/ccRTy0zu.s:206    .text:0000000000000090 .L0 
+     /tmp/ccRTy0zu.s:212    .text:0000000000000090 _ZN10KSemaphore4waitEv
+     /tmp/ccRTy0zu.s:215    .text:0000000000000090 .L0 
+     /tmp/ccRTy0zu.s:217    .text:0000000000000090 .L0 
+     /tmp/ccRTy0zu.s:218    .text:0000000000000090 .L0 
+     /tmp/ccRTy0zu.s:220    .text:0000000000000094 .L0 
+     /tmp/ccRTy0zu.s:224    .text:000000000000009c .L0 
+     /tmp/ccRTy0zu.s:227    .text:00000000000000a0 .L0 
+     /tmp/ccRTy0zu.s:230    .text:00000000000000a4 .L0 
+     /tmp/ccRTy0zu.s:234    .text:00000000000000a8 .L0 
+     /tmp/ccRTy0zu.s:235    .text:00000000000000ac .L0 
+     /tmp/ccRTy0zu.s:241    .text:00000000000000c0 .L0 
+     /tmp/ccRTy0zu.s:242    .text:00000000000000c0 .L0 
+     /tmp/ccRTy0zu.s:243    .text:00000000000000c0 .L0 
+     /tmp/ccRTy0zu.s:244    .text:00000000000000c0 .L0 
+     /tmp/ccRTy0zu.s:245    .text:00000000000000c0 .L0 
+     /tmp/ccRTy0zu.s:247    .text:00000000000000c4 .L0 
+     /tmp/ccRTy0zu.s:254    .text:00000000000000c8 .L0 
+     /tmp/ccRTy0zu.s:255    .text:00000000000000c8 .L0 
+     /tmp/ccRTy0zu.s:256    .text:00000000000000c8 .L0 
+     /tmp/ccRTy0zu.s:262    .text:00000000000000d4 .L0 
+     /tmp/ccRTy0zu.s:263    .text:00000000000000d4 .L0 
+     /tmp/ccRTy0zu.s:268    .text:00000000000000dc .L0 
+     /tmp/ccRTy0zu.s:269    .text:00000000000000dc .L0 
+     /tmp/ccRTy0zu.s:276    .text:00000000000000e0 .L0 
+     /tmp/ccRTy0zu.s:277    .text:00000000000000e0 .L0 
+     /tmp/ccRTy0zu.s:278    .text:00000000000000e0 .L0 
+     /tmp/ccRTy0zu.s:283    .text:00000000000000e4 .L0 
+     /tmp/ccRTy0zu.s:284    .text:00000000000000e4 .L0 
+     /tmp/ccRTy0zu.s:291    .text:00000000000000f4 .L0 
+     /tmp/ccRTy0zu.s:296    .text:00000000000000f4 .L0 
+     /tmp/ccRTy0zu.s:297    .text:00000000000000f4 .L0 
+     /tmp/ccRTy0zu.s:298    .text:00000000000000f4 .L0 
+GAS LISTING /tmp/ccRTy0zu.s 			page 24
 
 
-     /tmp/ccDHRDh4.s:272    .text:0000000000000114 .L0 
-     /tmp/ccDHRDh4.s:273    .text:0000000000000114 .L0 
-     /tmp/ccDHRDh4.s:280    .text:0000000000000118 .L0 
-     /tmp/ccDHRDh4.s:281    .text:0000000000000118 .L0 
-     /tmp/ccDHRDh4.s:282    .text:0000000000000118 .L0 
-     /tmp/ccDHRDh4.s:287    .text:000000000000011c .L0 
-     /tmp/ccDHRDh4.s:288    .text:000000000000011c .L0 
-     /tmp/ccDHRDh4.s:295    .text:000000000000012c .L0 
-     /tmp/ccDHRDh4.s:300    .text:000000000000012c .L0 
-     /tmp/ccDHRDh4.s:301    .text:000000000000012c .L0 
-     /tmp/ccDHRDh4.s:302    .text:000000000000012c .L0 
-     /tmp/ccDHRDh4.s:311    .text:0000000000000130 .L0 
-     /tmp/ccDHRDh4.s:312    .text:0000000000000130 .L0 
-     /tmp/ccDHRDh4.s:319    .text:0000000000000140 .L0 
-     /tmp/ccDHRDh4.s:320    .text:0000000000000140 .L0 
-     /tmp/ccDHRDh4.s:321    .text:0000000000000140 .L0 
-     /tmp/ccDHRDh4.s:328    .text:0000000000000144 .L0 
-     /tmp/ccDHRDh4.s:329    .text:0000000000000144 .L0 
-     /tmp/ccDHRDh4.s:334    .text:0000000000000148 .L0 
-     /tmp/ccDHRDh4.s:338    .text:000000000000014c .L0 
-     /tmp/ccDHRDh4.s:340    .text:000000000000014c .L0 
-     /tmp/ccDHRDh4.s:343    .text:000000000000014c .L0 
-     /tmp/ccDHRDh4.s:344    .text:000000000000014c .L0 
-     /tmp/ccDHRDh4.s:349    .text:0000000000000154 .L0 
-     /tmp/ccDHRDh4.s:352    .text:0000000000000158 .L0 
-     /tmp/ccDHRDh4.s:353    .text:000000000000015c .L0 
-     /tmp/ccDHRDh4.s:354    .text:000000000000015c .L0 
-     /tmp/ccDHRDh4.s:356    .text:0000000000000160 .L0 
-     /tmp/ccDHRDh4.s:357    .text:0000000000000160 .L0 
-     /tmp/ccDHRDh4.s:359    .text:0000000000000164 .L0 
-     /tmp/ccDHRDh4.s:362    .text:0000000000000168 .L0 
-     /tmp/ccDHRDh4.s:364    .text:000000000000016c .L0 
-     /tmp/ccDHRDh4.s:367    .text:0000000000000170 .L0 
-     /tmp/ccDHRDh4.s:371    .text:0000000000000174 .L0 
-     /tmp/ccDHRDh4.s:375    .text:0000000000000174 .L0 
-     /tmp/ccDHRDh4.s:379    .text:000000000000017c .L0 
-     /tmp/ccDHRDh4.s:383    .text:0000000000000184 .L0 
-     /tmp/ccDHRDh4.s:389    .text:0000000000000184 _ZN10KSemaphore6signalEv
-     /tmp/ccDHRDh4.s:392    .text:0000000000000184 .L0 
-     /tmp/ccDHRDh4.s:394    .text:0000000000000184 .L0 
-     /tmp/ccDHRDh4.s:395    .text:0000000000000184 .L0 
-     /tmp/ccDHRDh4.s:397    .text:0000000000000188 .L0 
-     /tmp/ccDHRDh4.s:400    .text:0000000000000190 .L0 
-     /tmp/ccDHRDh4.s:402    .text:0000000000000194 .L0 
-     /tmp/ccDHRDh4.s:405    .text:0000000000000198 .L0 
-     /tmp/ccDHRDh4.s:409    .text:000000000000019c .L0 
-     /tmp/ccDHRDh4.s:410    .text:00000000000001a0 .L0 
-     /tmp/ccDHRDh4.s:413    .text:00000000000001a8 .L0 
-     /tmp/ccDHRDh4.s:414    .text:00000000000001a8 .L0 
-     /tmp/ccDHRDh4.s:416    .text:00000000000001ac .L0 
-     /tmp/ccDHRDh4.s:418    .text:00000000000001ac .L0 
-     /tmp/ccDHRDh4.s:419    .text:00000000000001ac .L0 
-     /tmp/ccDHRDh4.s:423    .text:00000000000001b8 .L0 
-     /tmp/ccDHRDh4.s:424    .text:00000000000001bc .L0 
-     /tmp/ccDHRDh4.s:426    .text:00000000000001c0 .L0 
-     /tmp/ccDHRDh4.s:427    .text:00000000000001c0 .L0 
-     /tmp/ccDHRDh4.s:429    .text:00000000000001c4 .L0 
-GAS LISTING /tmp/ccDHRDh4.s 			page 21
+     /tmp/ccRTy0zu.s:307    .text:00000000000000f8 .L0 
+     /tmp/ccRTy0zu.s:308    .text:00000000000000f8 .L0 
+     /tmp/ccRTy0zu.s:315    .text:0000000000000108 .L0 
+     /tmp/ccRTy0zu.s:316    .text:0000000000000108 .L0 
+     /tmp/ccRTy0zu.s:317    .text:0000000000000108 .L0 
+     /tmp/ccRTy0zu.s:324    .text:000000000000010c .L0 
+     /tmp/ccRTy0zu.s:325    .text:000000000000010c .L0 
+     /tmp/ccRTy0zu.s:330    .text:0000000000000110 .L0 
+     /tmp/ccRTy0zu.s:334    .text:0000000000000114 .L0 
+     /tmp/ccRTy0zu.s:336    .text:0000000000000114 .L0 
+     /tmp/ccRTy0zu.s:339    .text:0000000000000114 .L0 
+     /tmp/ccRTy0zu.s:340    .text:0000000000000114 .L0 
+     /tmp/ccRTy0zu.s:345    .text:000000000000011c .L0 
+     /tmp/ccRTy0zu.s:348    .text:0000000000000120 .L0 
+     /tmp/ccRTy0zu.s:349    .text:0000000000000124 .L0 
+     /tmp/ccRTy0zu.s:350    .text:0000000000000124 .L0 
+     /tmp/ccRTy0zu.s:352    .text:0000000000000128 .L0 
+     /tmp/ccRTy0zu.s:353    .text:0000000000000128 .L0 
+     /tmp/ccRTy0zu.s:355    .text:000000000000012c .L0 
+     /tmp/ccRTy0zu.s:358    .text:0000000000000130 .L0 
+     /tmp/ccRTy0zu.s:360    .text:0000000000000134 .L0 
+     /tmp/ccRTy0zu.s:363    .text:0000000000000138 .L0 
+     /tmp/ccRTy0zu.s:367    .text:000000000000013c .L0 
+     /tmp/ccRTy0zu.s:371    .text:000000000000013c .L0 
+     /tmp/ccRTy0zu.s:375    .text:0000000000000144 .L0 
+     /tmp/ccRTy0zu.s:379    .text:000000000000014c .L0 
+     /tmp/ccRTy0zu.s:386    .text._ZN5QueueI3TCBE4takeEv:0000000000000000 _ZN5QueueI3TCBE4takeEv
+     /tmp/ccRTy0zu.s:389    .text._ZN5QueueI3TCBE4takeEv:0000000000000000 .L0 
+     /tmp/ccRTy0zu.s:391    .text._ZN5QueueI3TCBE4takeEv:0000000000000000 .L0 
+     /tmp/ccRTy0zu.s:392    .text._ZN5QueueI3TCBE4takeEv:0000000000000004 .L0 
+     /tmp/ccRTy0zu.s:394    .text._ZN5QueueI3TCBE4takeEv:0000000000000008 .L0 
+     /tmp/ccRTy0zu.s:396    .text._ZN5QueueI3TCBE4takeEv:000000000000000c .L0 
+     /tmp/ccRTy0zu.s:399    .text._ZN5QueueI3TCBE4takeEv:0000000000000010 .L0 
+     /tmp/ccRTy0zu.s:402    .text._ZN5QueueI3TCBE4takeEv:0000000000000014 .L0 
+     /tmp/ccRTy0zu.s:407    .text._ZN5QueueI3TCBE4takeEv:0000000000000018 .L0 
+     /tmp/ccRTy0zu.s:408    .text._ZN5QueueI3TCBE4takeEv:0000000000000018 .L0 
+     /tmp/ccRTy0zu.s:413    .text._ZN5QueueI3TCBE4takeEv:000000000000001c .L0 
+     /tmp/ccRTy0zu.s:415    .text._ZN5QueueI3TCBE4takeEv:0000000000000020 .L0 
+     /tmp/ccRTy0zu.s:419    .text._ZN5QueueI3TCBE4takeEv:0000000000000024 .L0 
+     /tmp/ccRTy0zu.s:420    .text._ZN5QueueI3TCBE4takeEv:0000000000000028 .L0 
+     /tmp/ccRTy0zu.s:421    .text._ZN5QueueI3TCBE4takeEv:0000000000000028 .L0 
+     /tmp/ccRTy0zu.s:422    .text._ZN5QueueI3TCBE4takeEv:0000000000000028 .L0 
+     /tmp/ccRTy0zu.s:424    .text._ZN5QueueI3TCBE4takeEv:000000000000002c .L0 
+     /tmp/ccRTy0zu.s:428    .text._ZN5QueueI3TCBE4takeEv:0000000000000030 .L0 
+     /tmp/ccRTy0zu.s:430    .text._ZN5QueueI3TCBE4takeEv:0000000000000030 .L0 
+     /tmp/ccRTy0zu.s:432    .text._ZN5QueueI3TCBE4takeEv:0000000000000038 .L0 
+     /tmp/ccRTy0zu.s:439    .text:000000000000014c _ZN10KSemaphore13unblockThreadEN12KernelConfig12WakeUpReasonE
+     /tmp/ccRTy0zu.s:442    .text:000000000000014c .L0 
+     /tmp/ccRTy0zu.s:444    .text:000000000000014c .L0 
+     /tmp/ccRTy0zu.s:445    .text:0000000000000150 .L0 
+     /tmp/ccRTy0zu.s:449    .text:000000000000015c .L0 
+     /tmp/ccRTy0zu.s:450    .text:000000000000015c .L0 
+     /tmp/ccRTy0zu.s:451    .text:000000000000015c .L0 
+     /tmp/ccRTy0zu.s:453    .text:0000000000000160 .L0 
+     /tmp/ccRTy0zu.s:456    .text:0000000000000164 .L0 
+     /tmp/ccRTy0zu.s:457    .text:0000000000000164 .L0 
+     /tmp/ccRTy0zu.s:462    .text:0000000000000170 .L0 
+GAS LISTING /tmp/ccRTy0zu.s 			page 25
 
 
-     /tmp/ccDHRDh4.s:431    .text:00000000000001c8 .L0 
-     /tmp/ccDHRDh4.s:437    .text:00000000000001c8 _ZN10KSemaphore5closeEv
-     /tmp/ccDHRDh4.s:440    .text:00000000000001c8 .L0 
-     /tmp/ccDHRDh4.s:442    .text:00000000000001c8 .L0 
-     /tmp/ccDHRDh4.s:443    .text:00000000000001cc .L0 
-     /tmp/ccDHRDh4.s:448    .text:00000000000001dc .L0 
-     /tmp/ccDHRDh4.s:449    .text:00000000000001dc .L0 
-     /tmp/ccDHRDh4.s:450    .text:00000000000001dc .L0 
-     /tmp/ccDHRDh4.s:451    .text:00000000000001dc .L0 
-     /tmp/ccDHRDh4.s:453    .text:00000000000001e0 .L0 
-     /tmp/ccDHRDh4.s:456    .text:00000000000001e4 .L0 
-     /tmp/ccDHRDh4.s:457    .text:00000000000001e4 .L0 
-     /tmp/ccDHRDh4.s:460    .text:00000000000001e8 .L0 
-     /tmp/ccDHRDh4.s:464    .text:00000000000001ec .L0 
-     /tmp/ccDHRDh4.s:465    .text:00000000000001ec .L0 
-     /tmp/ccDHRDh4.s:467    .text:00000000000001f0 .L0 
-     /tmp/ccDHRDh4.s:468    .text:00000000000001f0 .L0 
-     /tmp/ccDHRDh4.s:475    .text:0000000000000200 .L0 
-     /tmp/ccDHRDh4.s:476    .text:0000000000000200 .L0 
-     /tmp/ccDHRDh4.s:477    .text:0000000000000200 .L0 
-     /tmp/ccDHRDh4.s:482    .text:0000000000000204 .L0 
-     /tmp/ccDHRDh4.s:486    .text:0000000000000208 .L0 
-     /tmp/ccDHRDh4.s:491    .text:0000000000000210 .L0 
-     /tmp/ccDHRDh4.s:494    .text:0000000000000214 .L0 
-     /tmp/ccDHRDh4.s:495    .text:0000000000000218 .L0 
-     /tmp/ccDHRDh4.s:497    .text:000000000000021c .L0 
-     /tmp/ccDHRDh4.s:498    .text:000000000000021c .L0 
-     /tmp/ccDHRDh4.s:500    .text:0000000000000220 .L0 
-     /tmp/ccDHRDh4.s:503    .text:0000000000000224 .L0 
-     /tmp/ccDHRDh4.s:506    .text:0000000000000228 .L0 
-     /tmp/ccDHRDh4.s:508    .text:000000000000022c .L0 
-     /tmp/ccDHRDh4.s:514    .text:000000000000022c _ZN10KSemaphore25removeThreadFromWaitQueueEP3TCB
-     /tmp/ccDHRDh4.s:517    .text:000000000000022c .L0 
-     /tmp/ccDHRDh4.s:519    .text:000000000000022c .L0 
-     /tmp/ccDHRDh4.s:520    .text:0000000000000230 .L0 
-     /tmp/ccDHRDh4.s:522    .text:0000000000000234 .L0 
-     /tmp/ccDHRDh4.s:524    .text:0000000000000238 .L0 
-     /tmp/ccDHRDh4.s:526    .text:0000000000000238 .L0 
-     /tmp/ccDHRDh4.s:527    .text:0000000000000238 .L0 
-     /tmp/ccDHRDh4.s:531    .text:0000000000000240 .L0 
-     /tmp/ccDHRDh4.s:535    .text:0000000000000244 .L0 
-     /tmp/ccDHRDh4.s:536    .text:0000000000000244 .L0 
-     /tmp/ccDHRDh4.s:538    .text:0000000000000248 .L0 
-     /tmp/ccDHRDh4.s:541    .text:000000000000024c .L0 
-     /tmp/ccDHRDh4.s:544    .text:000000000000024c .L0 
-     /tmp/ccDHRDh4.s:547    .text:000000000000024c .L0 
-     /tmp/ccDHRDh4.s:548    .text:000000000000024c .L0 
-     /tmp/ccDHRDh4.s:550    .text:0000000000000250 .L0 
-     /tmp/ccDHRDh4.s:553    .text:0000000000000254 .L0 
-     /tmp/ccDHRDh4.s:556    .text:0000000000000258 .L0 
-     /tmp/ccDHRDh4.s:561    .text:000000000000025c .L0 
-     /tmp/ccDHRDh4.s:562    .text:000000000000025c .L0 
-     /tmp/ccDHRDh4.s:563    .text:000000000000025c .L0 
-     /tmp/ccDHRDh4.s:570    .text:0000000000000260 .L0 
-     /tmp/ccDHRDh4.s:571    .text:0000000000000260 .L0 
-     /tmp/ccDHRDh4.s:578    .text:0000000000000264 .L0 
-     /tmp/ccDHRDh4.s:579    .text:0000000000000264 .L0 
-GAS LISTING /tmp/ccDHRDh4.s 			page 22
+     /tmp/ccRTy0zu.s:467    .text:0000000000000174 .L0 
+     /tmp/ccRTy0zu.s:468    .text:0000000000000174 .L0 
+     /tmp/ccRTy0zu.s:469    .text:0000000000000174 .L0 
+     /tmp/ccRTy0zu.s:476    .text:0000000000000178 .L0 
+     /tmp/ccRTy0zu.s:477    .text:0000000000000178 .L0 
+     /tmp/ccRTy0zu.s:478    .text:0000000000000178 .L0 
+     /tmp/ccRTy0zu.s:485    .text:000000000000017c .L0 
+     /tmp/ccRTy0zu.s:486    .text:000000000000017c .L0 
+     /tmp/ccRTy0zu.s:487    .text:000000000000017c .L0 
+     /tmp/ccRTy0zu.s:492    .text:0000000000000180 .L0 
+     /tmp/ccRTy0zu.s:493    .text:0000000000000180 .L0 
+     /tmp/ccRTy0zu.s:496    .text:0000000000000188 .L0 
+     /tmp/ccRTy0zu.s:497    .text:0000000000000188 .L0 
+     /tmp/ccRTy0zu.s:500    .text:000000000000018c .L0 
+     /tmp/ccRTy0zu.s:501    .text:0000000000000190 .L0 
+     /tmp/ccRTy0zu.s:502    .text:0000000000000190 .L0 
+     /tmp/ccRTy0zu.s:504    .text:0000000000000194 .L0 
+     /tmp/ccRTy0zu.s:505    .text:0000000000000194 .L0 
+     /tmp/ccRTy0zu.s:507    .text:0000000000000198 .L0 
+     /tmp/ccRTy0zu.s:509    .text:000000000000019c .L0 
+     /tmp/ccRTy0zu.s:513    .text:00000000000001a0 .L0 
+     /tmp/ccRTy0zu.s:515    .text:00000000000001a0 .L0 
+     /tmp/ccRTy0zu.s:518    .text:00000000000001a8 .L0 
+     /tmp/ccRTy0zu.s:524    .text:00000000000001a8 _ZN10KSemaphore6signalEv
+     /tmp/ccRTy0zu.s:527    .text:00000000000001a8 .L0 
+     /tmp/ccRTy0zu.s:529    .text:00000000000001a8 .L0 
+     /tmp/ccRTy0zu.s:530    .text:00000000000001a8 .L0 
+     /tmp/ccRTy0zu.s:532    .text:00000000000001ac .L0 
+     /tmp/ccRTy0zu.s:535    .text:00000000000001b4 .L0 
+     /tmp/ccRTy0zu.s:537    .text:00000000000001b8 .L0 
+     /tmp/ccRTy0zu.s:540    .text:00000000000001bc .L0 
+     /tmp/ccRTy0zu.s:544    .text:00000000000001c0 .L0 
+     /tmp/ccRTy0zu.s:545    .text:00000000000001c4 .L0 
+     /tmp/ccRTy0zu.s:548    .text:00000000000001cc .L0 
+     /tmp/ccRTy0zu.s:549    .text:00000000000001cc .L0 
+     /tmp/ccRTy0zu.s:551    .text:00000000000001d0 .L0 
+     /tmp/ccRTy0zu.s:553    .text:00000000000001d0 .L0 
+     /tmp/ccRTy0zu.s:554    .text:00000000000001d0 .L0 
+     /tmp/ccRTy0zu.s:558    .text:00000000000001dc .L0 
+     /tmp/ccRTy0zu.s:559    .text:00000000000001e0 .L0 
+     /tmp/ccRTy0zu.s:561    .text:00000000000001e4 .L0 
+     /tmp/ccRTy0zu.s:562    .text:00000000000001e4 .L0 
+     /tmp/ccRTy0zu.s:564    .text:00000000000001e8 .L0 
+     /tmp/ccRTy0zu.s:566    .text:00000000000001ec .L0 
+     /tmp/ccRTy0zu.s:572    .text:00000000000001ec _ZN10KSemaphore5closeEv
+     /tmp/ccRTy0zu.s:575    .text:00000000000001ec .L0 
+     /tmp/ccRTy0zu.s:577    .text:00000000000001ec .L0 
+     /tmp/ccRTy0zu.s:578    .text:00000000000001f0 .L0 
+     /tmp/ccRTy0zu.s:583    .text:0000000000000200 .L0 
+     /tmp/ccRTy0zu.s:584    .text:0000000000000200 .L0 
+     /tmp/ccRTy0zu.s:585    .text:0000000000000200 .L0 
+     /tmp/ccRTy0zu.s:586    .text:0000000000000200 .L0 
+     /tmp/ccRTy0zu.s:588    .text:0000000000000204 .L0 
+     /tmp/ccRTy0zu.s:591    .text:0000000000000208 .L0 
+     /tmp/ccRTy0zu.s:592    .text:0000000000000208 .L0 
+     /tmp/ccRTy0zu.s:597    .text:000000000000020c .L0 
+     /tmp/ccRTy0zu.s:602    .text:0000000000000210 .L0 
+GAS LISTING /tmp/ccRTy0zu.s 			page 26
 
 
-     /tmp/ccDHRDh4.s:580    .text:0000000000000264 .L0 
-     /tmp/ccDHRDh4.s:587    .text:0000000000000268 .L0 
-     /tmp/ccDHRDh4.s:588    .text:0000000000000268 .L0 
-     /tmp/ccDHRDh4.s:589    .text:0000000000000268 .L0 
-     /tmp/ccDHRDh4.s:594    .text:000000000000026c .L0 
-     /tmp/ccDHRDh4.s:595    .text:000000000000026c .L0 
-     /tmp/ccDHRDh4.s:597    .text:0000000000000270 .L0 
-     /tmp/ccDHRDh4.s:600    .text:0000000000000274 .L0 
-     /tmp/ccDHRDh4.s:601    .text:0000000000000278 .L0 
-     /tmp/ccDHRDh4.s:602    .text:0000000000000278 .L0 
-     /tmp/ccDHRDh4.s:603    .text:0000000000000278 .L0 
-     /tmp/ccDHRDh4.s:605    .text:000000000000027c .L0 
-     /tmp/ccDHRDh4.s:609    .text:0000000000000280 .L0 
-     /tmp/ccDHRDh4.s:613    .text:0000000000000280 .L0 
-     /tmp/ccDHRDh4.s:614    .text:0000000000000280 .L0 
-     /tmp/ccDHRDh4.s:615    .text:0000000000000280 .L0 
-     /tmp/ccDHRDh4.s:620    .text:0000000000000284 .L0 
-     /tmp/ccDHRDh4.s:625    .text:0000000000000288 .L0 
-     /tmp/ccDHRDh4.s:626    .text:0000000000000288 .L0 
-     /tmp/ccDHRDh4.s:627    .text:0000000000000288 .L0 
-     /tmp/ccDHRDh4.s:634    .text:000000000000028c .L0 
-     /tmp/ccDHRDh4.s:635    .text:000000000000028c .L0 
-     /tmp/ccDHRDh4.s:636    .text:000000000000028c .L0 
-     /tmp/ccDHRDh4.s:641    .text:0000000000000290 .L0 
-     /tmp/ccDHRDh4.s:642    .text:0000000000000290 .L0 
-     /tmp/ccDHRDh4.s:644    .text:0000000000000294 .L0 
-     /tmp/ccDHRDh4.s:646    .text:0000000000000298 .L0 
-     /tmp/ccDHRDh4.s:647    .text:0000000000000298 .L0 
-     /tmp/ccDHRDh4.s:651    .text:00000000000002a0 .L0 
-     /tmp/ccDHRDh4.s:652    .text:00000000000002a0 .L0 
-     /tmp/ccDHRDh4.s:654    .text:00000000000002a4 .L0 
-     /tmp/ccDHRDh4.s:655    .text:00000000000002a8 .L0 
-     /tmp/ccDHRDh4.s:663    .text:00000000000002a8 .L0 
-     /tmp/ccDHRDh4.s:260    .text:0000000000000100 .L0 
-     /tmp/ccDHRDh4.s:100    .text:0000000000000060 .L7
-     /tmp/ccDHRDh4.s:86     .text:0000000000000050 .L5
-     /tmp/ccDHRDh4.s:202    .text:00000000000000c0 .L11
-     /tmp/ccDHRDh4.s:195    .text:00000000000000b8 .L16
-     /tmp/ccDHRDh4.s:148    .text:0000000000000090 .L10
-     /tmp/ccDHRDh4.s:236    .text:00000000000000e0 .L26
-     /tmp/ccDHRDh4.s:370    .text:0000000000000174 .L20
-     /tmp/ccDHRDh4.s:377    .text:000000000000017c .L21
-     /tmp/ccDHRDh4.s:350    .text:0000000000000158 .L18
-     /tmp/ccDHRDh4.s:407    .text:000000000000019c .L34
-     /tmp/ccDHRDh4.s:484    .text:0000000000000208 .L38
-     /tmp/ccDHRDh4.s:489    .text:0000000000000210 .L39
-     /tmp/ccDHRDh4.s:462    .text:00000000000001ec .L37
-     /tmp/ccDHRDh4.s:492    .text:0000000000000214 .L36
-     /tmp/ccDHRDh4.s:554    .text:0000000000000258 .L42
-     /tmp/ccDHRDh4.s:533    .text:0000000000000244 .L43
-     /tmp/ccDHRDh4.s:608    .text:0000000000000280 .L47
-     /tmp/ccDHRDh4.s:649    .text:00000000000002a0 .L48
-     /tmp/ccDHRDh4.s:598    .text:0000000000000274 .L41
-     /tmp/ccDHRDh4.s:2296   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
-     /tmp/ccDHRDh4.s:4023   .debug_str:000000000000088f .LASF138
-     /tmp/ccDHRDh4.s:3883   .debug_str:00000000000003d3 .LASF139
-     /tmp/ccDHRDh4.s:4031   .debug_str:000000000000097d .LASF140
-GAS LISTING /tmp/ccDHRDh4.s 			page 23
+     /tmp/ccRTy0zu.s:606    .text:0000000000000214 .L0 
+     /tmp/ccRTy0zu.s:607    .text:0000000000000214 .L0 
+     /tmp/ccRTy0zu.s:609    .text:0000000000000218 .L0 
+     /tmp/ccRTy0zu.s:610    .text:0000000000000218 .L0 
+     /tmp/ccRTy0zu.s:617    .text:0000000000000228 .L0 
+     /tmp/ccRTy0zu.s:618    .text:0000000000000228 .L0 
+     /tmp/ccRTy0zu.s:619    .text:0000000000000228 .L0 
+     /tmp/ccRTy0zu.s:624    .text:000000000000022c .L0 
+     /tmp/ccRTy0zu.s:628    .text:0000000000000230 .L0 
+     /tmp/ccRTy0zu.s:633    .text:0000000000000238 .L0 
+     /tmp/ccRTy0zu.s:636    .text:000000000000023c .L0 
+     /tmp/ccRTy0zu.s:637    .text:0000000000000240 .L0 
+     /tmp/ccRTy0zu.s:639    .text:0000000000000244 .L0 
+     /tmp/ccRTy0zu.s:640    .text:0000000000000244 .L0 
+     /tmp/ccRTy0zu.s:642    .text:0000000000000248 .L0 
+     /tmp/ccRTy0zu.s:645    .text:000000000000024c .L0 
+     /tmp/ccRTy0zu.s:648    .text:0000000000000250 .L0 
+     /tmp/ccRTy0zu.s:650    .text:0000000000000254 .L0 
+     /tmp/ccRTy0zu.s:657    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000000 _ZN5QueueI3TCBE13removeElementEPS0_
+     /tmp/ccRTy0zu.s:660    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000000 .L0 
+     /tmp/ccRTy0zu.s:662    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000000 .L0 
+     /tmp/ccRTy0zu.s:663    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000004 .L0 
+     /tmp/ccRTy0zu.s:665    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000008 .L0 
+     /tmp/ccRTy0zu.s:667    .text._ZN5QueueI3TCBE13removeElementEPS0_:000000000000000c .L0 
+     /tmp/ccRTy0zu.s:670    .text._ZN5QueueI3TCBE13removeElementEPS0_:000000000000000c .L0 
+     /tmp/ccRTy0zu.s:674    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000014 .L0 
+     /tmp/ccRTy0zu.s:678    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000018 .L0 
+     /tmp/ccRTy0zu.s:680    .text._ZN5QueueI3TCBE13removeElementEPS0_:000000000000001c .L0 
+     /tmp/ccRTy0zu.s:687    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000020 .L0 
+     /tmp/ccRTy0zu.s:688    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000020 .L0 
+     /tmp/ccRTy0zu.s:690    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000024 .L0 
+     /tmp/ccRTy0zu.s:693    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000028 .L0 
+     /tmp/ccRTy0zu.s:696    .text._ZN5QueueI3TCBE13removeElementEPS0_:000000000000002c .L0 
+     /tmp/ccRTy0zu.s:701    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000030 .L0 
+     /tmp/ccRTy0zu.s:702    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000030 .L0 
+     /tmp/ccRTy0zu.s:709    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000034 .L0 
+     /tmp/ccRTy0zu.s:710    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000034 .L0 
+     /tmp/ccRTy0zu.s:715    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000038 .L0 
+     /tmp/ccRTy0zu.s:717    .text._ZN5QueueI3TCBE13removeElementEPS0_:000000000000003c .L0 
+     /tmp/ccRTy0zu.s:720    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000040 .L0 
+     /tmp/ccRTy0zu.s:721    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000044 .L0 
+     /tmp/ccRTy0zu.s:722    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000044 .L0 
+     /tmp/ccRTy0zu.s:723    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000044 .L0 
+     /tmp/ccRTy0zu.s:725    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000048 .L0 
+     /tmp/ccRTy0zu.s:729    .text._ZN5QueueI3TCBE13removeElementEPS0_:000000000000004c .L0 
+     /tmp/ccRTy0zu.s:733    .text._ZN5QueueI3TCBE13removeElementEPS0_:000000000000004c .L0 
+     /tmp/ccRTy0zu.s:734    .text._ZN5QueueI3TCBE13removeElementEPS0_:000000000000004c .L0 
+     /tmp/ccRTy0zu.s:739    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000050 .L0 
+     /tmp/ccRTy0zu.s:741    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000054 .L0 
+     /tmp/ccRTy0zu.s:743    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000058 .L0 
+     /tmp/ccRTy0zu.s:747    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000060 .L0 
+     /tmp/ccRTy0zu.s:749    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000064 .L0 
+     /tmp/ccRTy0zu.s:750    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000068 .L0 
+     /tmp/ccRTy0zu.s:757    .text:0000000000000254 _ZN10KSemaphore28removeThreadFromBlockedQueueEP3TCB
+     /tmp/ccRTy0zu.s:760    .text:0000000000000254 .L0 
+     /tmp/ccRTy0zu.s:762    .text:0000000000000254 .L0 
+     /tmp/ccRTy0zu.s:763    .text:0000000000000258 .L0 
+GAS LISTING /tmp/ccRTy0zu.s 			page 27
 
 
-     /tmp/ccDHRDh4.s:5      .text:0000000000000000 .Ltext0
-     /tmp/ccDHRDh4.s:658    .text:00000000000002a8 .Letext0
-     /tmp/ccDHRDh4.s:3769   .debug_line:0000000000000000 .Ldebug_line0
-     /tmp/ccDHRDh4.s:3879   .debug_str:00000000000003a3 .LASF0
-     /tmp/ccDHRDh4.s:3897   .debug_str:0000000000000446 .LASF1
-     /tmp/ccDHRDh4.s:3969   .debug_str:00000000000006fc .LASF2
-     /tmp/ccDHRDh4.s:3977   .debug_str:0000000000000730 .LASF4
-     /tmp/ccDHRDh4.s:3889   .debug_str:00000000000003fe .LASF3
-     /tmp/ccDHRDh4.s:3783   .debug_str:000000000000006c .LASF5
-     /tmp/ccDHRDh4.s:3945   .debug_str:000000000000060e .LASF6
-     /tmp/ccDHRDh4.s:3893   .debug_str:000000000000042b .LASF7
-     /tmp/ccDHRDh4.s:3853   .debug_str:00000000000002c2 .LASF8
-     /tmp/ccDHRDh4.s:3857   .debug_str:00000000000002df .LASF9
-     /tmp/ccDHRDh4.s:3813   .debug_str:0000000000000166 .LASF10
-     /tmp/ccDHRDh4.s:3843   .debug_str:000000000000027e .LASF11
-     /tmp/ccDHRDh4.s:3821   .debug_str:00000000000001a6 .LASF12
-     /tmp/ccDHRDh4.s:3811   .debug_str:0000000000000156 .LASF13
-     /tmp/ccDHRDh4.s:3999   .debug_str:00000000000007f7 .LASF14
-     /tmp/ccDHRDh4.s:3835   .debug_str:0000000000000241 .LASF15
-     /tmp/ccDHRDh4.s:3993   .debug_str:00000000000007b9 .LASF16
-     /tmp/ccDHRDh4.s:4027   .debug_str:000000000000095d .LASF141
-     /tmp/ccDHRDh4.s:4045   .debug_str:0000000000000a12 .LASF17
-     /tmp/ccDHRDh4.s:3805   .debug_str:0000000000000121 .LASF18
-     /tmp/ccDHRDh4.s:4033   .debug_str:00000000000009a0 .LASF19
-     /tmp/ccDHRDh4.s:4021   .debug_str:000000000000087c .LASF20
-     /tmp/ccDHRDh4.s:3995   .debug_str:00000000000007cf .LASF21
-     /tmp/ccDHRDh4.s:3943   .debug_str:00000000000005f4 .LASF22
-     /tmp/ccDHRDh4.s:3919   .debug_str:0000000000000530 .LASF25
-     /tmp/ccDHRDh4.s:3825   .debug_str:000000000000021d .LASF23
-     /tmp/ccDHRDh4.s:3911   .debug_str:00000000000004bd .LASF24
-     /tmp/ccDHRDh4.s:3859   .debug_str:00000000000002ed .LASF26
-     /tmp/ccDHRDh4.s:3807   .debug_str:000000000000013b .LASF27
-     /tmp/ccDHRDh4.s:3837   .debug_str:0000000000000257 .LASF28
-     /tmp/ccDHRDh4.s:3887   .debug_str:00000000000003f1 .LASF142
-     /tmp/ccDHRDh4.s:3953   .debug_str:000000000000064f .LASF29
-     /tmp/ccDHRDh4.s:3903   .debug_str:0000000000000470 .LASF30
-     /tmp/ccDHRDh4.s:3905   .debug_str:0000000000000488 .LASF31
-     /tmp/ccDHRDh4.s:4003   .debug_str:0000000000000811 .LASF32
-     /tmp/ccDHRDh4.s:3963   .debug_str:00000000000006b2 .LASF33
-     /tmp/ccDHRDh4.s:3961   .debug_str:00000000000006a7 .LASF38
-     /tmp/ccDHRDh4.s:3865   .debug_str:000000000000031a .LASF40
-     /tmp/ccDHRDh4.s:3909   .debug_str:00000000000004a9 .LASF34
-     /tmp/ccDHRDh4.s:3913   .debug_str:00000000000004c5 .LASF36
-     /tmp/ccDHRDh4.s:3987   .debug_str:000000000000077a .LASF35
-     /tmp/ccDHRDh4.s:3803   .debug_str:00000000000000f0 .LASF37
-     /tmp/ccDHRDh4.s:3841   .debug_str:0000000000000270 .LASF39
-     /tmp/ccDHRDh4.s:3789   .debug_str:000000000000008e .LASF41
-     /tmp/ccDHRDh4.s:3829   .debug_str:000000000000022d .LASF42
-     /tmp/ccDHRDh4.s:3985   .debug_str:0000000000000763 .LASF43
-     /tmp/ccDHRDh4.s:4007   .debug_str:0000000000000834 .LASF44
-     /tmp/ccDHRDh4.s:3927   .debug_str:000000000000056b .LASF45
-     /tmp/ccDHRDh4.s:3785   .debug_str:0000000000000073 .LASF46
-     /tmp/ccDHRDh4.s:4037   .debug_str:00000000000009bb .LASF47
-     /tmp/ccDHRDh4.s:3773   .debug_str:0000000000000011 .LASF88
-     /tmp/ccDHRDh4.s:3881   .debug_str:00000000000003b0 .LASF90
-     /tmp/ccDHRDh4.s:3929   .debug_str:0000000000000584 .LASF48
-     /tmp/ccDHRDh4.s:3965   .debug_str:00000000000006b7 .LASF49
-GAS LISTING /tmp/ccDHRDh4.s 			page 24
+     /tmp/ccRTy0zu.s:767    .text:0000000000000264 .L0 
+     /tmp/ccRTy0zu.s:768    .text:0000000000000264 .L0 
+     /tmp/ccRTy0zu.s:769    .text:0000000000000264 .L0 
+     /tmp/ccRTy0zu.s:771    .text:0000000000000268 .L0 
+     /tmp/ccRTy0zu.s:774    .text:000000000000026c .L0 
+     /tmp/ccRTy0zu.s:775    .text:000000000000026c .L0 
+     /tmp/ccRTy0zu.s:782    .text:0000000000000278 .L0 
+     /tmp/ccRTy0zu.s:783    .text:0000000000000278 .L0 
+     /tmp/ccRTy0zu.s:784    .text:0000000000000278 .L0 
+     /tmp/ccRTy0zu.s:791    .text:000000000000027c .L0 
+     /tmp/ccRTy0zu.s:792    .text:000000000000027c .L0 
+     /tmp/ccRTy0zu.s:793    .text:000000000000027c .L0 
+     /tmp/ccRTy0zu.s:798    .text:0000000000000280 .L0 
+     /tmp/ccRTy0zu.s:799    .text:0000000000000284 .L0 
+     /tmp/ccRTy0zu.s:801    .text:0000000000000288 .L0 
+     /tmp/ccRTy0zu.s:802    .text:0000000000000288 .L0 
+     /tmp/ccRTy0zu.s:804    .text:000000000000028c .L0 
+     /tmp/ccRTy0zu.s:807    .text:0000000000000290 .L0 
+     /tmp/ccRTy0zu.s:809    .text:0000000000000294 .L0 
+     /tmp/ccRTy0zu.s:52     .text._ZN5QueueI3TCBEnwEm:000000000000003c .L0 
+     /tmp/ccRTy0zu.s:818    .text:0000000000000294 .L0 
+     /tmp/ccRTy0zu.s:164    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000034 .L0 
+     /tmp/ccRTy0zu.s:435    .text._ZN5QueueI3TCBE4takeEv:0000000000000038 .L0 
+     /tmp/ccRTy0zu.s:753    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000068 .L0 
+     /tmp/ccRTy0zu.s:256    .text:00000000000000c8 .L0 
+     /tmp/ccRTy0zu.s:232    .text:00000000000000a8 .L22
+     /tmp/ccRTy0zu.s:366    .text:000000000000013c .L16
+     /tmp/ccRTy0zu.s:373    .text:0000000000000144 .L17
+     /tmp/ccRTy0zu.s:346    .text:0000000000000120 .L14
+     /tmp/ccRTy0zu.s:512    .text:00000000000001a0 .L29
+     /tmp/ccRTy0zu.s:498    .text:000000000000018c .L28
+     /tmp/ccRTy0zu.s:542    .text:00000000000001c0 .L38
+     /tmp/ccRTy0zu.s:626    .text:0000000000000230 .L42
+     /tmp/ccRTy0zu.s:631    .text:0000000000000238 .L43
+     /tmp/ccRTy0zu.s:604    .text:0000000000000214 .L41
+     /tmp/ccRTy0zu.s:634    .text:000000000000023c .L40
+     /tmp/ccRTy0zu.s:33     .text._ZN5QueueI3TCBEnwEm:0000000000000020 .L2
+     /tmp/ccRTy0zu.s:156    .text._ZN5QueueI3TCBE6appendEPS0_:000000000000002c .L10
+     /tmp/ccRTy0zu.s:143    .text._ZN5QueueI3TCBE6appendEPS0_:000000000000001c .L8
+     /tmp/ccRTy0zu.s:417    .text._ZN5QueueI3TCBE4takeEv:0000000000000024 .L23
+     /tmp/ccRTy0zu.s:427    .text._ZN5QueueI3TCBE4takeEv:0000000000000030 .L26
+     /tmp/ccRTy0zu.s:694    .text._ZN5QueueI3TCBE13removeElementEPS0_:000000000000002c .L46
+     /tmp/ccRTy0zu.s:676    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000018 .L47
+     /tmp/ccRTy0zu.s:728    .text._ZN5QueueI3TCBE13removeElementEPS0_:000000000000004c .L51
+     /tmp/ccRTy0zu.s:745    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000060 .L52
+     /tmp/ccRTy0zu.s:718    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000040 .L45
+     /tmp/ccRTy0zu.s:3000   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccRTy0zu.s:5174   .debug_str:0000000000000c5d .LASF204
+     /tmp/ccRTy0zu.s:4974   .debug_str:0000000000000538 .LASF205
+     /tmp/ccRTy0zu.s:5186   .debug_str:0000000000000dbc .LASF206
+     /tmp/ccRTy0zu.s:4806   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccRTy0zu.s:4828   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccRTy0zu.s:4968   .debug_str:00000000000004eb .LASF0
+     /tmp/ccRTy0zu.s:4998   .debug_str:00000000000005ed .LASF1
+     /tmp/ccRTy0zu.s:5108   .debug_str:0000000000000a5a .LASF2
+     /tmp/ccRTy0zu.s:4914   .debug_str:0000000000000337 .LASF3
+     /tmp/ccRTy0zu.s:5118   .debug_str:0000000000000a99 .LASF4
+GAS LISTING /tmp/ccRTy0zu.s 			page 28
 
 
-     /tmp/ccDHRDh4.s:3855   .debug_str:00000000000002d2 .LASF50
-     /tmp/ccDHRDh4.s:4071   .debug_str:0000000000000b59 .LASF51
-     /tmp/ccDHRDh4.s:3781   .debug_str:000000000000005a .LASF52
-     /tmp/ccDHRDh4.s:4073   .debug_str:0000000000000b6b .LASF53
-     /tmp/ccDHRDh4.s:3941   .debug_str:00000000000005d9 .LASF115
-     /tmp/ccDHRDh4.s:4009   .debug_str:000000000000083b .LASF70
-     /tmp/ccDHRDh4.s:4017   .debug_str:000000000000086f .LASF54
-     /tmp/ccDHRDh4.s:3817   .debug_str:000000000000018a .LASF143
-     /tmp/ccDHRDh4.s:3771   .debug_str:0000000000000000 .LASF55
-     /tmp/ccDHRDh4.s:3823   .debug_str:00000000000001b6 .LASF56
-     /tmp/ccDHRDh4.s:3935   .debug_str:00000000000005ab .LASF69
-     /tmp/ccDHRDh4.s:3901   .debug_str:0000000000000463 .LASF57
-     /tmp/ccDHRDh4.s:4041   .debug_str:00000000000009e3 .LASF58
-     /tmp/ccDHRDh4.s:4011   .debug_str:0000000000000843 .LASF59
-     /tmp/ccDHRDh4.s:3923   .debug_str:0000000000000546 .LASF60
-     /tmp/ccDHRDh4.s:4049   .debug_str:0000000000000a48 .LASF61
-     /tmp/ccDHRDh4.s:4075   .debug_str:0000000000000b76 .LASF62
-     /tmp/ccDHRDh4.s:3991   .debug_str:00000000000007a8 .LASF63
-     /tmp/ccDHRDh4.s:3915   .debug_str:0000000000000502 .LASF64
-     /tmp/ccDHRDh4.s:3983   .debug_str:000000000000075a .LASF65
-     /tmp/ccDHRDh4.s:3989   .debug_str:0000000000000794 .LASF66
-     /tmp/ccDHRDh4.s:3885   .debug_str:00000000000003e6 .LASF67
-     /tmp/ccDHRDh4.s:4015   .debug_str:0000000000000859 .LASF68
-     /tmp/ccDHRDh4.s:3871   .debug_str:000000000000034f .LASF71
-     /tmp/ccDHRDh4.s:4043   .debug_str:00000000000009fc .LASF72
-     /tmp/ccDHRDh4.s:3797   .debug_str:00000000000000cf .LASF73
-     /tmp/ccDHRDh4.s:3863   .debug_str:0000000000000301 .LASF74
-     /tmp/ccDHRDh4.s:3861   .debug_str:00000000000002f2 .LASF75
-     /tmp/ccDHRDh4.s:3891   .debug_str:0000000000000410 .LASF76
-     /tmp/ccDHRDh4.s:3777   .debug_str:0000000000000022 .LASF77
-     /tmp/ccDHRDh4.s:3819   .debug_str:0000000000000196 .LASF78
-     /tmp/ccDHRDh4.s:4069   .debug_str:0000000000000b21 .LASF79
-     /tmp/ccDHRDh4.s:4067   .debug_str:0000000000000b11 .LASF80
-     /tmp/ccDHRDh4.s:3957   .debug_str:000000000000067b .LASF81
-     /tmp/ccDHRDh4.s:4029   .debug_str:000000000000096a .LASF82
-     /tmp/ccDHRDh4.s:4055   .debug_str:0000000000000a85 .LASF83
-     /tmp/ccDHRDh4.s:4061   .debug_str:0000000000000ad8 .LASF84
-     /tmp/ccDHRDh4.s:3779   .debug_str:000000000000003b .LASF85
-     /tmp/ccDHRDh4.s:3951   .debug_str:000000000000063a .LASF86
-     /tmp/ccDHRDh4.s:3877   .debug_str:0000000000000383 .LASF87
-     /tmp/ccDHRDh4.s:3827   .debug_str:0000000000000224 .LASF96
-     /tmp/ccDHRDh4.s:3955   .debug_str:0000000000000668 .LASF98
-     /tmp/ccDHRDh4.s:3959   .debug_str:0000000000000696 .LASF92
-     /tmp/ccDHRDh4.s:3849   .debug_str:000000000000029c .LASF94
-     /tmp/ccDHRDh4.s:3809   .debug_str:0000000000000145 .LASF89
-     /tmp/ccDHRDh4.s:3939   .debug_str:00000000000005bb .LASF91
-     /tmp/ccDHRDh4.s:3925   .debug_str:000000000000055d .LASF93
-     /tmp/ccDHRDh4.s:3979   .debug_str:0000000000000737 .LASF95
-     /tmp/ccDHRDh4.s:4057   .debug_str:0000000000000aaf .LASF97
-     /tmp/ccDHRDh4.s:3867   .debug_str:000000000000032e .LASF99
-     /tmp/ccDHRDh4.s:3997   .debug_str:00000000000007e3 .LASF100
-     /tmp/ccDHRDh4.s:4047   .debug_str:0000000000000a29 .LASF101
-     /tmp/ccDHRDh4.s:3775   .debug_str:000000000000001d .LASF102
-     /tmp/ccDHRDh4.s:3895   .debug_str:000000000000043e .LASF103
-     /tmp/ccDHRDh4.s:3921   .debug_str:000000000000053c .LASF104
-     /tmp/ccDHRDh4.s:4051   .debug_str:0000000000000a56 .LASF105
-     /tmp/ccDHRDh4.s:4025   .debug_str:0000000000000953 .LASF106
-GAS LISTING /tmp/ccDHRDh4.s 			page 25
+     /tmp/ccRTy0zu.s:4984   .debug_str:0000000000000585 .LASF5
+     /tmp/ccRTy0zu.s:4840   .debug_str:0000000000000056 .LASF6
+     /tmp/ccRTy0zu.s:5074   .debug_str:00000000000008d2 .LASF7
+     /tmp/ccRTy0zu.s:4990   .debug_str:00000000000005bc .LASF8
+     /tmp/ccRTy0zu.s:4936   .debug_str:00000000000003c7 .LASF9
+     /tmp/ccRTy0zu.s:4942   .debug_str:00000000000003ef .LASF10
+     /tmp/ccRTy0zu.s:4872   .debug_str:0000000000000177 .LASF11
+     /tmp/ccRTy0zu.s:4924   .debug_str:0000000000000378 .LASF12
+     /tmp/ccRTy0zu.s:4882   .debug_str:00000000000001e3 .LASF13
+     /tmp/ccRTy0zu.s:4870   .debug_str:0000000000000167 .LASF14
+     /tmp/ccRTy0zu.s:5146   .debug_str:0000000000000b78 .LASF15
+     /tmp/ccRTy0zu.s:4906   .debug_str:00000000000002ed .LASF16
+     /tmp/ccRTy0zu.s:5136   .debug_str:0000000000000b2a .LASF17
+     /tmp/ccRTy0zu.s:5182   .debug_str:0000000000000d83 .LASF207
+     /tmp/ccRTy0zu.s:5208   .debug_str:0000000000000eb9 .LASF18
+     /tmp/ccRTy0zu.s:4864   .debug_str:0000000000000132 .LASF19
+     /tmp/ccRTy0zu.s:5190   .debug_str:0000000000000de5 .LASF20
+     /tmp/ccRTy0zu.s:5172   .debug_str:0000000000000c4a .LASF21
+     /tmp/ccRTy0zu.s:5140   .debug_str:0000000000000b46 .LASF22
+     /tmp/ccRTy0zu.s:5070   .debug_str:0000000000000880 .LASF23
+     /tmp/ccRTy0zu.s:5030   .debug_str:000000000000073b .LASF26
+     /tmp/ccRTy0zu.s:4890   .debug_str:0000000000000287 .LASF24
+     /tmp/ccRTy0zu.s:5018   .debug_str:00000000000006d6 .LASF25
+     /tmp/ccRTy0zu.s:4944   .debug_str:00000000000003fd .LASF27
+     /tmp/ccRTy0zu.s:4866   .debug_str:000000000000014c .LASF28
+     /tmp/ccRTy0zu.s:4916   .debug_str:000000000000033d .LASF29
+     /tmp/ccRTy0zu.s:4982   .debug_str:0000000000000578 .LASF208
+     /tmp/ccRTy0zu.s:5086   .debug_str:0000000000000952 .LASF30
+     /tmp/ccRTy0zu.s:5004   .debug_str:0000000000000617 .LASF31
+     /tmp/ccRTy0zu.s:5012   .debug_str:00000000000006a1 .LASF32
+     /tmp/ccRTy0zu.s:5152   .debug_str:0000000000000b9f .LASF33
+     /tmp/ccRTy0zu.s:5064   .debug_str:0000000000000837 .LASF38
+     /tmp/ccRTy0zu.s:5106   .debug_str:0000000000000a50 .LASF51
+     /tmp/ccRTy0zu.s:4980   .debug_str:000000000000056f .LASF34
+     /tmp/ccRTy0zu.s:5022   .debug_str:00000000000006f3 .LASF35
+     /tmp/ccRTy0zu.s:4986   .debug_str:0000000000000597 .LASF36
+     /tmp/ccRTy0zu.s:5032   .debug_str:0000000000000747 .LASF37
+     /tmp/ccRTy0zu.s:4844   .debug_str:0000000000000063 .LASF39
+     /tmp/ccRTy0zu.s:5096   .debug_str:00000000000009bc .LASF40
+     /tmp/ccRTy0zu.s:5112   .debug_str:0000000000000a73 .LASF180
+     /tmp/ccRTy0zu.s:5204   .debug_str:0000000000000e87 .LASF181
+     /tmp/ccRTy0zu.s:5212   .debug_str:0000000000000f07 .LASF41
+     /tmp/ccRTy0zu.s:4846   .debug_str:000000000000007c .LASF43
+     /tmp/ccRTy0zu.s:5110   .debug_str:0000000000000a68 .LASF42
+     /tmp/ccRTy0zu.s:4876   .debug_str:000000000000019b .LASF44
+     /tmp/ccRTy0zu.s:4922   .debug_str:0000000000000364 .LASF45
+     /tmp/ccRTy0zu.s:5184   .debug_str:0000000000000d90 .LASF47
+     /tmp/ccRTy0zu.s:5168   .debug_str:0000000000000c35 .LASF46
+     /tmp/ccRTy0zu.s:5034   .debug_str:0000000000000755 .LASF48
+     /tmp/ccRTy0zu.s:5088   .debug_str:000000000000096b .LASF49
+     /tmp/ccRTy0zu.s:4860   .debug_str:0000000000000102 .LASF50
+     /tmp/ccRTy0zu.s:4836   .debug_str:0000000000000022 .LASF52
+     /tmp/ccRTy0zu.s:4958   .debug_str:0000000000000488 .LASF53
+     /tmp/ccRTy0zu.s:5200   .debug_str:0000000000000e62 .LASF54
+     /tmp/ccRTy0zu.s:4856   .debug_str:00000000000000e6 .LASF55
+     /tmp/ccRTy0zu.s:4904   .debug_str:00000000000002e1 .LASF56
+     /tmp/ccRTy0zu.s:5076   .debug_str:00000000000008e5 .LASF58
+GAS LISTING /tmp/ccRTy0zu.s 			page 29
 
 
-     /tmp/ccDHRDh4.s:3899   .debug_str:0000000000000459 .LASF107
-     /tmp/ccDHRDh4.s:4005   .debug_str:0000000000000824 .LASF108
-     /tmp/ccDHRDh4.s:3831   .debug_str:0000000000000232 .LASF109
-     /tmp/ccDHRDh4.s:4035   .debug_str:00000000000009b2 .LASF110
-     /tmp/ccDHRDh4.s:3839   .debug_str:0000000000000263 .LASF111
-     /tmp/ccDHRDh4.s:4019   .debug_str:0000000000000874 .LASF112
-     /tmp/ccDHRDh4.s:3933   .debug_str:00000000000005a0 .LASF113
-     /tmp/ccDHRDh4.s:3799   .debug_str:00000000000000dc .LASF144
-     /tmp/ccDHRDh4.s:4059   .debug_str:0000000000000abf .LASF145
-     /tmp/ccDHRDh4.s:3801   .debug_str:00000000000000ea .LASF146
-     /tmp/ccDHRDh4.s:3787   .debug_str:0000000000000079 .LASF147
-     /tmp/ccDHRDh4.s:3833   .debug_str:0000000000000238 .LASF114
-     /tmp/ccDHRDh4.s:3947   .debug_str:0000000000000621 .LASF116
-     /tmp/ccDHRDh4.s:3851   .debug_str:00000000000002b8 .LASF117
-     /tmp/ccDHRDh4.s:4063   .debug_str:0000000000000aeb .LASF118
-     /tmp/ccDHRDh4.s:3815   .debug_str:0000000000000175 .LASF119
-     /tmp/ccDHRDh4.s:3971   .debug_str:000000000000070a .LASF148
-     /tmp/ccDHRDh4.s:3975   .debug_str:000000000000071b .LASF149
-     /tmp/ccDHRDh4.s:3873   .debug_str:000000000000035a .LASF150
-     /tmp/ccDHRDh4.s:4065   .debug_str:0000000000000afd .LASF151
-     /tmp/ccDHRDh4.s:3931   .debug_str:0000000000000592 .LASF120
-     /tmp/ccDHRDh4.s:4053   .debug_str:0000000000000a62 .LASF121
-     /tmp/ccDHRDh4.s:4039   .debug_str:00000000000009d3 .LASF122
-     /tmp/ccDHRDh4.s:3917   .debug_str:0000000000000520 .LASF123
-     /tmp/ccDHRDh4.s:3795   .debug_str:00000000000000c4 .LASF124
-     /tmp/ccDHRDh4.s:515    .text:000000000000022c .LFB43
-     /tmp/ccDHRDh4.s:656    .text:00000000000002a8 .LFE43
-     /tmp/ccDHRDh4.s:3847   .debug_str:0000000000000297 .LASF127
-     /tmp/ccDHRDh4.s:3967   .debug_str:00000000000006f5 .LASF130
-     /tmp/ccDHRDh4.s:3791   .debug_str:00000000000000af .LASF125
-     /tmp/ccDHRDh4.s:3388   .debug_loc:0000000000000000 .LLST22
-     /tmp/ccDHRDh4.s:4013   .debug_str:000000000000084e .LASF126
-     /tmp/ccDHRDh4.s:3412   .debug_loc:0000000000000071 .LLST23
-     /tmp/ccDHRDh4.s:542    .text:000000000000024c .LBB91
-     /tmp/ccDHRDh4.s:546    .text:000000000000024c .LBE91
-     /tmp/ccDHRDh4.s:559    .text:000000000000025c .LBB93
-     /tmp/ccDHRDh4.s:566    .text:0000000000000260 .LBE93
-     /tmp/ccDHRDh4.s:3432   .debug_loc:00000000000000ce .LLST24
-     /tmp/ccDHRDh4.s:567    .text:0000000000000260 .LBB95
-     /tmp/ccDHRDh4.s:574    .text:0000000000000264 .LBE95
-     /tmp/ccDHRDh4.s:3439   .debug_loc:00000000000000f1 .LLST25
-     /tmp/ccDHRDh4.s:3446   .debug_loc:0000000000000114 .LLST26
-     /tmp/ccDHRDh4.s:576    .text:0000000000000264 .LBB97
-     /tmp/ccDHRDh4.s:583    .text:0000000000000268 .LBE97
-     /tmp/ccDHRDh4.s:3453   .debug_loc:0000000000000137 .LLST27
-     /tmp/ccDHRDh4.s:585    .text:0000000000000268 .LBB99
-     /tmp/ccDHRDh4.s:592    .text:000000000000026c .LBE99
-     /tmp/ccDHRDh4.s:3460   .debug_loc:000000000000015a .LLST28
-     /tmp/ccDHRDh4.s:611    .text:0000000000000280 .LBB101
-     /tmp/ccDHRDh4.s:618    .text:0000000000000284 .LBE101
-     /tmp/ccDHRDh4.s:3467   .debug_loc:000000000000017d .LLST29
-     /tmp/ccDHRDh4.s:623    .text:0000000000000288 .LBB103
-     /tmp/ccDHRDh4.s:630    .text:000000000000028c .LBE103
-     /tmp/ccDHRDh4.s:3474   .debug_loc:00000000000001a0 .LLST30
-     /tmp/ccDHRDh4.s:632    .text:000000000000028c .LBB105
-     /tmp/ccDHRDh4.s:639    .text:0000000000000290 .LBE105
-     /tmp/ccDHRDh4.s:3481   .debug_loc:00000000000001c3 .LLST31
-GAS LISTING /tmp/ccDHRDh4.s 			page 26
+     /tmp/ccRTy0zu.s:4910   .debug_str:0000000000000324 .LASF62
+     /tmp/ccRTy0zu.s:5210   .debug_str:0000000000000ed0 .LASF64
+     /tmp/ccRTy0zu.s:5248   .debug_str:0000000000001089 .LASF57
+     /tmp/ccRTy0zu.s:5072   .debug_str:000000000000089a .LASF59
+     /tmp/ccRTy0zu.s:4976   .debug_str:000000000000054b .LASF60
+     /tmp/ccRTy0zu.s:5196   .debug_str:0000000000000e18 .LASF61
+     /tmp/ccRTy0zu.s:5126   .debug_str:0000000000000acc .LASF63
+     /tmp/ccRTy0zu.s:5008   .debug_str:0000000000000643 .LASF65
+     /tmp/ccRTy0zu.s:4992   .debug_str:00000000000005cf .LASF153
+     /tmp/ccRTy0zu.s:5160   .debug_str:0000000000000bd1 .LASF155
+     /tmp/ccRTy0zu.s:5100   .debug_str:00000000000009f3 .LASF66
+     /tmp/ccRTy0zu.s:4930   .debug_str:0000000000000396 .LASF67
+     /tmp/ccRTy0zu.s:4954   .debug_str:0000000000000469 .LASF68
+     /tmp/ccRTy0zu.s:5016   .debug_str:00000000000006c2 .LASF69
+     /tmp/ccRTy0zu.s:5178   .debug_str:0000000000000d3c .LASF70
+     /tmp/ccRTy0zu.s:4970   .debug_str:00000000000004f8 .LASF71
+     /tmp/ccRTy0zu.s:4952   .debug_str:0000000000000435 .LASF72
+     /tmp/ccRTy0zu.s:4920   .debug_str:0000000000000356 .LASF73
+     /tmp/ccRTy0zu.s:4848   .debug_str:00000000000000a3 .LASF74
+     /tmp/ccRTy0zu.s:4898   .debug_str:00000000000002cd .LASF75
+     /tmp/ccRTy0zu.s:5128   .debug_str:0000000000000ae2 .LASF76
+     /tmp/ccRTy0zu.s:5156   .debug_str:0000000000000bc2 .LASF77
+     /tmp/ccRTy0zu.s:5046   .debug_str:00000000000007cb .LASF78
+     /tmp/ccRTy0zu.s:4842   .debug_str:000000000000005d .LASF79
+     /tmp/ccRTy0zu.s:5194   .debug_str:0000000000000e00 .LASF80
+     /tmp/ccRTy0zu.s:4832   .debug_str:0000000000000011 .LASF81
+     /tmp/ccRTy0zu.s:4972   .debug_str:0000000000000515 .LASF82
+     /tmp/ccRTy0zu.s:5050   .debug_str:00000000000007e9 .LASF83
+     /tmp/ccRTy0zu.s:5104   .debug_str:0000000000000a12 .LASF84
+     /tmp/ccRTy0zu.s:4938   .debug_str:00000000000003d7 .LASF85
+     /tmp/ccRTy0zu.s:5006   .debug_str:000000000000062f .LASF86
+     /tmp/ccRTy0zu.s:5198   .debug_str:0000000000000e57 .LASF87
+     /tmp/ccRTy0zu.s:5068   .debug_str:0000000000000865 .LASF175
+     /tmp/ccRTy0zu.s:5158   .debug_str:0000000000000bc9 .LASF110
+     /tmp/ccRTy0zu.s:5164   .debug_str:0000000000000c10 .LASF88
+     /tmp/ccRTy0zu.s:5130   .debug_str:0000000000000af9 .LASF169
+     /tmp/ccRTy0zu.s:4830   .debug_str:0000000000000000 .LASF89
+     /tmp/ccRTy0zu.s:4884   .debug_str:00000000000001f3 .LASF90
+     /tmp/ccRTy0zu.s:5058   .debug_str:000000000000081b .LASF109
+     /tmp/ccRTy0zu.s:5002   .debug_str:000000000000060a .LASF91
+     /tmp/ccRTy0zu.s:5144   .debug_str:0000000000000b5f .LASF92
+     /tmp/ccRTy0zu.s:4948   .debug_str:0000000000000411 .LASF93
+     /tmp/ccRTy0zu.s:5042   .debug_str:00000000000007a6 .LASF94
+     /tmp/ccRTy0zu.s:5214   .debug_str:0000000000000f16 .LASF95
+     /tmp/ccRTy0zu.s:5256   .debug_str:00000000000010c2 .LASF96
+     /tmp/ccRTy0zu.s:5234   .debug_str:0000000000000fd9 .LASF97
+     /tmp/ccRTy0zu.s:5176   .debug_str:0000000000000d21 .LASF98
+     /tmp/ccRTy0zu.s:5040   .debug_str:0000000000000797 .LASF99
+     /tmp/ccRTy0zu.s:5102   .debug_str:00000000000009f8 .LASF100
+     /tmp/ccRTy0zu.s:5202   .debug_str:0000000000000e72 .LASF101
+     /tmp/ccRTy0zu.s:5166   .debug_str:0000000000000c15 .LASF102
+     /tmp/ccRTy0zu.s:5134   .debug_str:0000000000000b19 .LASF103
+     /tmp/ccRTy0zu.s:5024   .debug_str:00000000000006ff .LASF104
+     /tmp/ccRTy0zu.s:5124   .debug_str:0000000000000ac3 .LASF105
+     /tmp/ccRTy0zu.s:5132   .debug_str:0000000000000b05 .LASF106
+     /tmp/ccRTy0zu.s:4956   .debug_str:000000000000047d .LASF107
+     /tmp/ccRTy0zu.s:5162   .debug_str:0000000000000bfa .LASF108
+GAS LISTING /tmp/ccRTy0zu.s 			page 30
 
 
-     /tmp/ccDHRDh4.s:438    .text:00000000000001c8 .LFB42
-     /tmp/ccDHRDh4.s:509    .text:000000000000022c .LFE42
-     /tmp/ccDHRDh4.s:3488   .debug_loc:00000000000001e6 .LLST19
-     /tmp/ccDHRDh4.s:3937   .debug_str:00000000000005b0 .LASF128
-     /tmp/ccDHRDh4.s:3514   .debug_loc:0000000000000258 .LLST20
-     /tmp/ccDHRDh4.s:473    .text:0000000000000200 .LBB89
-     /tmp/ccDHRDh4.s:480    .text:0000000000000204 .LBE89
-     /tmp/ccDHRDh4.s:3521   .debug_loc:000000000000027b .LLST21
-     /tmp/ccDHRDh4.s:471    .text:0000000000000200 .LVL41
-     /tmp/ccDHRDh4.s:390    .text:0000000000000184 .LFB41
-     /tmp/ccDHRDh4.s:432    .text:00000000000001c8 .LFE41
-     /tmp/ccDHRDh4.s:3528   .debug_loc:000000000000029e .LLST18
-     /tmp/ccDHRDh4.s:421    .text:00000000000001b8 .LVL37
-     /tmp/ccDHRDh4.s:217    .text:00000000000000c8 .LFB40
-     /tmp/ccDHRDh4.s:384    .text:0000000000000184 .LFE40
-     /tmp/ccDHRDh4.s:3553   .debug_loc:0000000000000300 .LLST13
-     /tmp/ccDHRDh4.s:3759   .debug_ranges:0000000000000000 .Ldebug_ranges0
-     /tmp/ccDHRDh4.s:3793   .debug_str:00000000000000ba .LASF129
-     /tmp/ccDHRDh4.s:3586   .debug_loc:0000000000000388 .LLST14
-     /tmp/ccDHRDh4.s:256    .text:0000000000000100 .LBB68
-     /tmp/ccDHRDh4.s:264    .text:000000000000010c .LBE68
-     /tmp/ccDHRDh4.s:269    .text:0000000000000114 .LBB70
-     /tmp/ccDHRDh4.s:276    .text:0000000000000118 .LBE70
-     /tmp/ccDHRDh4.s:3597   .debug_loc:00000000000003be .LLST15
-     /tmp/ccDHRDh4.s:278    .text:0000000000000118 .LBB72
-     /tmp/ccDHRDh4.s:285    .text:000000000000011c .LBE72
-     /tmp/ccDHRDh4.s:3604   .debug_loc:00000000000003e1 .LLST16
-     /tmp/ccDHRDh4.s:293    .text:000000000000012c .LBB74
-     /tmp/ccDHRDh4.s:297    .text:000000000000012c .LBE74
-     /tmp/ccDHRDh4.s:298    .text:000000000000012c .LBB76
-     /tmp/ccDHRDh4.s:305    .text:0000000000000130 .LBE76
-     /tmp/ccDHRDh4.s:306    .text:0000000000000130 .LBB78
-     /tmp/ccDHRDh4.s:310    .text:0000000000000130 .LBE78
-     /tmp/ccDHRDh4.s:317    .text:0000000000000140 .LBB80
-     /tmp/ccDHRDh4.s:324    .text:0000000000000144 .LBE80
-     /tmp/ccDHRDh4.s:325    .text:0000000000000144 .LBB82
-     /tmp/ccDHRDh4.s:332    .text:0000000000000148 .LBE82
-     /tmp/ccDHRDh4.s:3611   .debug_loc:0000000000000404 .LLST17
-     /tmp/ccDHRDh4.s:268    .text:0000000000000114 .LVL22
-     /tmp/ccDHRDh4.s:291    .text:000000000000012c .LVL25
-     /tmp/ccDHRDh4.s:315    .text:0000000000000140 .LVL27
-     /tmp/ccDHRDh4.s:113    .text:0000000000000068 .LFB39
-     /tmp/ccDHRDh4.s:211    .text:00000000000000c8 .LFE39
-     /tmp/ccDHRDh4.s:3618   .debug_loc:0000000000000427 .LLST5
-     /tmp/ccDHRDh4.s:3973   .debug_str:0000000000000714 .LASF131
-     /tmp/ccDHRDh4.s:3640   .debug_loc:0000000000000486 .LLST6
-     /tmp/ccDHRDh4.s:3658   .debug_loc:00000000000004d2 .LLST7
-     /tmp/ccDHRDh4.s:136    .text:0000000000000084 .LBB58
-     /tmp/ccDHRDh4.s:143    .text:0000000000000088 .LBE58
-     /tmp/ccDHRDh4.s:3669   .debug_loc:0000000000000508 .LLST8
-     /tmp/ccDHRDh4.s:151    .text:0000000000000090 .LBB60
-     /tmp/ccDHRDh4.s:158    .text:0000000000000094 .LBE60
-     /tmp/ccDHRDh4.s:3676   .debug_loc:000000000000052b .LLST9
-     /tmp/ccDHRDh4.s:3683   .debug_loc:000000000000054e .LLST10
-     /tmp/ccDHRDh4.s:160    .text:0000000000000094 .LBB62
-     /tmp/ccDHRDh4.s:167    .text:0000000000000098 .LBE62
-     /tmp/ccDHRDh4.s:3690   .debug_loc:0000000000000571 .LLST11
-GAS LISTING /tmp/ccDHRDh4.s 			page 27
+     /tmp/ccRTy0zu.s:4960   .debug_str:0000000000000497 .LASF111
+     /tmp/ccRTy0zu.s:5206   .debug_str:0000000000000ea3 .LASF112
+     /tmp/ccRTy0zu.s:4854   .debug_str:00000000000000d9 .LASF113
+     /tmp/ccRTy0zu.s:4950   .debug_str:000000000000041c .LASF114
+     /tmp/ccRTy0zu.s:4946   .debug_str:0000000000000402 .LASF115
+     /tmp/ccRTy0zu.s:4988   .debug_str:00000000000005a1 .LASF116
+     /tmp/ccRTy0zu.s:4888   .debug_str:000000000000026e .LASF117
+     /tmp/ccRTy0zu.s:4878   .debug_str:00000000000001bf .LASF118
+     /tmp/ccRTy0zu.s:5246   .debug_str:0000000000001051 .LASF119
+     /tmp/ccRTy0zu.s:5244   .debug_str:0000000000001041 .LASF120
+     /tmp/ccRTy0zu.s:5092   .debug_str:0000000000000990 .LASF121
+     /tmp/ccRTy0zu.s:4892   .debug_str:000000000000028e .LASF122
+     /tmp/ccRTy0zu.s:5222   .debug_str:0000000000000f59 .LASF123
+     /tmp/ccRTy0zu.s:5038   .debug_str:0000000000000784 .LASF124
+     /tmp/ccRTy0zu.s:4838   .debug_str:0000000000000037 .LASF125
+     /tmp/ccRTy0zu.s:5082   .debug_str:0000000000000932 .LASF126
+     /tmp/ccRTy0zu.s:4966   .debug_str:00000000000004cb .LASF127
+     /tmp/ccRTy0zu.s:4896   .debug_str:00000000000002c4 .LASF134
+     /tmp/ccRTy0zu.s:5090   .debug_str:000000000000097d .LASF136
+     /tmp/ccRTy0zu.s:5094   .debug_str:00000000000009ab .LASF128
+     /tmp/ccRTy0zu.s:4932   .debug_str:00000000000003a1 .LASF129
+     /tmp/ccRTy0zu.s:4868   .debug_str:0000000000000156 .LASF130
+     /tmp/ccRTy0zu.s:5066   .debug_str:0000000000000847 .LASF131
+     /tmp/ccRTy0zu.s:5044   .debug_str:00000000000007bd .LASF132
+     /tmp/ccRTy0zu.s:5120   .debug_str:0000000000000aa0 .LASF133
+     /tmp/ccRTy0zu.s:5224   .debug_str:0000000000000f83 .LASF135
+     /tmp/ccRTy0zu.s:5098   .debug_str:00000000000009d8 .LASF137
+     /tmp/ccRTy0zu.s:5226   .debug_str:0000000000000f93 .LASF138
+     /tmp/ccRTy0zu.s:5010   .debug_str:0000000000000682 .LASF139
+     /tmp/ccRTy0zu.s:4834   .debug_str:000000000000001d .LASF140
+     /tmp/ccRTy0zu.s:4994   .debug_str:00000000000005e0 .LASF141
+     /tmp/ccRTy0zu.s:5036   .debug_str:000000000000077a .LASF142
+     /tmp/ccRTy0zu.s:5216   .debug_str:0000000000000f24 .LASF143
+     /tmp/ccRTy0zu.s:5180   .debug_str:0000000000000d79 .LASF144
+     /tmp/ccRTy0zu.s:5000   .debug_str:0000000000000600 .LASF145
+     /tmp/ccRTy0zu.s:5154   .debug_str:0000000000000bb2 .LASF146
+     /tmp/ccRTy0zu.s:4900   .debug_str:00000000000002d2 .LASF147
+     /tmp/ccRTy0zu.s:5192   .debug_str:0000000000000df7 .LASF148
+     /tmp/ccRTy0zu.s:4918   .debug_str:0000000000000349 .LASF149
+     /tmp/ccRTy0zu.s:5062   .debug_str:000000000000082b .LASF150
+     /tmp/ccRTy0zu.s:5170   .debug_str:0000000000000c42 .LASF151
+     /tmp/ccRTy0zu.s:5056   .debug_str:0000000000000810 .LASF152
+     /tmp/ccRTy0zu.s:4858   .debug_str:00000000000000f4 .LASF154
+     /tmp/ccRTy0zu.s:5230   .debug_str:0000000000000fbb .LASF156
+     /tmp/ccRTy0zu.s:4862   .debug_str:000000000000012c .LASF209
+     /tmp/ccRTy0zu.s:5020   .debug_str:00000000000006de .LASF210
+     /tmp/ccRTy0zu.s:4902   .debug_str:00000000000002d8 .LASF157
+     /tmp/ccRTy0zu.s:4940   .debug_str:00000000000003e4 .LASF158
+     /tmp/ccRTy0zu.s:5188   .debug_str:0000000000000ddf .LASF159
+     /tmp/ccRTy0zu.s:4886   .debug_str:000000000000025a .LASF160
+     /tmp/ccRTy0zu.s:5028   .debug_str:0000000000000734 .LASF161
+     /tmp/ccRTy0zu.s:5238   .debug_str:000000000000100c .LASF162
+     /tmp/ccRTy0zu.s:5232   .debug_str:0000000000000fd4 .LASF163
+     /tmp/ccRTy0zu.s:5218   .debug_str:0000000000000f30 .LASF164
+     /tmp/ccRTy0zu.s:4978   .debug_str:0000000000000561 .LASF165
+     /tmp/ccRTy0zu.s:5236   .debug_str:0000000000000fe8 .LASF166
+     /tmp/ccRTy0zu.s:5150   .debug_str:0000000000000b92 .LASF167
+GAS LISTING /tmp/ccRTy0zu.s 			page 31
 
 
-     /tmp/ccDHRDh4.s:169    .text:0000000000000098 .LBB64
-     /tmp/ccDHRDh4.s:176    .text:000000000000009c .LBE64
-     /tmp/ccDHRDh4.s:3697   .debug_loc:0000000000000594 .LLST12
-     /tmp/ccDHRDh4.s:180    .text:00000000000000a4 .LVL15
-     /tmp/ccDHRDh4.s:51     .text:0000000000000030 .LFB38
-     /tmp/ccDHRDh4.s:107    .text:0000000000000068 .LFE38
-     /tmp/ccDHRDh4.s:4001   .debug_str:0000000000000803 .LASF132
-     /tmp/ccDHRDh4.s:63     .text:000000000000003c .LBB54
-     /tmp/ccDHRDh4.s:71     .text:0000000000000040 .LBE54
-     /tmp/ccDHRDh4.s:3704   .debug_loc:00000000000005b7 .LLST1
-     /tmp/ccDHRDh4.s:3711   .debug_loc:00000000000005da .LLST2
-     /tmp/ccDHRDh4.s:80     .text:000000000000004c .LBB56
-     /tmp/ccDHRDh4.s:88     .text:0000000000000050 .LBE56
-     /tmp/ccDHRDh4.s:3718   .debug_loc:00000000000005fd .LLST3
-     /tmp/ccDHRDh4.s:3725   .debug_loc:0000000000000620 .LLST4
-     /tmp/ccDHRDh4.s:10     .text:0000000000000000 .LFB37
-     /tmp/ccDHRDh4.s:45     .text:0000000000000030 .LFE37
-     /tmp/ccDHRDh4.s:3869   .debug_str:0000000000000349 .LASF133
-     /tmp/ccDHRDh4.s:3732   .debug_loc:0000000000000643 .LLST0
-     /tmp/ccDHRDh4.s:3949   .debug_str:0000000000000635 .LASF134
-     /tmp/ccDHRDh4.s:3875   .debug_str:0000000000000372 .LASF135
-     /tmp/ccDHRDh4.s:3845   .debug_str:000000000000028d .LASF136
-     /tmp/ccDHRDh4.s:3981   .debug_str:0000000000000750 .LASF137
-     /tmp/ccDHRDh4.s:3907   .debug_str:000000000000049a .LASF152
-     /tmp/ccDHRDh4.s:528    .text:000000000000023c .LVL48
-     /tmp/ccDHRDh4.s:532    .text:0000000000000244 .LVL49
-     /tmp/ccDHRDh4.s:540    .text:000000000000024c .LVL50
-     /tmp/ccDHRDh4.s:551    .text:0000000000000254 .LVL51
-     /tmp/ccDHRDh4.s:564    .text:0000000000000260 .LVL53
-     /tmp/ccDHRDh4.s:607    .text:0000000000000280 .LVL57
-     /tmp/ccDHRDh4.s:616    .text:0000000000000284 .LVL58
-     /tmp/ccDHRDh4.s:558    .text:000000000000025c .LVL52
-     /tmp/ccDHRDh4.s:572    .text:0000000000000264 .LVL54
-     /tmp/ccDHRDh4.s:581    .text:0000000000000268 .LVL55
-     /tmp/ccDHRDh4.s:590    .text:000000000000026c .LVL56
-     /tmp/ccDHRDh4.s:622    .text:0000000000000288 .LVL59
-     /tmp/ccDHRDh4.s:628    .text:000000000000028c .LVL60
-     /tmp/ccDHRDh4.s:637    .text:0000000000000290 .LVL61
-     /tmp/ccDHRDh4.s:441    .text:00000000000001c8 .LVL38
-     /tmp/ccDHRDh4.s:461    .text:00000000000001ec .LVL40
-     /tmp/ccDHRDh4.s:483    .text:0000000000000208 .LVL43
-     /tmp/ccDHRDh4.s:487    .text:000000000000020c .LVL44
-     /tmp/ccDHRDh4.s:504    .text:0000000000000224 .LVL46
-     /tmp/ccDHRDh4.s:458    .text:00000000000001e8 .LVL39
-     /tmp/ccDHRDh4.s:501    .text:0000000000000220 .LVL45
-     /tmp/ccDHRDh4.s:478    .text:0000000000000204 .LVL42
-     /tmp/ccDHRDh4.s:393    .text:0000000000000184 .LVL34
-     /tmp/ccDHRDh4.s:403    .text:0000000000000198 .LVL35
-     /tmp/ccDHRDh4.s:406    .text:000000000000019c .LVL36
-     /tmp/ccDHRDh4.s:220    .text:00000000000000c8 .LVL18
-     /tmp/ccDHRDh4.s:232    .text:00000000000000dc .LVL19
-     /tmp/ccDHRDh4.s:235    .text:00000000000000e0 .LVL20
-     /tmp/ccDHRDh4.s:360    .text:0000000000000164 .LVL31
-     /tmp/ccDHRDh4.s:369    .text:0000000000000174 .LVL33
-     /tmp/ccDHRDh4.s:262    .text:000000000000010c .LVL21
-     /tmp/ccDHRDh4.s:365    .text:000000000000016c .LVL32
-     /tmp/ccDHRDh4.s:274    .text:0000000000000118 .LVL23
-GAS LISTING /tmp/ccDHRDh4.s 			page 28
+     /tmp/ccRTy0zu.s:4908   .debug_str:0000000000000303 .LASF168
+     /tmp/ccRTy0zu.s:5026   .debug_str:000000000000071d .LASF170
+     /tmp/ccRTy0zu.s:5250   .debug_str:000000000000109b .LASF171
+     /tmp/ccRTy0zu.s:5228   .debug_str:0000000000000fa7 .LASF172
+     /tmp/ccRTy0zu.s:5142   .debug_str:0000000000000b5a .LASF173
+     /tmp/ccRTy0zu.s:5048   .debug_str:00000000000007e4 .LASF174
+     /tmp/ccRTy0zu.s:5078   .debug_str:0000000000000919 .LASF176
+     /tmp/ccRTy0zu.s:4934   .debug_str:00000000000003bd .LASF177
+     /tmp/ccRTy0zu.s:5254   .debug_str:00000000000010b0 .LASF178
+     /tmp/ccRTy0zu.s:4874   .debug_str:0000000000000186 .LASF179
+     /tmp/ccRTy0zu.s:5116   .debug_str:0000000000000a84 .LASF182
+     /tmp/ccRTy0zu.s:4962   .debug_str:00000000000004a2 .LASF211
+     /tmp/ccRTy0zu.s:5242   .debug_str:000000000000102d .LASF212
+     /tmp/ccRTy0zu.s:5054   .debug_str:0000000000000802 .LASF183
+     /tmp/ccRTy0zu.s:4894   .debug_str:00000000000002a1 .LASF184
+     /tmp/ccRTy0zu.s:5220   .debug_str:0000000000000f47 .LASF185
+     /tmp/ccRTy0zu.s:4852   .debug_str:00000000000000ce .LASF186
+     /tmp/ccRTy0zu.s:658    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000000 .LFB60
+     /tmp/ccRTy0zu.s:751    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000068 .LFE60
+     /tmp/ccRTy0zu.s:4928   .debug_str:0000000000000391 .LASF189
+     /tmp/ccRTy0zu.s:5252   .debug_str:00000000000010a8 .LASF191
+     /tmp/ccRTy0zu.s:5240   .debug_str:0000000000001028 .LASF187
+     /tmp/ccRTy0zu.s:4288   .debug_loc:0000000000000000 .LLST31
+     /tmp/ccRTy0zu.s:5258   .debug_str:00000000000010db .LASF188
+     /tmp/ccRTy0zu.s:4308   .debug_loc:000000000000005d .LLST32
+     /tmp/ccRTy0zu.s:682    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000020 .LBB94
+     /tmp/ccRTy0zu.s:686    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000020 .LBE94
+     /tmp/ccRTy0zu.s:698    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000030 .LBB96
+     /tmp/ccRTy0zu.s:705    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000034 .LBE96
+     /tmp/ccRTy0zu.s:4332   .debug_loc:00000000000000ce .LLST33
+     /tmp/ccRTy0zu.s:706    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000034 .LBB98
+     /tmp/ccRTy0zu.s:713    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000038 .LBE98
+     /tmp/ccRTy0zu.s:4339   .debug_loc:00000000000000f1 .LLST34
+     /tmp/ccRTy0zu.s:4346   .debug_loc:0000000000000114 .LLST35
+     /tmp/ccRTy0zu.s:730    .text._ZN5QueueI3TCBE13removeElementEPS0_:000000000000004c .LBB100
+     /tmp/ccRTy0zu.s:737    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000050 .LBE100
+     /tmp/ccRTy0zu.s:4353   .debug_loc:0000000000000137 .LLST36
+     /tmp/ccRTy0zu.s:387    .text._ZN5QueueI3TCBE4takeEv:0000000000000000 .LFB58
+     /tmp/ccRTy0zu.s:433    .text._ZN5QueueI3TCBE4takeEv:0000000000000038 .LFE58
+     /tmp/ccRTy0zu.s:4360   .debug_loc:000000000000015a .LLST16
+     /tmp/ccRTy0zu.s:5052   .debug_str:00000000000007f7 .LASF190
+     /tmp/ccRTy0zu.s:4371   .debug_loc:0000000000000190 .LLST17
+     /tmp/ccRTy0zu.s:404    .text._ZN5QueueI3TCBE4takeEv:0000000000000018 .LBB82
+     /tmp/ccRTy0zu.s:411    .text._ZN5QueueI3TCBE4takeEv:000000000000001c .LBE82
+     /tmp/ccRTy0zu.s:4382   .debug_loc:00000000000001c6 .LLST18
+     /tmp/ccRTy0zu.s:119    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000000 .LFB57
+     /tmp/ccRTy0zu.s:162    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000034 .LFE57
+     /tmp/ccRTy0zu.s:5084   .debug_str:0000000000000947 .LASF192
+     /tmp/ccRTy0zu.s:136    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000018 .LBB55
+     /tmp/ccRTy0zu.s:145    .text._ZN5QueueI3TCBE6appendEPS0_:000000000000001c .LBE55
+     /tmp/ccRTy0zu.s:4389   .debug_loc:00000000000001e9 .LLST5
+     /tmp/ccRTy0zu.s:4396   .debug_loc:000000000000020c .LLST6
+     /tmp/ccRTy0zu.s:11     .text._ZN5QueueI3TCBEnwEm:0000000000000000 .LFB56
+     /tmp/ccRTy0zu.s:50     .text._ZN5QueueI3TCBEnwEm:000000000000003c .LFE56
+     /tmp/ccRTy0zu.s:4996   .debug_str:00000000000005e8 .LASF193
+     /tmp/ccRTy0zu.s:4403   .debug_loc:000000000000022f .LLST0
+     /tmp/ccRTy0zu.s:4417   .debug_loc:0000000000000268 .LLST1
+GAS LISTING /tmp/ccRTy0zu.s 			page 32
 
 
-     /tmp/ccDHRDh4.s:283    .text:000000000000011c .LVL24
-     /tmp/ccDHRDh4.s:322    .text:0000000000000144 .LVL28
-     /tmp/ccDHRDh4.s:330    .text:0000000000000148 .LVL29
-     /tmp/ccDHRDh4.s:116    .text:0000000000000068 .LVL7
-     /tmp/ccDHRDh4.s:121    .text:0000000000000070 .LVL8
-     /tmp/ccDHRDh4.s:194    .text:00000000000000b8 .LVL16
-     /tmp/ccDHRDh4.s:134    .text:0000000000000084 .LVL9
-     /tmp/ccDHRDh4.s:201    .text:00000000000000c0 .LVL17
-     /tmp/ccDHRDh4.s:141    .text:0000000000000088 .LVL10
-     /tmp/ccDHRDh4.s:150    .text:0000000000000090 .LVL11
-     /tmp/ccDHRDh4.s:156    .text:0000000000000094 .LVL12
-     /tmp/ccDHRDh4.s:165    .text:0000000000000098 .LVL13
-     /tmp/ccDHRDh4.s:174    .text:000000000000009c .LVL14
-     /tmp/ccDHRDh4.s:62     .text:000000000000003c .LVL3
-     /tmp/ccDHRDh4.s:69     .text:0000000000000040 .LVL4
-     /tmp/ccDHRDh4.s:79     .text:000000000000004c .LVL5
-     /tmp/ccDHRDh4.s:85     .text:0000000000000050 .LVL6
-     /tmp/ccDHRDh4.s:14     .text:0000000000000000 .LVL0
-     /tmp/ccDHRDh4.s:24     .text:0000000000000010 .LVL1
-     /tmp/ccDHRDh4.s:664    .debug_info:0000000000000000 .Ldebug_info0
-     /tmp/ccDHRDh4.s:254    .text:0000000000000100 .LBB67
-     /tmp/ccDHRDh4.s:336    .text:000000000000014c .LBE67
-     /tmp/ccDHRDh4.s:342    .text:000000000000014c .LBB84
-     /tmp/ccDHRDh4.s:346    .text:0000000000000154 .LBE84
-     /tmp/ccDHRDh4.s:373    .text:0000000000000174 .LBB85
-     /tmp/ccDHRDh4.s:381    .text:0000000000000184 .LBE85
+     /tmp/ccRTy0zu.s:39     .text._ZN5QueueI3TCBEnwEm:000000000000002c .LVL5
+     /tmp/ccRTy0zu.s:758    .text:0000000000000254 .LFB55
+     /tmp/ccRTy0zu.s:810    .text:0000000000000294 .LFE55
+     /tmp/ccRTy0zu.s:4437   .debug_loc:00000000000002b6 .LLST37
+     /tmp/ccRTy0zu.s:4912   .debug_str:0000000000000330 .LASF194
+     /tmp/ccRTy0zu.s:4451   .debug_loc:00000000000002ef .LLST38
+     /tmp/ccRTy0zu.s:780    .text:0000000000000278 .LBB102
+     /tmp/ccRTy0zu.s:787    .text:000000000000027c .LBE102
+     /tmp/ccRTy0zu.s:4469   .debug_loc:000000000000033b .LLST39
+     /tmp/ccRTy0zu.s:789    .text:000000000000027c .LBB104
+     /tmp/ccRTy0zu.s:796    .text:0000000000000280 .LBE104
+     /tmp/ccRTy0zu.s:4476   .debug_loc:000000000000035e .LLST40
+     /tmp/ccRTy0zu.s:778    .text:0000000000000278 .LVL79
+     /tmp/ccRTy0zu.s:573    .text:00000000000001ec .LFB54
+     /tmp/ccRTy0zu.s:651    .text:0000000000000254 .LFE54
+     /tmp/ccRTy0zu.s:4483   .debug_loc:0000000000000381 .LLST27
+     /tmp/ccRTy0zu.s:5060   .debug_str:0000000000000820 .LASF195
+     /tmp/ccRTy0zu.s:4509   .debug_loc:00000000000003f3 .LLST28
+     /tmp/ccRTy0zu.s:594    .text:000000000000020c .LBB90
+     /tmp/ccRTy0zu.s:600    .text:0000000000000210 .LBE90
+     /tmp/ccRTy0zu.s:4516   .debug_loc:0000000000000416 .LLST29
+     /tmp/ccRTy0zu.s:615    .text:0000000000000228 .LBB92
+     /tmp/ccRTy0zu.s:622    .text:000000000000022c .LBE92
+     /tmp/ccRTy0zu.s:4523   .debug_loc:0000000000000439 .LLST30
+     /tmp/ccRTy0zu.s:613    .text:0000000000000228 .LVL60
+     /tmp/ccRTy0zu.s:525    .text:00000000000001a8 .LFB53
+     /tmp/ccRTy0zu.s:567    .text:00000000000001ec .LFE53
+     /tmp/ccRTy0zu.s:4530   .debug_loc:000000000000045c .LLST26
+     /tmp/ccRTy0zu.s:556    .text:00000000000001dc .LVL55
+     /tmp/ccRTy0zu.s:213    .text:0000000000000090 .LFB52
+     /tmp/ccRTy0zu.s:380    .text:000000000000014c .LFE52
+     /tmp/ccRTy0zu.s:4555   .debug_loc:00000000000004be .LLST11
+     /tmp/ccRTy0zu.s:4850   .debug_str:00000000000000c4 .LASF196
+     /tmp/ccRTy0zu.s:4588   .debug_loc:0000000000000546 .LLST12
+     /tmp/ccRTy0zu.s:252    .text:00000000000000c8 .LBB61
+     /tmp/ccRTy0zu.s:260    .text:00000000000000d4 .LBE61
+     /tmp/ccRTy0zu.s:265    .text:00000000000000dc .LBB63
+     /tmp/ccRTy0zu.s:272    .text:00000000000000e0 .LBE63
+     /tmp/ccRTy0zu.s:4599   .debug_loc:000000000000057c .LLST13
+     /tmp/ccRTy0zu.s:274    .text:00000000000000e0 .LBB65
+     /tmp/ccRTy0zu.s:281    .text:00000000000000e4 .LBE65
+     /tmp/ccRTy0zu.s:4606   .debug_loc:000000000000059f .LLST14
+     /tmp/ccRTy0zu.s:289    .text:00000000000000f4 .LBB67
+     /tmp/ccRTy0zu.s:293    .text:00000000000000f4 .LBE67
+     /tmp/ccRTy0zu.s:294    .text:00000000000000f4 .LBB69
+     /tmp/ccRTy0zu.s:301    .text:00000000000000f8 .LBE69
+     /tmp/ccRTy0zu.s:302    .text:00000000000000f8 .LBB71
+     /tmp/ccRTy0zu.s:306    .text:00000000000000f8 .LBE71
+     /tmp/ccRTy0zu.s:313    .text:0000000000000108 .LBB73
+     /tmp/ccRTy0zu.s:320    .text:000000000000010c .LBE73
+     /tmp/ccRTy0zu.s:321    .text:000000000000010c .LBB75
+     /tmp/ccRTy0zu.s:328    .text:0000000000000110 .LBE75
+     /tmp/ccRTy0zu.s:4613   .debug_loc:00000000000005c2 .LLST15
+     /tmp/ccRTy0zu.s:264    .text:00000000000000dc .LVL24
+     /tmp/ccRTy0zu.s:287    .text:00000000000000f4 .LVL27
+     /tmp/ccRTy0zu.s:311    .text:0000000000000108 .LVL29
+     /tmp/ccRTy0zu.s:440    .text:000000000000014c .LFB51
+GAS LISTING /tmp/ccRTy0zu.s 			page 33
+
+
+     /tmp/ccRTy0zu.s:519    .text:00000000000001a8 .LFE51
+     /tmp/ccRTy0zu.s:4620   .debug_loc:00000000000005e5 .LLST19
+     /tmp/ccRTy0zu.s:5114   .debug_str:0000000000000a7d .LASF197
+     /tmp/ccRTy0zu.s:4634   .debug_loc:000000000000061e .LLST20
+     /tmp/ccRTy0zu.s:4648   .debug_loc:0000000000000657 .LLST21
+     /tmp/ccRTy0zu.s:465    .text:0000000000000174 .LBB84
+     /tmp/ccRTy0zu.s:472    .text:0000000000000178 .LBE84
+     /tmp/ccRTy0zu.s:4659   .debug_loc:000000000000068d .LLST22
+     /tmp/ccRTy0zu.s:4666   .debug_loc:00000000000006b0 .LLST23
+     /tmp/ccRTy0zu.s:474    .text:0000000000000178 .LBB86
+     /tmp/ccRTy0zu.s:481    .text:000000000000017c .LBE86
+     /tmp/ccRTy0zu.s:4673   .debug_loc:00000000000006d3 .LLST24
+     /tmp/ccRTy0zu.s:483    .text:000000000000017c .LBB88
+     /tmp/ccRTy0zu.s:490    .text:0000000000000180 .LBE88
+     /tmp/ccRTy0zu.s:4680   .debug_loc:00000000000006f6 .LLST25
+     /tmp/ccRTy0zu.s:460    .text:0000000000000170 .LVL44
+     /tmp/ccRTy0zu.s:494    .text:0000000000000188 .LVL49
+     /tmp/ccRTy0zu.s:169    .text:0000000000000060 .LFB50
+     /tmp/ccRTy0zu.s:207    .text:0000000000000090 .LFE50
+     /tmp/ccRTy0zu.s:4687   .debug_loc:0000000000000719 .LLST7
+     /tmp/ccRTy0zu.s:5148   .debug_str:0000000000000b84 .LASF198
+     /tmp/ccRTy0zu.s:4706   .debug_loc:0000000000000767 .LLST8
+     /tmp/ccRTy0zu.s:183    .text:0000000000000070 .LBB57
+     /tmp/ccRTy0zu.s:190    .text:0000000000000074 .LBE57
+     /tmp/ccRTy0zu.s:4720   .debug_loc:00000000000007a0 .LLST9
+     /tmp/ccRTy0zu.s:4727   .debug_loc:00000000000007c3 .LLST10
+     /tmp/ccRTy0zu.s:196    .text:0000000000000080 .LVL19
+     /tmp/ccRTy0zu.s:57     .text:0000000000000000 .LFB46
+     /tmp/ccRTy0zu.s:112    .text:0000000000000060 .LFE46
+     /tmp/ccRTy0zu.s:4734   .debug_loc:00000000000007e6 .LLST2
+     /tmp/ccRTy0zu.s:5138   .debug_str:0000000000000b40 .LASF199
+     /tmp/ccRTy0zu.s:4752   .debug_loc:0000000000000832 .LLST3
+     /tmp/ccRTy0zu.s:5080   .debug_str:000000000000092d .LASF200
+     /tmp/ccRTy0zu.s:4766   .debug_loc:000000000000086b .LLST4
+     /tmp/ccRTy0zu.s:88     .text:0000000000000038 .LVL9
+     /tmp/ccRTy0zu.s:4880   .debug_str:00000000000001cf .LASF213
+     /tmp/ccRTy0zu.s:4964   .debug_str:00000000000004ba .LASF201
+     /tmp/ccRTy0zu.s:4926   .debug_str:0000000000000387 .LASF202
+     /tmp/ccRTy0zu.s:5122   .debug_str:0000000000000ab9 .LASF203
+     /tmp/ccRTy0zu.s:5014   .debug_str:00000000000006b3 .LASF214
+     /tmp/ccRTy0zu.s:668    .text._ZN5QueueI3TCBE13removeElementEPS0_:000000000000000c .LVL67
+     /tmp/ccRTy0zu.s:675    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000018 .LVL69
+     /tmp/ccRTy0zu.s:681    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000020 .LVL70
+     /tmp/ccRTy0zu.s:691    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000028 .LVL71
+     /tmp/ccRTy0zu.s:671    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000010 .LVL68
+     /tmp/ccRTy0zu.s:703    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000034 .LVL73
+     /tmp/ccRTy0zu.s:727    .text._ZN5QueueI3TCBE13removeElementEPS0_:000000000000004c .LVL75
+     /tmp/ccRTy0zu.s:735    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000050 .LVL76
+     /tmp/ccRTy0zu.s:697    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000030 .LVL72
+     /tmp/ccRTy0zu.s:711    .text._ZN5QueueI3TCBE13removeElementEPS0_:0000000000000038 .LVL74
+     /tmp/ccRTy0zu.s:390    .text._ZN5QueueI3TCBE4takeEv:0000000000000000 .LVL36
+     /tmp/ccRTy0zu.s:400    .text._ZN5QueueI3TCBE4takeEv:0000000000000014 .LVL37
+     /tmp/ccRTy0zu.s:403    .text._ZN5QueueI3TCBE4takeEv:0000000000000018 .LVL38
+     /tmp/ccRTy0zu.s:416    .text._ZN5QueueI3TCBE4takeEv:0000000000000024 .LVL40
+     /tmp/ccRTy0zu.s:426    .text._ZN5QueueI3TCBE4takeEv:0000000000000030 .LVL41
+     /tmp/ccRTy0zu.s:409    .text._ZN5QueueI3TCBE4takeEv:000000000000001c .LVL39
+     /tmp/ccRTy0zu.s:135    .text._ZN5QueueI3TCBE6appendEPS0_:0000000000000018 .LVL13
+GAS LISTING /tmp/ccRTy0zu.s 			page 34
+
+
+     /tmp/ccRTy0zu.s:142    .text._ZN5QueueI3TCBE6appendEPS0_:000000000000001c .LVL14
+     /tmp/ccRTy0zu.s:15     .text._ZN5QueueI3TCBEnwEm:0000000000000000 .LVL0
+     /tmp/ccRTy0zu.s:29     .text._ZN5QueueI3TCBEnwEm:0000000000000018 .LVL2
+     /tmp/ccRTy0zu.s:26     .text._ZN5QueueI3TCBEnwEm:0000000000000014 .LVL1
+     /tmp/ccRTy0zu.s:34     .text._ZN5QueueI3TCBEnwEm:0000000000000020 .LVL3
+     /tmp/ccRTy0zu.s:37     .text._ZN5QueueI3TCBEnwEm:0000000000000024 .LVL4
+     /tmp/ccRTy0zu.s:761    .text:0000000000000254 .LVL77
+     /tmp/ccRTy0zu.s:776    .text:0000000000000270 .LVL78
+     /tmp/ccRTy0zu.s:805    .text:000000000000028c .LVL82
+     /tmp/ccRTy0zu.s:785    .text:000000000000027c .LVL80
+     /tmp/ccRTy0zu.s:794    .text:0000000000000280 .LVL81
+     /tmp/ccRTy0zu.s:576    .text:00000000000001ec .LVL56
+     /tmp/ccRTy0zu.s:603    .text:0000000000000214 .LVL59
+     /tmp/ccRTy0zu.s:625    .text:0000000000000230 .LVL62
+     /tmp/ccRTy0zu.s:629    .text:0000000000000234 .LVL63
+     /tmp/ccRTy0zu.s:646    .text:000000000000024c .LVL65
+     /tmp/ccRTy0zu.s:598    .text:0000000000000210 .LVL58
+     /tmp/ccRTy0zu.s:643    .text:0000000000000248 .LVL64
+     /tmp/ccRTy0zu.s:593    .text:000000000000020c .LVL57
+     /tmp/ccRTy0zu.s:620    .text:000000000000022c .LVL61
+     /tmp/ccRTy0zu.s:528    .text:00000000000001a8 .LVL52
+     /tmp/ccRTy0zu.s:538    .text:00000000000001bc .LVL53
+     /tmp/ccRTy0zu.s:541    .text:00000000000001c0 .LVL54
+     /tmp/ccRTy0zu.s:216    .text:0000000000000090 .LVL20
+     /tmp/ccRTy0zu.s:228    .text:00000000000000a4 .LVL21
+     /tmp/ccRTy0zu.s:231    .text:00000000000000a8 .LVL22
+     /tmp/ccRTy0zu.s:356    .text:000000000000012c .LVL33
+     /tmp/ccRTy0zu.s:365    .text:000000000000013c .LVL35
+     /tmp/ccRTy0zu.s:258    .text:00000000000000d4 .LVL23
+     /tmp/ccRTy0zu.s:361    .text:0000000000000134 .LVL34
+     /tmp/ccRTy0zu.s:270    .text:00000000000000e0 .LVL25
+     /tmp/ccRTy0zu.s:279    .text:00000000000000e4 .LVL26
+     /tmp/ccRTy0zu.s:318    .text:000000000000010c .LVL30
+     /tmp/ccRTy0zu.s:326    .text:0000000000000110 .LVL31
+     /tmp/ccRTy0zu.s:443    .text:000000000000014c .LVL42
+     /tmp/ccRTy0zu.s:458    .text:0000000000000168 .LVL43
+     /tmp/ccRTy0zu.s:511    .text:00000000000001a0 .LVL50
+     /tmp/ccRTy0zu.s:516    .text:00000000000001a4 .LVL51
+     /tmp/ccRTy0zu.s:464    .text:0000000000000174 .LVL45
+     /tmp/ccRTy0zu.s:470    .text:0000000000000178 .LVL46
+     /tmp/ccRTy0zu.s:479    .text:000000000000017c .LVL47
+     /tmp/ccRTy0zu.s:488    .text:0000000000000180 .LVL48
+     /tmp/ccRTy0zu.s:172    .text:0000000000000060 .LVL15
+     /tmp/ccRTy0zu.s:194    .text:0000000000000078 .LVL18
+     /tmp/ccRTy0zu.s:182    .text:0000000000000070 .LVL16
+     /tmp/ccRTy0zu.s:188    .text:0000000000000074 .LVL17
+     /tmp/ccRTy0zu.s:61     .text:0000000000000000 .LVL6
+     /tmp/ccRTy0zu.s:86     .text:0000000000000030 .LVL8
+     /tmp/ccRTy0zu.s:104    .text:0000000000000054 .LVL10
+     /tmp/ccRTy0zu.s:79     .text:0000000000000024 .LVL7
+     /tmp/ccRTy0zu.s:107    .text:0000000000000058 .LVL11
+     /tmp/ccRTy0zu.s:819    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/ccRTy0zu.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccRTy0zu.s:812    .text:0000000000000294 .Letext0
+     /tmp/ccRTy0zu.s:250    .text:00000000000000c8 .LBB60
+     /tmp/ccRTy0zu.s:332    .text:0000000000000114 .LBE60
+     /tmp/ccRTy0zu.s:338    .text:0000000000000114 .LBB77
+GAS LISTING /tmp/ccRTy0zu.s 			page 35
+
+
+     /tmp/ccRTy0zu.s:342    .text:000000000000011c .LBE77
+     /tmp/ccRTy0zu.s:369    .text:000000000000013c .LBB78
+     /tmp/ccRTy0zu.s:377    .text:000000000000014c .LBE78
 
 UNDEFINED SYMBOLS
-_ZN9Scheduler3putEP3TCB
+_ZN15MemoryAllocator14allocateMemoryEm
 _ZN3TCB7runningE
 _ZN9Scheduler3getEv
 context_switch
+_ZN9Scheduler3putEP3TCB

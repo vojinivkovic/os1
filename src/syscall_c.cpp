@@ -89,6 +89,11 @@ int sem_signal(sem_t handle)
     return (int) system_call(&arg);
 }
 
+int time_sleep(time_t time_to_sleep)
+{
+    Arguments arg = {(uint64)KernelConfig::TIME_SLEEP, (uint64)time_to_sleep, 0, 0, 0, 0, 0, 0};
+    return (int) system_call(&arg);
+}
 char getc()
 {
     Arguments arg = {(uint64)KernelConfig::GETC, 0, 0, 0, 0, 0, 0, 0};

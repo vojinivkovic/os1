@@ -95,6 +95,18 @@ void* Kernel::mallocSystemStack(size_t numOfBytes)
     uint8* systemStack = (uint8*)MemoryAllocator::allocateMemory(numOfBlocks);
     return (void*)(&systemStack[KernelConfig::DEFAULT_SYSTEM_STACK_SIZE]);
 }
+
+void Kernel::wakeUpThreads()
+{
+    queueOfAsleepThreads->top()->decrementTimeToSleep();
+
+    while(!queueOfAsleepThreads->top()->getTimeToSleep())
+    {
+        TCB* curr = queueOfAsleepThreads->take();
+        curr->resetState();
+        Scheduler::put(curr);
+    }
+}
 void Kernel::interruptHandler()
 {
     volatile uint64 basePointer;
@@ -132,11 +144,10 @@ void Kernel::interruptHandler()
         case 0x8000000000000001UL:
         {
             // interrupt from timer
+
             Machine::bc_sip(Machine::SSIP);
             TCB::incrementNumOfTicks();
-            //TCB::numOfTicks++;
             if (TCB::getNumOfTicks() >= TCB::getRunningThread()->getTimeSlice()) {
-                //TCB::numOfTicks = 0;
                 TCB::resetNumOfTicks();
                 uint64 sepc = Machine::readSepc() + 4;
                 uint64 sstatus = Machine::readSstatus();
@@ -147,6 +158,7 @@ void Kernel::interruptHandler()
                 Machine::writeSstatus(sstatus);
 
             }
+            wakeUpThreads();
             break;
         }
         case 0x8000000000000009UL:
@@ -256,7 +268,7 @@ uint64 Kernel::sysThreadExit(Kernel::ArgumentsOfSystemCall *arg)
     if(!TCB::getRunningThread()->getSemaphoreOnWait())
     {
         KSemaphore* tempSemaphore = TCB::getRunningThread()->getSemaphoreOnWait();
-        tempSemaphore->removeThreadFromWaitQueue(TCB::getRunningThread());
+        tempSemaphore->removeThreadFromBlockedQueue(TCB::getRunningThread());
     }
 
     Kernel::poolOfThreads->freeObject(TCB::getRunningThread());
@@ -299,6 +311,12 @@ uint64 Kernel::sysSemaphoreSignal(ArgumentsOfSystemCall *arg)
 
 uint64 Kernel::sysTimeSleep(ArgumentsOfSystemCall *arg)
 {
+    TCB* oldThread = TCB::getRunningThread();
+    oldThread->resetState();
+    oldThread->setTimeToSleep((size_t)arg->a0);
+    queueOfAsleepThreads->append(oldThread);
+    TCB::setRunningThread(Scheduler::get());
+    context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
     return 0;
 }
 uint64 Kernel::sysGetc(ArgumentsOfSystemCall *arg)

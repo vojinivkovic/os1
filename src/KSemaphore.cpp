@@ -94,7 +94,7 @@ int KSemaphore::signal()
 
 int KSemaphore::close()
 {
-    TCB* tempThread = headBlockedThread;
+    TCB* tempThread = queueBlockedThreads->top();
     if(!tempThread)
     {
         return 0;

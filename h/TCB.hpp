@@ -32,6 +32,7 @@ public:
     size_t getTimeToSleep() const { return timeToSleep; }
     void setTimeToSleep(size_t time) { timeToSleep = time; }
 
+    void decrementTimeToSleep() { timeToSleep--; };
     void addThreadToState(TCB* newThread) { state = newThread; }
     TCB* getState() const { return state; }
     void resetState() {state = nullptr; }
