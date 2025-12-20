@@ -9,12 +9,13 @@
 #include "Config.hpp"
 #include "ObjectPool.hpp"
 #include "PriorityQueue.hpp"
+#include "TCB.hpp"
 
-class TCB;
+
 class KSemaphore;
-auto cmp = [](int a, int b)
+auto cmp = [](TCB* threadI, TCB* threadJ)
 {
-    return a < b;
+    return threadI->getTimeToSleep() < threadJ->getTimeToSleep();
 }
 
 class Kernel

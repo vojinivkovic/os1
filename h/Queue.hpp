@@ -14,6 +14,7 @@ public:
     void append(T* newElement);
     T* take();
     void removeElement(T* element);
+    bool isQueueEmpty() const { return !head; }
 
     static void* operator new(size_t size);
 private:
@@ -36,6 +37,10 @@ void Queue<T>::append(T *newElement)
 template<typename T>
 T* Queue<T>::take()
 {
+    if(!head)
+    {
+        return nullptr;
+    }
     T* oldElement = head;
     head = head->getState();
     if(!head)

@@ -30,7 +30,7 @@ void PriorityQueue<T, Compare>::append(T *newElement)
     }
 
     T* curr = head, *prev = nullptr;
-    while(curr && cmp(curr->getTimeToSleep(), newElement->getTimeToSleep()))
+    while(curr && cmp(curr, newElement))
     {
         newElement->setTimeToSleep(newElement->getTimeToSleep() - curr->getTimeToSleep());
         prev = curr;

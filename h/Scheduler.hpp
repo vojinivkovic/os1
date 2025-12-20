@@ -4,7 +4,7 @@
 
 #ifndef PROJECT_BASE_V1_1_SCHEDULER_H
 #define PROJECT_BASE_V1_1_SCHEDULER_H
-
+#include "Queue.hpp"
 
 class TCB;
 
@@ -17,8 +17,9 @@ public:
     static TCB* get(void);
     static void setIdleThread(TCB* thread) { idleThread = thread; }
 private:
-    static TCB* headReadyThread;
-    static TCB* tailReadyThread;
+    //static TCB* headReadyThread;
+    //static TCB* tailReadyThread;
+    static Queue<TCB>* queueReadyThreads;
     static TCB* idleThread;
 };
 

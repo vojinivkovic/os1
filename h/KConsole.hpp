@@ -6,7 +6,7 @@
 #define PROJECT_BASE_V1_1_KCONSOLE_H
 #include "Buffer.hpp"
 #include "Config.hpp"
-
+#include "Queue.hpp"
 
 class TCB;
 
@@ -26,18 +26,24 @@ public:
 
     static bool isInputBufferEmpty() { return inputBuffer->isBufferEmpty(); }
     static bool isInputBufferFull() { return inputBuffer->isBufferFull(); }
+
     static bool isOutputBufferFull() { return outputBuffer->isBufferFull(); }
     static bool isOutputBufferEmpty() { return outputBuffer->isBufferEmpty(); }
+
     static void addThreadToInputWaitQueue(TCB* thread);
     static void removeThreadFromInputWaitQueue();
+
     static void addThreadToOutputWaitQueue(TCB* thread);
     static void removeThreadFromOutputWaitQueue();
+
     static void addCharToOutputBuffer(char c);
     static char getCharFromInputBuffer();
 private:
     static TCB* consumerThread, *producerThread;
-    static TCB* headThreadInputWait, *tailThreadInputWait;
-    static TCB* headThreadOutputWait, *tailThreadOutputWait;
+    //static TCB* headThreadInputWait, *tailThreadInputWait;
+    //static TCB* headThreadOutputWait, *tailThreadOutputWait;
+    static Queue<TCB>* inputWaitQueue, *outputWaitQueue;
+
     static Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>* inputBuffer;
     static Buffer<char, KernelConfig::SIZE_OUTPUT_BUFFER>* outputBuffer;
 };

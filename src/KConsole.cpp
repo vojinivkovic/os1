@@ -12,68 +12,78 @@ extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContex
 
 Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>* KConsole::inputBuffer = new Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>();
 Buffer<char, KernelConfig::SIZE_OUTPUT_BUFFER>* KConsole::outputBuffer = new Buffer<char, KernelConfig::SIZE_OUTPUT_BUFFER>();
+Queue<TCB>* KConsole::inputWaitQueue = new Queue<TCB>();
+Queue<TCB>* KConsole::outputWaitQueue = new Queue<TCB>();
 TCB* KConsole::consumerThread = nullptr;
 TCB* KConsole::producerThread = nullptr;
-TCB* KConsole::headThreadInputWait = nullptr;
-TCB* KConsole::tailThreadInputWait = nullptr;
-TCB* KConsole::headThreadOutputWait = nullptr;
-TCB* KConsole::tailThreadOutputWait = nullptr;
+//TCB* KConsole::headThreadInputWait = nullptr;
+//TCB* KConsole::tailThreadInputWait = nullptr;
+//TCB* KConsole::headThreadOutputWait = nullptr;
+//TCB* KConsole::tailThreadOutputWait = nullptr;
 
 void KConsole::addThreadToInputWaitQueue(TCB *thread)
 {
-    if(!headThreadInputWait)
-    {
-        headThreadInputWait = thread;
-    }
-    else
-    {
-        tailThreadInputWait->addThreadToState(thread);
-    }
-    tailThreadInputWait = thread;
+//    if(!headThreadInputWait)
+//    {
+//        headThreadInputWait = thread;
+//    }
+//    else
+//    {
+//        tailThreadInputWait->addThreadToState(thread);
+//    }
+//    tailThreadInputWait = thread;
+    inputWaitQueue->append(thread);
 }
 
 void KConsole::addThreadToOutputWaitQueue(TCB* thread)
 {
-    if(!headThreadOutputWait)
-    {
-        headThreadOutputWait = thread;
-    }
-    else
-    {
-        tailThreadOutputWait->addThreadToState(thread);
-    }
-    tailThreadOutputWait = thread;
+//    if(!headThreadOutputWait)
+//    {
+//        headThreadOutputWait = thread;
+//    }
+//    else
+//    {
+//        tailThreadOutputWait->addThreadToState(thread);
+//    }
+//    tailThreadOutputWait = thread;
+    outputWaitQueue->append(thread);
 }
 
 void KConsole::removeThreadFromInputWaitQueue()
 {
-    if(!headThreadInputWait)
+//    if(!headThreadInputWait)
+//    {
+//        return;
+//    }
+    TCB* oldThread = outputWaitQueue->take();
+//    headThreadInputWait = headThreadInputWait->getState();
+//    if(!headThreadInputWait)
+//    {
+//        tailThreadInputWait = nullptr;
+//    }
+    if(oldThread)
     {
-        return;
+        oldThread->resetState();
+        Scheduler::put(oldThread);
     }
-    TCB* oldThread = headThreadInputWait;
-    headThreadInputWait = headThreadInputWait->getState();
-    if(!headThreadInputWait)
-    {
-        tailThreadInputWait = nullptr;
-    }
-    oldThread->resetState();
-    Scheduler::put(oldThread);
 }
 void KConsole::removeThreadFromOutputWaitQueue()
 {
-    if(!headThreadOutputWait)
+    //    if(!headThreadInputWait)
+//    {
+//        return;
+//    }
+    TCB* oldThread = inputWaitQueue->take();
+//    headThreadInputWait = headThreadInputWait->getState();
+//    if(!headThreadInputWait)
+//    {
+//        tailThreadInputWait = nullptr;
+//    }
+    if(oldThread)
     {
-        return;
+        oldThread->resetState();
+        Scheduler::put(oldThread);
     }
-    TCB* oldThread = headThreadOutputWait;
-    headThreadOutputWait = headThreadOutputWait->getState();
-    if(!headThreadOutputWait)
-    {
-        tailThreadOutputWait = nullptr;
-    }
-    oldThread->resetState();
-    Scheduler::put(oldThread);
 }
 char KConsole::getCharFromInputBuffer()
 {
