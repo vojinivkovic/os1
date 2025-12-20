@@ -76,6 +76,13 @@ void Kernel::initializeKernel()
     initializeSystemCalls();
 
 }
+void Kernel::destroy()
+{
+    delete poolOfThreads;
+    delete poolOfSemaphores;
+    delete queueOfAsleepThreads;
+}
+
 void Kernel::initializeArguments(Kernel::ArgumentsOfSystemCall* arg, uint64 basePointer)
 {
     __asm__ volatile("ld %[rd], 11*8(%[rs])":[rd]"=r"(arg->a0):[rs]"r"(basePointer));
@@ -127,13 +134,13 @@ void Kernel::interruptHandler()
             uint64 sstatus = Machine::readSstatus();
 
             uint64 numberOfEntry;
-            __asm__ volatile ("ld %[rd], 80(%[rs])": [rd]"=r"(numberOfEntry):[rs]"r"(basePointer));
+            __asm__ volatile ("ld %[rd], -176(%[rs])": [rd]"=r"(numberOfEntry):[rs]"r"(basePointer));
 
             ArgumentsOfSystemCall arg;
             initializeArguments(&arg, basePointer);
             systemCallsTable[numberOfEntry](&arg);
 
-            __asm__ volatile("sd a0, 80(%[rs])"::[rs]"r"(basePointer));
+            __asm__ volatile("sd a0, -176(%[rs])"::[rs]"r"(basePointer));
 
             TCB::dispatch();
 

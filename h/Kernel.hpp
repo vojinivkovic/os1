@@ -59,7 +59,7 @@ private:
     static void makeProducerThread(void);
     static void kernelWorker(void*);
 
-
+    static void destroy();
     static uint64 (*systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(ArgumentsOfSystemCall* arg);
     static void initializeSystemCalls(void);
     static void initializeArguments(ArgumentsOfSystemCall* arg, uint64 basePointer);

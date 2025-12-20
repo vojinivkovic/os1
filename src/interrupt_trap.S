@@ -24,7 +24,7 @@ system_stack:    addi sp, sp, -256
     ld t0, 8(t0)
     sd t0, 5 * 8(sp)
 
-    addi s0, sp, 0
+    addi s0, sp, 256
     auipc t0, 0
     addi t0, t0, 16
     csrw sscratch, t0
