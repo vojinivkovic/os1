@@ -143,3 +143,7 @@ void KSemaphore::removeThreadFromBlockedQueue(TCB *thread)
     thread->resetState();
 
 }
+KSemaphore::~KSemaphore()
+{
+    delete queueBlockedThreads;
+}

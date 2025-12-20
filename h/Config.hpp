@@ -6,7 +6,8 @@
 #define PROJECT_BASE_V1_1_KERNELCONFIG_H
 #include "../lib/hw.h"
 
-namespace KernelConfig{
+namespace KernelConfig
+{
     constexpr size_t NUM_OF_THREADS_IN_POOL = 20;
     constexpr size_t NUM_OF_SEMAPHORES_IN_POOL = 10;
     constexpr size_t SIZE_INPUT_BUFFER = 100;

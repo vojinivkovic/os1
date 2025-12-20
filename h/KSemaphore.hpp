@@ -9,9 +9,11 @@
 #include "Queue.hpp"
 
 class TCB;
-class KSemaphore {
+class KSemaphore
+{
 public:
     KSemaphore() = default;
+    ~KSemaphore();
     void initializeSemaphore(unsigned value, ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* pool);
     void removeThreadFromBlockedQueue(TCB* thread);
     ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* getSourcePool() { return sourcePool; }

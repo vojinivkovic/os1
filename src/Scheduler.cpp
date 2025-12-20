@@ -34,3 +34,7 @@ TCB* Scheduler::get(void)
     newThread->addThreadToState(nullptr);
     return newThread;
 }
+void Scheduler::destroy()
+{
+    delete queueReadyThreads;
+}

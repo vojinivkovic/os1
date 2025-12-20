@@ -9,7 +9,8 @@
 
 
 template <typename T, size_t numOfObjects>
-class ObjectPool {
+class ObjectPool
+{
 public:
     ObjectPool(): headFreeObject(pool), nextObjectPool(nullptr), prevObjectPool(nullptr)
     {
@@ -22,6 +23,7 @@ public:
     }
 
     static void* operator new(size_t size);
+    static void operator delete(void* obj);
     T* mallocObject(ObjectPool<T, numOfObjects>** pool);
     int freeObject(T* obj);
 
@@ -56,6 +58,11 @@ void* ObjectPool<T, numOfObjects>::operator new(size_t size)
     size_t numOfBlocks = size / MEM_BLOCK_SIZE;
     numOfBlocks += size % MEM_BLOCK_SIZE ? 1 : 0;
     return MemoryAllocator::allocateMemory(numOfBlocks);
+}
+template<typename T, size_t numOfObjects>
+void ObjectPool<T, numOfObjects>::operator delete(void *obj)
+{
+    MemoryAllocator::freeMemory(obj);
 }
 
 template<typename T, size_t numOfObjects>

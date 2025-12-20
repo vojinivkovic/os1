@@ -8,7 +8,8 @@
 #include "MemoryAllocator.hpp"
 
 template<typename T>
-class Queue {
+class Queue
+{
 public:
     Queue() = default;
 
@@ -19,6 +20,7 @@ public:
     T* top() const { return head; };
 
     static void* operator new(size_t size);
+    static void operator delete(void* obj);
 private:
     T* head = nullptr, *tail = nullptr;
 };
@@ -85,5 +87,9 @@ void* Queue<T>::operator new(size_t size)
     numOfBlocks += size % MEM_BLOCK_SIZE ? 1 : 0;
     return MemoryAllocator::allocateMemory(numOfBlocks);
 }
-
+template<typename T>
+void Queue<T>::operator delete(void *obj)
+{
+    MemoryAllocator::freeMemory(obj);
+}
 #endif //PROJECT_BASE_V1_1_QUEUE_H

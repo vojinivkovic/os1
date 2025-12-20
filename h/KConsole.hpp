@@ -10,11 +10,13 @@
 
 class TCB;
 
-class KConsole {
+class KConsole
+{
 public:
     KConsole() = delete;
     KConsole(const KConsole& console) = delete;
     KConsole& operator= (const KConsole& console) = delete;
+    static void destroy();
     static void consumeOutputBuffer(void*);
     static void produceInputBuffer(void*);
 

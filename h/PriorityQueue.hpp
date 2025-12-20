@@ -8,7 +8,8 @@
 #include "MemoryAllocator.hpp"
 
 template <typename T, typename Compare>
-class PriorityQueue {
+class PriorityQueue
+{
 public:
     explicit PriorityQueue(Compare c) : cmp(c) {}
 
@@ -16,6 +17,7 @@ public:
     T* take();
     T* top();
     static void* operator new(size_t size);
+    static void operator delete(void* obj);
 private:
     T* head = nullptr, *tail = nullptr;
     Compare cmp;
@@ -68,6 +70,13 @@ void* PriorityQueue<T, Compare>::operator new(size_t size)
     numOfBlocks += size % MEM_BLOCK_SIZE ? 1 : 0;
     return MemoryAllocator::allocateMemory(numOfBlocks);
 }
+
+template<typename T, typename Compare>
+void PriorityQueue<T, Compare>::operator delete(void *obj)
+{
+    MemoryAllocator::freeMemory(obj);
+}
+
 template<typename T, typename Compare>
 T* PriorityQueue<T, Compare>::top()
 {

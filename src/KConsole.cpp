@@ -138,4 +138,11 @@ void KConsole::produceInputBuffer(void*)
     }
 
 }
+void KConsole::destroy()
+{
+    delete inputBuffer;
+    delete outputBuffer;
+    delete inputWaitQueue;
+    delete outputWaitQueue;
+}
 

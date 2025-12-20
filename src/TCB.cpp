@@ -55,3 +55,8 @@ void TCB::dispatch()
     running = Scheduler::get();
     yield(oldThread, running);
 }
+TCB::~TCB()
+{
+    MemoryAllocator::freeMemory(userStack);
+    MemoryAllocator::freeMemory(systemStack);
+}

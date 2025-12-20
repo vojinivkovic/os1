@@ -8,7 +8,8 @@
 
 class TCB;
 
-class Scheduler {
+class Scheduler
+{
 public:
     Scheduler() = delete;
     Scheduler(const Scheduler& scheduler) = delete;
@@ -16,6 +17,7 @@ public:
     static void put(TCB* readyThread);
     static TCB* get(void);
     static void setIdleThread(TCB* thread) { idleThread = thread; }
+    static void destroy();
 private:
     //static TCB* headReadyThread;
     //static TCB* tailReadyThread;

@@ -22,6 +22,7 @@ public:
     } Context;
     using Body = void(*)(void*);
     TCB() = default;
+    ~TCB();
     void initializeThread(Body body, void*arg, void* stack, void* systemStack, ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool,
                           KernelConfig::Mode mode = KernelConfig::USER_MODE, KernelConfig::ThreadState stateOfThread = KernelConfig::ACTIVE);
 

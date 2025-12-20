@@ -8,7 +8,8 @@
 #include "../h/MemoryAllocator.hpp"
 
 template<typename T, size_t numOfElements>
-class Buffer {
+class Buffer
+{
 public:
     Buffer();
     bool isBufferEmpty() const;
@@ -17,6 +18,7 @@ public:
     T* take();
 
     static void* operator new(size_t size);
+    static void operator delete(void* obj);
 private:
     T* array[numOfElements];
     size_t head = 0, tail = 0, count = 0;
@@ -35,6 +37,11 @@ void* Buffer<T, numOfElements>::operator new(size_t size)
     size_t numOfBlocks = size / MEM_BLOCK_SIZE;
     numOfBlocks += size % MEM_BLOCK_SIZE ? 1 : 0;
     return MemoryAllocator::allocateMemory(numOfBlocks);
+}
+template<typename T, size_t numOfElements>
+void Buffer<T, numOfElements>::operator delete(void* obj)
+{
+    MemoryAllocator::freeMemory(obj);
 }
 
 template<typename T, size_t numOfElements>
@@ -75,5 +82,7 @@ bool Buffer<T, numOfElements>::isBufferFull() const
 {
     return count == numOfElements;
 }
+
+
 
 #endif //PROJECT_BASE_V1_1_BUFFER_H
