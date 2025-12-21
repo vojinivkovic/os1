@@ -11,7 +11,7 @@ extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContex
 size_t TCB::numOfTicks = 0;
 TCB* TCB::running = nullptr;
 void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, void* allocatedSystemStack, ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool,
-                           KernelConfig::Mode mode, KernelConfig::ThreadState stateOfThread)
+                           KernelConfig::ThreadState stateOfThread, KernelConfig::Mode mode)
 {
 
     body = function;
@@ -59,4 +59,8 @@ TCB::~TCB()
 {
     MemoryAllocator::freeMemory(userStack);
     MemoryAllocator::freeMemory(systemStack);
+}
+void TCB::start(TCB* readyThread)
+{
+    Scheduler::put(readyThread);
 }

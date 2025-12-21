@@ -25,7 +25,7 @@ void Kernel::makeConsumerThread()
     {
         consumerThread = poolOfThreads->mallocObject(&sourcePool);
     }
-    consumerThread->initializeThread(&KConsole::consumeOutputBuffer, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::KERNEL_MODE, KernelConfig::BLOCKED);
+    consumerThread->initializeThread(&KConsole::consumeOutputBuffer, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::BLOCKED, KernelConfig::KERNEL_MODE);
     KConsole::setConsumerThread(consumerThread);
 }
 
@@ -38,7 +38,7 @@ void Kernel::makeProducerThread()
     {
         producerThread = poolOfThreads->mallocObject(&sourcePool);
     }
-    producerThread->initializeThread(&KConsole::produceInputBuffer, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::KERNEL_MODE, KernelConfig::BLOCKED);
+    producerThread->initializeThread(&KConsole::produceInputBuffer, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::BLOCKED, KernelConfig::KERNEL_MODE);
     KConsole::setProducerThread(producerThread);
 }
 void Kernel::makeIdleThread()
@@ -50,7 +50,7 @@ void Kernel::makeIdleThread()
     {
         idleThread = poolOfThreads->mallocObject(&sourcePool);
     }
-    idleThread->initializeThread(&kernelWorker, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::KERNEL_MODE, KernelConfig::BLOCKED);
+    idleThread->initializeThread(&kernelWorker, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::BLOCKED, KernelConfig::KERNEL_MODE);
     Scheduler::setIdleThread(idleThread);
 }
 void Kernel::initializeKernelThreads(void)
@@ -261,27 +261,32 @@ uint64 Kernel::sysThreadDispatch(Kernel::ArgumentsOfSystemCall *arg)
 }
 uint64 Kernel::sysThreadExit(Kernel::ArgumentsOfSystemCall *arg)
 {
-    if(MemoryAllocator::freeMemory(TCB::getRunningThread()->getSystemStack()) == -1)
-    {
-        return -1;
-    }
+//    if(MemoryAllocator::freeMemory(TCB::getRunningThread()->getSystemStack()) == -1)
+//    {
+//        return -1;
+//    }
 
     TCB::getRunningThread()->setIsFinished();
-    if(MemoryAllocator::freeMemory(TCB::getRunningThread()->getUserStack()) == -1)
-    {
-        return -1;
-    }
+//    if(MemoryAllocator::freeMemory(TCB::getRunningThread()->getUserStack()) == -1)
+//    {
+//        return -1;
+//    }
 
     if(!TCB::getRunningThread()->getSemaphoreOnWait())
     {
         KSemaphore* tempSemaphore = TCB::getRunningThread()->getSemaphoreOnWait();
         tempSemaphore->removeThreadFromBlockedQueue(TCB::getRunningThread());
     }
-
-    Kernel::poolOfThreads->freeObject(TCB::getRunningThread());
+    TCB* oldThread = TCB::getRunningThread();
+    Kernel::poolOfThreads->freeObject(oldThread);
+    delete oldThread;
     return 0;
 }
-
+uint64 Kernel::sysThreadStart(ArgumentsOfSystemCall *arg)
+{
+    Scheduler::put((TCB*)arg->a0);
+    return 0;
+}
 uint64 Kernel::sysSemaphoreOpen(ArgumentsOfSystemCall *arg)
 {
     ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* sourcePool;
@@ -301,6 +306,7 @@ uint64 Kernel::sysSemaphoreClose(ArgumentsOfSystemCall *arg)
     KSemaphore* tempSemaphore = (KSemaphore*)(arg->a0);
     returnValue = (uint64)tempSemaphore->close();
     Kernel::poolOfSemaphores->freeObject(tempSemaphore);
+    delete tempSemaphore;
     return returnValue;
 }
 
@@ -359,6 +365,9 @@ void Kernel::initializeSystemCalls(void)
     systemCallsTable[KernelConfig::MEM_FREE_SPACE] = &sysGetFreeSpace;
     systemCallsTable[KernelConfig::LARGEST_FREE_BLOCK] = &sysLargestFreeBlock;
     systemCallsTable[KernelConfig::THREAD_CREATE] = &sysThreadCreate;
+    systemCallsTable[KernelConfig::THREAD_DISPATCH] = &sysThreadDispatch;
+    systemCallsTable[KernelConfig::THREAD_EXIT] = &sysThreadExit;
+    systemCallsTable[KernelConfig::THREAD_START] = &sysThreadStart;
     systemCallsTable[KernelConfig::SEMAPHORE_OPEN] = &sysSemaphoreOpen;
     systemCallsTable[KernelConfig::SEMAPHORE_CLOSE] = &sysSemaphoreClose;
     systemCallsTable[KernelConfig::SEMAPHORE_SIGNAL] = &sysSemaphoreSignal;

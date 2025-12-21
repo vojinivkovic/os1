@@ -48,7 +48,7 @@ int thread_create(thread_t* handle, void(*start_routine)(void*), void* argOfRout
         return -1;
     }
 
-    Arguments arg = {(uint64)KernelConfig::THREAD_CREATE, (uint64)handle, (uint64)start_routine, (uint64)argOfRoutine, (uint64)(&threadStack[DEFAULT_STACK_SIZE]), 0, 0, 0};
+    Arguments arg = {KernelConfig::THREAD_CREATE, (uint64)handle, (uint64)start_routine, (uint64)argOfRoutine, (uint64)(&threadStack[DEFAULT_STACK_SIZE]), 0, 0, 0};
 
     return (int) system_call(&arg);
 }
@@ -64,44 +64,49 @@ int thread_exit()
     Arguments arg = {KernelConfig::THREAD_EXIT, 0, 0, 0, 0, 0, 0, 0};
     return (int) system_call(&arg);
 }
+void thread_start(thread_t handle)
+{
+    Arguments arg = {KernelConfig::THREAD_START,(uint64)handle, 0, 0, 0, 0, 0, 0};
+    system_call(&arg);
+}
 
 int sem_open(sem_t* handle, unsigned init)
 {
-    Arguments arg = {(uint64)KernelConfig::SEMAPHORE_OPEN, (uint64)handle, (uint64)init, 0, 0, 0, 0, 0};
+    Arguments arg = {KernelConfig::SEMAPHORE_OPEN, (uint64)handle, (uint64)init, 0, 0, 0, 0, 0};
     return (int) system_call(&arg);
 }
 
 int sem_close(sem_t handle)
 {
-    Arguments arg = {(uint64)KernelConfig::SEMAPHORE_CLOSE, (uint64)handle, 0, 0, 0, 0, 0, 0};
+    Arguments arg = {KernelConfig::SEMAPHORE_CLOSE, (uint64)handle, 0, 0, 0, 0, 0, 0};
     return (int) system_call(&arg);
 }
 
 int sem_wait(sem_t handle)
 {
-    Arguments arg = {(uint64)KernelConfig::SEMAPHORE_WAIT, (uint64)handle, 0, 0, 0, 0, 0, 0};
+    Arguments arg = {KernelConfig::SEMAPHORE_WAIT, (uint64)handle, 0, 0, 0, 0, 0, 0};
     return (int) system_call(&arg);
 }
 
 int sem_signal(sem_t handle)
 {
-    Arguments arg = {(uint64)KernelConfig::SEMAPHORE_SIGNAL, (uint64)handle, 0, 0, 0, 0, 0, 0};
+    Arguments arg = {KernelConfig::SEMAPHORE_SIGNAL, (uint64)handle, 0, 0, 0, 0, 0, 0};
     return (int) system_call(&arg);
 }
 
 int time_sleep(time_t time_to_sleep)
 {
-    Arguments arg = {(uint64)KernelConfig::TIME_SLEEP, (uint64)time_to_sleep, 0, 0, 0, 0, 0, 0};
+    Arguments arg = {KernelConfig::TIME_SLEEP, (uint64)time_to_sleep, 0, 0, 0, 0, 0, 0};
     return (int) system_call(&arg);
 }
 char getc()
 {
-    Arguments arg = {(uint64)KernelConfig::GETC, 0, 0, 0, 0, 0, 0, 0};
+    Arguments arg = {KernelConfig::GETC, 0, 0, 0, 0, 0, 0, 0};
     return (char) system_call(&arg);
 }
 
 void putc(char c)
 {
-    Arguments arg = {(uint64)KernelConfig::PUTC, (uint64) c, 0, 0, 0, 0, 0, 0};
+    Arguments arg = {KernelConfig::PUTC, (uint64) c, 0, 0, 0, 0, 0, 0};
     system_call(&arg);
 }

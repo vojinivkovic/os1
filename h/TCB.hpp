@@ -24,13 +24,14 @@ public:
     TCB() = default;
     ~TCB();
     void initializeThread(Body body, void*arg, void* stack, void* systemStack, ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool,
-                          KernelConfig::Mode mode = KernelConfig::USER_MODE, KernelConfig::ThreadState stateOfThread = KernelConfig::ACTIVE);
+                          KernelConfig::ThreadState stateOfThread = KernelConfig::BLOCKED, KernelConfig::Mode mode = KernelConfig::USER_MODE);
 
     size_t getTimeSlice() const { return timeSlice; }
     bool isFinished() const { return finished; }
     void setIsFinished() { finished = true; }
 
     size_t getTimeToSleep() const { return timeToSleep; }
+
     void setTimeToSleep(size_t time) { timeToSleep = time; }
 
     void decrementTimeToSleep() { timeToSleep--; };
@@ -48,6 +49,7 @@ public:
     KSemaphore* getSemaphoreOnWait() const { return waitOnSemaphore; }
     void resetSemaphoreOnWait() { waitOnSemaphore = nullptr; }
     static void dispatch();
+    static void start(TCB* readyElement);
 
     static TCB* getRunningThread() { return running; }
     static void setRunningThread(TCB* newRunningThread) { running = newRunningThread; }

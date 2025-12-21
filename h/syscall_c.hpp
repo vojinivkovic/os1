@@ -28,6 +28,8 @@ int thread_exit();
 
 void thread_dispatch();
 
+void thread_start(thread_t handle);
+
 int sem_open(sem_t* handle, unsigned init);
 
 int sem_close(sem_t handle);
