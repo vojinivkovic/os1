@@ -261,16 +261,8 @@ uint64 Kernel::sysThreadDispatch(Kernel::ArgumentsOfSystemCall *arg)
 }
 uint64 Kernel::sysThreadExit(Kernel::ArgumentsOfSystemCall *arg)
 {
-//    if(MemoryAllocator::freeMemory(TCB::getRunningThread()->getSystemStack()) == -1)
-//    {
-//        return -1;
-//    }
 
     TCB::getRunningThread()->setIsFinished();
-//    if(MemoryAllocator::freeMemory(TCB::getRunningThread()->getUserStack()) == -1)
-//    {
-//        return -1;
-//    }
 
     if(!TCB::getRunningThread()->getSemaphoreOnWait())
     {
@@ -278,13 +270,29 @@ uint64 Kernel::sysThreadExit(Kernel::ArgumentsOfSystemCall *arg)
         tempSemaphore->removeThreadFromBlockedQueue(TCB::getRunningThread());
     }
     TCB* oldThread = TCB::getRunningThread();
-    Kernel::poolOfThreads->freeObject(oldThread);
-    delete oldThread;
+    oldThread->freeWaitThreads();
     return 0;
 }
 uint64 Kernel::sysThreadStart(ArgumentsOfSystemCall *arg)
 {
     Scheduler::put((TCB*)arg->a0);
+    return 0;
+}
+uint64 Kernel::sysThreadJoin(ArgumentsOfSystemCall *arg)
+{
+    TCB* temp = (TCB*)(arg->a0);
+    if(!temp->isFinished())
+    {
+        TCB* oldThread = TCB::getRunningThread();
+        oldThread->resetState();
+        temp->addThreadToWaitQueue(oldThread);
+        TCB::TCB::setRunningThread(Scheduler::get());
+        context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
+
+    }
+
+    delete temp;
+    poolOfThreads->freeObject(temp);
     return 0;
 }
 uint64 Kernel::sysSemaphoreOpen(ArgumentsOfSystemCall *arg)
@@ -368,6 +376,7 @@ void Kernel::initializeSystemCalls(void)
     systemCallsTable[KernelConfig::THREAD_DISPATCH] = &sysThreadDispatch;
     systemCallsTable[KernelConfig::THREAD_EXIT] = &sysThreadExit;
     systemCallsTable[KernelConfig::THREAD_START] = &sysThreadStart;
+    systemCallsTable[KernelConfig::THREAD_JOIN] = &sysThreadJoin;
     systemCallsTable[KernelConfig::SEMAPHORE_OPEN] = &sysSemaphoreOpen;
     systemCallsTable[KernelConfig::SEMAPHORE_CLOSE] = &sysSemaphoreClose;
     systemCallsTable[KernelConfig::SEMAPHORE_SIGNAL] = &sysSemaphoreSignal;

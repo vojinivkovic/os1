@@ -70,6 +70,13 @@ void thread_start(thread_t handle)
     system_call(&arg);
 }
 
+void thread_join(thread_t handle)
+{
+    Arguments arg = {KernelConfig::THREAD_JOIN,(uint64)handle, 0, 0, 0, 0, 0, 0};
+    system_call(&arg);
+}
+
+
 int sem_open(sem_t* handle, unsigned init)
 {
     Arguments arg = {KernelConfig::SEMAPHORE_OPEN, (uint64)handle, (uint64)init, 0, 0, 0, 0, 0};

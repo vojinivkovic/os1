@@ -22,6 +22,7 @@ public:
 
 protected:
     Thread();
+    static void wrapperRun(void*);
     virtual void run() {}
 
 private:

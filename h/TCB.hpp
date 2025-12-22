@@ -9,6 +9,7 @@
 #include "../lib/hw.h"
 #include "Config.hpp"
 #include "Machine.hpp"
+#include "Queue.hpp"
 
 class KSemaphore;
 class TCB
@@ -43,11 +44,15 @@ public:
     void* getSystemStack() const { return systemStack; }
     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* getSourcePool() { return sourcePool; }
 
+
     void setWakeUpReason(KernelConfig::WakeUpReason reason) { wakeUpReason = reason; }
     KernelConfig::WakeUpReason getWakeUpReason() { return wakeUpReason; }
     void setSemaphoreOnWait (KSemaphore* semaphore) { waitOnSemaphore = semaphore; }
     KSemaphore* getSemaphoreOnWait() const { return waitOnSemaphore; }
     void resetSemaphoreOnWait() { waitOnSemaphore = nullptr; }
+    void addThreadToWaitQueue(TCB* newThread);
+    void freeWaitThreads();
+
     static void dispatch();
     static void start(TCB* readyElement);
 
@@ -75,6 +80,7 @@ private:
     bool finished;
     KernelConfig::WakeUpReason wakeUpReason;
     size_t timeToSleep;
+    Queue<TCB>* queueOfWaitThreads;
     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
 
 

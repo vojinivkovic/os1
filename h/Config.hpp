@@ -43,6 +43,7 @@ namespace KernelConfig
         THREAD_EXIT = 0x12,
         THREAD_DISPATCH = 0x13,
         THREAD_START = 0x14,
+        THREAD_JOIN = 0x15,
         SEMAPHORE_OPEN = 0X21,
         SEMAPHORE_CLOSE = 0x22,
         SEMAPHORE_WAIT = 0x23,
