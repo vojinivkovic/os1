@@ -3,18 +3,31 @@
 //
 #include "../h/syscall_cpp.hpp"
 
-void* ::operator new(size_t size)
+void* operator new(size_t size)
 {
     return mem_alloc(size);
 }
-void ::operator delete(void* obj)
+void operator delete(void* obj)
 {
     mem_free(obj);
 }
-v
-Thread::Thread(void (*body)(void *), void *arg): body(body), arg(arg)
+
+Thread::~Thread()
 {
-    if(thread_create(&myHandle, this->body, this->arg))
+    thread_join(myHandle);
+}
+void Thread::dispatch()
+{
+    thread_dispatch();
+}
+int Thread::sleep(time_t time)
+{
+    return time_sleep(time);
+}
+
+Thread::Thread(void (*body)(void *), void *arg): body(body), arg(arg), myHandle(nullptr)
+{
+    if(thread_create(&myHandle, body, arg))
     {
        myHandle = nullptr;
     }
@@ -31,23 +44,46 @@ int Thread::start()
     {
         return -1;
     }
+    thread_start(myHandle);
+    return 0;
 
 }
 
-Thread::Thread(): body(nullptr), arg(nullptr)
+Thread::Thread(): body(nullptr), arg(nullptr), myHandle(nullptr)
 {
     if(thread_create(&myHandle, &(Thread::wrapperRun), this))
     {
         myHandle = nullptr;
     }
 }
+void PeriodicThread::wrapperPeriodicThread(void * thread)
+{
+    PeriodicThread* tempThread = (PeriodicThread*) thread;
+    while(1)
+    {
+        tempThread->periodicActivation();
+        time_sleep(period);
+    }
+}
+PeriodicThread::PeriodicThread(time_t period) : Thread(&(PeriodicThread::wrapperPeriodicThread), this),
+period(period)
+{
 
+}
+Semaphore::Semaphore(unsigned int init)
+{
+    sem_open(&myHandle, init);
+}
+Semaphore::~Semaphore()
+{
+    sem_close(myHandle);
+}
 char Console::getc()
 {
-    ::getc();
+   return ::getc();
 }
 
 void Console::putc(char c)
 {
-    ::putc();
+    ::putc(c);
 }

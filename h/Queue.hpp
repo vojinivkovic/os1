@@ -34,7 +34,7 @@ void Queue<T>::append(T *newElement)
     }
     else
     {
-        tail->addThreadToState(newElement);
+        tail->addThreadToQueue(newElement);
     }
     tail = newElement;
 }
@@ -46,7 +46,7 @@ T* Queue<T>::take()
         return nullptr;
     }
     T* oldElement = head;
-    head = head->getState();
+    head = head->getNextThreadInQueue();
     if(!head)
     {
         tail = nullptr;
@@ -61,11 +61,11 @@ void Queue<T>::removeElement(T *element)
     while(element != curr && curr)
     {
         prev = curr;
-        curr = curr->getState();
+        curr = curr->getNextThreadInQueue();
     }
     if(!prev)
     {
-        head = head->getState();
+        head = head->getNextThreadInQueue();
         if(!head)
         {
             tail = nullptr;
@@ -73,7 +73,7 @@ void Queue<T>::removeElement(T *element)
     }
     else
     {
-        prev->addThreadToState(element->getState());
+        prev->addThreadToQueue(element->getNextThreadInQueue());
         if(element == tail)
         {
             tail = prev;

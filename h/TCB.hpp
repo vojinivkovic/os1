@@ -25,20 +25,21 @@ public:
     TCB() = default;
     ~TCB();
     void initializeThread(Body body, void*arg, void* stack, void* systemStack, ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool,
-                          KernelConfig::ThreadState stateOfThread = KernelConfig::BLOCKED, KernelConfig::Mode mode = KernelConfig::USER_MODE);
+                          KernelConfig::StateOfThread state = KernelConfig::BLOCKED, KernelConfig::Mode mode = KernelConfig::USER_MODE);
 
     size_t getTimeSlice() const { return timeSlice; }
     bool isFinished() const { return finished; }
     void setIsFinished() { finished = true; }
-
+    void setStateOfThread(KernelConfig::StateOfThread state) { stateOfThread = state; }
+    KernelConfig::StateOfThread getStateOfThread() const { return stateOfThread; }
     size_t getTimeToSleep() const { return timeToSleep; }
 
     void setTimeToSleep(size_t time) { timeToSleep = time; }
 
     void decrementTimeToSleep() { timeToSleep--; };
-    void addThreadToState(TCB* newThread) { state = newThread; }
-    TCB* getState() const { return state; }
-    void resetState() {state = nullptr; }
+    void addThreadToQueue(TCB* newThread) { nextThreadInQueue = newThread; }
+    TCB* getNextThreadInQueue() const { return nextThreadInQueue; }
+    void resetNextThreadInQueue() {nextThreadInQueue = nullptr; }
     Context* getContext() { return &context; }
     void* getUserStack() const { return userStack; }
     void* getSystemStack() const { return systemStack; }
@@ -76,7 +77,8 @@ private:
     size_t timeSlice;
     void* arguments;
     KSemaphore* waitOnSemaphore;
-    TCB* state;
+    TCB* nextThreadInQueue;
+    KernelConfig::StateOfThread stateOfThread;
     bool finished;
     KernelConfig::WakeUpReason wakeUpReason;
     size_t timeToSleep;

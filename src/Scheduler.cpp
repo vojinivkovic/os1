@@ -4,6 +4,7 @@
 
 #include "../h/Scheduler.hpp"
 #include "../h/TCB.hpp"
+#include "../h/Config.hpp"
 //TCB* Scheduler::headReadyThread = nullptr;
 //TCB* Scheduler::tailReadyThread = nullptr;
 Queue<TCB>* Scheduler::queueReadyThreads = new Queue<TCB>();
@@ -31,7 +32,8 @@ TCB* Scheduler::get(void)
     TCB* newThread = queueReadyThreads->take();
     //headReadyThread = headReadyThread->getState();
 
-    newThread->addThreadToState(nullptr);
+    newThread->resetNextThreadInQueue();
+    newThread->setStateOfThread(KernelConfig::RUNNING);
     return newThread;
 }
 void Scheduler::destroy()

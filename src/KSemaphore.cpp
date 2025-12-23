@@ -31,6 +31,7 @@ void KSemaphore::blockThread(TCB* threadToBlock)
 //        tailBlockedThread->addThreadToState(threadToBlock);
 //    }
 //    tailBlockedThread = threadToBlock;
+    threadToBlock->setStateOfThread(KernelConfig::BLOCKED);
     queueBlockedThreads->append(threadToBlock);
 }
 
@@ -49,8 +50,9 @@ int KSemaphore::unblockThread(KernelConfig::WakeUpReason reason)
     if(oldThread)
     {
         oldThread->setWakeUpReason(reason);
-        oldThread->resetState();
+        oldThread->resetNextThreadInQueue();
         oldThread->resetSemaphoreOnWait();
+        oldThread->setStateOfThread(KernelConfig::READY);
         Scheduler::put(oldThread);
         return 0;
     }
@@ -66,7 +68,7 @@ int KSemaphore::wait()
 
         TCB* oldThread = TCB::getRunningThread();
         TCB::setRunningThread(Scheduler::get());
-        oldThread->resetState();
+        oldThread->resetNextThreadInQueue();
         blockThread(oldThread);
         context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
         if(TCB::getRunningThread()->getWakeUpReason() == KernelConfig::WAKE_UP_SEMAPHORE_SIGNAL)
@@ -99,7 +101,7 @@ int KSemaphore::close()
     {
         return 0;
     }
-    for(;tempThread; tempThread = tempThread->getState())
+    for(;tempThread; tempThread = tempThread->getNextThreadInQueue())
     {
         unblockThread(KernelConfig::WAKE_UP_SEMAPHORE_CLOSE);
     }
@@ -140,7 +142,7 @@ void KSemaphore::removeThreadFromBlockedQueue(TCB *thread)
 
     queueBlockedThreads->removeElement(thread);
     thread->resetSemaphoreOnWait();
-    thread->resetState();
+    thread->resetNextThreadInQueue();
 
 }
 KSemaphore::~KSemaphore()

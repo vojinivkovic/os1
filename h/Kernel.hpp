@@ -45,6 +45,7 @@ private:
     static uint64 sysThreadExit(ArgumentsOfSystemCall* arg);
     static uint64 sysThreadStart(ArgumentsOfSystemCall*arg);
     static uint64 sysThreadJoin(ArgumentsOfSystemCall* arg);
+    static uint64 sysThreadTerminate(ArgumentsOfSystemCall* arg);
 	static uint64 sysSemaphoreOpen(ArgumentsOfSystemCall* arg);
 	static uint64 sysSemaphoreClose(ArgumentsOfSystemCall* arg);
     static uint64 sysSemaphoreWait(ArgumentsOfSystemCall* arg);

@@ -11,15 +11,16 @@ extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContex
 size_t TCB::numOfTicks = 0;
 TCB* TCB::running = nullptr;
 void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, void* allocatedSystemStack, ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool,
-                           KernelConfig::ThreadState stateOfThread, KernelConfig::Mode mode)
+                           KernelConfig::StateOfThread state, KernelConfig::Mode mode)
 {
 
     body = function;
     timeSlice = DEFAULT_TIME_SLICE;
-    state = nullptr;
+    nextThreadInQueue = nullptr;
     finished = false;
     arguments = arg;
     waitOnSemaphore = nullptr;
+    stateOfThread = state;
     timeToSleep = 0;
     sourcePool = pool;
     queueOfWaitThreads = nullptr;
@@ -51,6 +52,7 @@ void TCB::dispatch()
     TCB* oldThread = running;
     if(!oldThread->isFinished())
     {
+        oldThread->setStateOfThread(KernelConfig::READY);
         Scheduler::put(oldThread);
     }
     running = Scheduler::get();
@@ -70,11 +72,14 @@ void TCB::freeWaitThreads()
     TCB* temp;
     while(!queueOfWaitThreads->isQueueEmpty())
     {
+
         temp = queueOfWaitThreads->take();
+        temp->setStateOfThread(KernelConfig::READY);
         Scheduler::put(temp);
     }
 }
 void TCB::addThreadToWaitQueue(TCB *newThread)
 {
+    newThread->setStateOfThread(KernelConfig::BLOCKED);
     queueOfWaitThreads->append(newThread);
 }

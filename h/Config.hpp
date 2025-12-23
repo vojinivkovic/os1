@@ -15,10 +15,14 @@ namespace KernelConfig
     constexpr size_t NUM_OF_SYSTEM_CALLS = 0x43;
     constexpr size_t DEFAULT_SYSTEM_STACK_SIZE = 1024;
     const int EOF = -1;
-    enum ThreadState
+
+    enum StateOfThread
     {
-        ACTIVE,
-        BLOCKED
+        READY,
+        BLOCKED,
+        FINISHED,
+        RUNNING,
+        TERMINATED
     };
 
     enum Mode
@@ -44,6 +48,7 @@ namespace KernelConfig
         THREAD_DISPATCH = 0x13,
         THREAD_START = 0x14,
         THREAD_JOIN = 0x15,
+        THREAD_TERMINATE = 0x16,
         SEMAPHORE_OPEN = 0X21,
         SEMAPHORE_CLOSE = 0x22,
         SEMAPHORE_WAIT = 0x23,

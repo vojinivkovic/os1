@@ -32,7 +32,9 @@ void KConsole::addThreadToInputWaitQueue(TCB *thread)
 //        tailThreadInputWait->addThreadToState(thread);
 //    }
 //    tailThreadInputWait = thread;
+    thread->setStateOfThread(KernelConfig::BLOCKED);
     inputWaitQueue->append(thread);
+
 }
 
 void KConsole::addThreadToOutputWaitQueue(TCB* thread)
@@ -46,6 +48,7 @@ void KConsole::addThreadToOutputWaitQueue(TCB* thread)
 //        tailThreadOutputWait->addThreadToState(thread);
 //    }
 //    tailThreadOutputWait = thread;
+    thread->setStateOfThread(KernelConfig::BLOCKED);
     outputWaitQueue->append(thread);
 }
 
@@ -63,7 +66,8 @@ void KConsole::removeThreadFromInputWaitQueue()
 //    }
     if(oldThread)
     {
-        oldThread->resetState();
+        oldThread->resetNextThreadInQueue();
+        thread->setStateOfThread(KernelConfig::READY);
         Scheduler::put(oldThread);
     }
 }
@@ -81,7 +85,8 @@ void KConsole::removeThreadFromOutputWaitQueue()
 //    }
     if(oldThread)
     {
-        oldThread->resetState();
+        oldThread->resetNextThreadInQueue();
+        thread->setStateOfThread(KernelConfig::READY);
         Scheduler::put(oldThread);
     }
 }
@@ -111,7 +116,8 @@ void KConsole::consumeOutputBuffer(void*)
         plic_complete(numOfDevice);
         TCB *oldThread = TCB::getRunningThread();
         TCB::setRunningThread(Scheduler::get());
-        oldThread->resetState();
+        oldThread->resetNextThreadInQueue();
+        oldThread->setStateOfThread(KernelConfig::BLOCKED);
         context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
     }
 }
@@ -133,7 +139,8 @@ void KConsole::produceInputBuffer(void*)
 
         TCB *oldThread = TCB::getRunningThread();
         TCB::setRunningThread(Scheduler::get());
-        oldThread->resetState();
+        oldThread->resetNextThreadInQueue();
+        oldThread->setStateOfThread(KernelConfig::BLOCKED);
         context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
     }
 
