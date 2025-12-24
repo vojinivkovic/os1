@@ -20,13 +20,19 @@ public:
     int wait();
     int signal();
 	int close();
+	void addElementToQueue(KSemaphore* newSemaphore) { nextSemaphoreInQueue = newSemaphore; }
+	TCB* getNextElementInQueue() const { return nextSemaphoreInQueue; }
+	void resetNextSemaphoreInQueue() { nextSemaphoreInQueue = nullptr; }
+	uint64 getID() const { return semId; }
 private:
     void blockThread(TCB* threadToBlock);
     int unblockThread(KernelConfig::WakeUpReason reason);
+	static uint64 countOfSemaphores;
     long semaphoreVal;
-    //TCB* headBlockedThread, *tailBlockedThread;
+	KSemaphore* nextSemaphoreInQueue;
 	Queue<TCB>* queueBlockedThreads;
     ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* sourcePool;
+    uint64 semId;
 };
 
 

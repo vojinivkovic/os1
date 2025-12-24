@@ -37,15 +37,18 @@ public:
     void setTimeToSleep(size_t time) { timeToSleep = time; }
 
     void decrementTimeToSleep() { timeToSleep--; };
-    void addThreadToQueue(TCB* newThread) { nextThreadInQueue = newThread; }
-    TCB* getNextThreadInQueue() const { return nextThreadInQueue; }
-    void resetNextThreadInQueue() {nextThreadInQueue = nullptr; }
+    void addElementToQueue(TCB* newThread) { nextThreadInQueue = newThread; }
+    TCB* getNextElementInQueue() const { return nextThreadInQueue; }
+    void resetNextThreadInQueue() { nextThreadInQueue = nullptr; }
     Context* getContext() { return &context; }
     void* getUserStack() const { return userStack; }
     void* getSystemStack() const { return systemStack; }
     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* getSourcePool() { return sourcePool; }
 
-
+    Queue<TCB*> getWaitQueue() const { return queueOfWaitThreads; }
+    Queue<TCB>* getQueueOfWhichIsPart() const { return queueOfWhichIsPart; }
+    void setQueueOfWhichIsPart(Queue<TCB>* queue) { queueOfWhichIsPart = queue; }
+    void resetQueueOfWhichIsPart() { queueOfWhichIsPart = nullptr; }
     void setWakeUpReason(KernelConfig::WakeUpReason reason) { wakeUpReason = reason; }
     KernelConfig::WakeUpReason getWakeUpReason() { return wakeUpReason; }
     void setSemaphoreOnWait (KSemaphore* semaphore) { waitOnSemaphore = semaphore; }
@@ -83,6 +86,7 @@ private:
     KernelConfig::WakeUpReason wakeUpReason;
     size_t timeToSleep;
     Queue<TCB>* queueOfWaitThreads;
+    Queue<TCB>* queueOfWhichIsPart;
     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
 
 

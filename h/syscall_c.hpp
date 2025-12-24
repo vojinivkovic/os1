@@ -28,7 +28,7 @@ int thread_exit();
 
 void thread_dispatch();
 
-void thread_start(thread_t handle);
+int thread_start(thread_t handle);
 
 void thread_join(thread_t handle);
 

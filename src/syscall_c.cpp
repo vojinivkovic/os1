@@ -64,7 +64,7 @@ int thread_exit()
     Arguments arg = {KernelConfig::THREAD_EXIT, 0, 0, 0, 0, 0, 0, 0};
     return (int) system_call(&arg);
 }
-void thread_start(thread_t handle)
+int thread_start(thread_t handle)
 {
     Arguments arg = {KernelConfig::THREAD_START,(uint64)handle, 0, 0, 0, 0, 0, 0};
     system_call(&arg);

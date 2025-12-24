@@ -42,8 +42,6 @@ public:
     static char getCharFromInputBuffer();
 private:
     static TCB* consumerThread, *producerThread;
-    //static TCB* headThreadInputWait, *tailThreadInputWait;
-    //static TCB* headThreadOutputWait, *tailThreadOutputWait;
     static Queue<TCB>* inputWaitQueue, *outputWaitQueue;
 
     static Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>* inputBuffer;

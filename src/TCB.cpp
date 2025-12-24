@@ -24,6 +24,7 @@ void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, v
     timeToSleep = 0;
     sourcePool = pool;
     queueOfWaitThreads = nullptr;
+    queueOfWhichIsPart = nullptr;
     userStack = (void*)((uint8*)allocatedStack - DEFAULT_STACK_SIZE);
     systemStack = (void*)((uint8*)allocatedSystemStack - KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
 
@@ -62,6 +63,7 @@ TCB::~TCB()
 {
     MemoryAllocator::freeMemory(userStack);
     MemoryAllocator::freeMemory(systemStack);
+    stateOfThread = KernelConfig::TERMINATED;
 }
 void TCB::start(TCB* readyThread)
 {

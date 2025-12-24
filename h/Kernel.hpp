@@ -73,8 +73,8 @@ private:
     static ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* poolOfThreads;
     static ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* poolOfSemaphores;
     static PriorityQueue<TCB, decltype(cmp)>* queueOfAsleepThreads;
+    static Queue<KSemaphore>* queueOfOpenedSemaphores;
 
-    //static TCB* runningThread;
 
 };
 

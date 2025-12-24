@@ -12,15 +12,7 @@ TCB* Scheduler::idleThread = nullptr;
 
 void Scheduler::put(TCB *readyThread)
 {
-//    if(!headReadyThread)
-//    {
-//        headReadyThread = readyThread;
-//    }
-//    else
-//    {
-//        tailReadyThread->addThreadToState(readyThread);
-//    }
-//    tailReadyThread = readyThread;
+    readyThread->setQueueOfWhichIsPart(queueReadyThreads);
     queueReadyThreads->append(readyThread);
 }
 TCB* Scheduler::get(void)
@@ -30,8 +22,7 @@ TCB* Scheduler::get(void)
         return idleThread;
     }
     TCB* newThread = queueReadyThreads->take();
-    //headReadyThread = headReadyThread->getState();
-
+    newThread->resetQueueOfWhichIsPart();
     newThread->resetNextThreadInQueue();
     newThread->setStateOfThread(KernelConfig::RUNNING);
     return newThread;

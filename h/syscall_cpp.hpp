@@ -24,9 +24,9 @@ protected:
     Thread();
     static void wrapperRun(void*);
     virtual void run() {}
-
-private:
     thread_t myHandle;
+private:
+
     void (*body)(void*);
     void* arg;
 };

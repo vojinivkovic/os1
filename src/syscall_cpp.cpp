@@ -44,8 +44,8 @@ int Thread::start()
     {
         return -1;
     }
-    thread_start(myHandle);
-    return 0;
+    return thread_start(myHandle);
+
 
 }
 
@@ -70,6 +70,10 @@ period(period)
 {
 
 }
+void PeriodicThread::terminate()
+{
+    thread_terminate(myHandle);
+}
 Semaphore::Semaphore(unsigned int init)
 {
     sem_open(&myHandle, init);
@@ -78,6 +82,15 @@ Semaphore::~Semaphore()
 {
     sem_close(myHandle);
 }
+int Semaphore::wait()
+{
+    return sem_wait(myHandle);
+}
+int Semaphore::close()
+{
+    return sem_close(myHandle);
+}
+
 char Console::getc()
 {
    return ::getc();

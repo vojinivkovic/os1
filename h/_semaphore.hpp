@@ -4,6 +4,6 @@
 
 #ifndef PROJECT_BASE_V1_1__SEMAPHORE_H
 #define PROJECT_BASE_V1_1__SEMAPHORE_H
-class KSemaphore;
-using _sem = KSemaphore;
+#include "../lib/hw.h"
+using _sem = uint64;
 #endif //PROJECT_BASE_V1_1__SEMAPHORE_H

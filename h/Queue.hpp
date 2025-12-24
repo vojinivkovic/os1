@@ -17,6 +17,7 @@ public:
     T* take();
     void removeElement(T* element);
     bool isQueueEmpty() const { return !head; }
+    T* findElement(uint64 id) const;
     T* top() const { return head; };
 
     static void* operator new(size_t size);
@@ -34,7 +35,7 @@ void Queue<T>::append(T *newElement)
     }
     else
     {
-        tail->addThreadToQueue(newElement);
+        tail->addElementToQueue(newElement);
     }
     tail = newElement;
 }
@@ -46,7 +47,7 @@ T* Queue<T>::take()
         return nullptr;
     }
     T* oldElement = head;
-    head = head->getNextThreadInQueue();
+    head = head->getNextElementInQueue();
     if(!head)
     {
         tail = nullptr;
@@ -61,11 +62,11 @@ void Queue<T>::removeElement(T *element)
     while(element != curr && curr)
     {
         prev = curr;
-        curr = curr->getNextThreadInQueue();
+        curr = curr->getNextElementInQueue();
     }
     if(!prev)
     {
-        head = head->getNextThreadInQueue();
+        head = head->getNextElementInQueue();
         if(!head)
         {
             tail = nullptr;
@@ -73,13 +74,26 @@ void Queue<T>::removeElement(T *element)
     }
     else
     {
-        prev->addThreadToQueue(element->getNextThreadInQueue());
+        prev->addElementToQueue(element->getNextElementInQueue());
         if(element == tail)
         {
             tail = prev;
         }
     }
 }
+template<typename T>
+T* Queue<T>::findElement(uint64 id) const
+{
+    for(T* curr = head; curr; curr = curr->getNextElementInQueue())
+    {
+        if(curr->getID() == id)
+        {
+            return curr;
+        }
+    }
+    return nullptr;
+}
+
 template<typename T>
 void* Queue<T>::operator new(size_t size)
 {

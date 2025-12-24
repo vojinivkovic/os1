@@ -36,19 +36,19 @@ void PriorityQueue<T, Compare>::append(T *newElement)
     {
         newElement->setTimeToSleep(newElement->getTimeToSleep() - curr->getTimeToSleep());
         prev = curr;
-        curr = curr->getNextThreadInQueue();
+        curr = curr->getNextElementdInQueue();
     }
 
     if(curr == head)
     {
-        newElement->addThreadToQueue(head);
+        newElement->addElementToQueue(head);
         head->setTimeToSleep(head->getTimeToSleep() - newElement->getTimeToSleep());
         head = newElement;
     }
     else
     {
-        newElement->addThreadToQueue(curr);
-        prev->addThreadToQueue(newElement);
+        newElement->addElementToQueue(curr);
+        prev->addElementToQueue(newElement);
         curr->setTimeToSleep(curr->getTimeToSleep() - newElement->getTimeToSleep());
     }
 }
@@ -56,7 +56,7 @@ template<typename T, typename Compare>
 T* PriorityQueue<T, Compare>::take()
 {
     T* oldElement = head;
-    head = head->getNextThreadInQueue();
+    head = head->getNextElementInQueue();
     if(!head)
     {
         tail = nullptr;

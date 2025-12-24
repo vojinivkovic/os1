@@ -15,7 +15,7 @@ uint64 (*Kernel::systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(Kernel::Ar
 ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* Kernel::poolOfThreads = new ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>();
 ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* Kernel::poolOfSemaphores = new ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>();
 PriorityQueue<TCB, decltype(cmp)>* Kernel::queueOfAsleepThreads = new PriorityQueue<TCB, decltype(cmp)>(cmp);
-
+Queue<KSemaphore>* Kernel::queueOfOpenedSemaphores = new Queue<KSemaphore>();
 void Kernel::makeConsumerThread()
 {
     void* kernelSystemStack = Kernel::mallocSystemStack(KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
@@ -81,6 +81,7 @@ void Kernel::destroy()
     delete poolOfThreads;
     delete poolOfSemaphores;
     delete queueOfAsleepThreads;
+    delete queueOfOpenedSemaphores;
 }
 
 void Kernel::initializeArguments(Kernel::ArgumentsOfSystemCall* arg, uint64 basePointer)
@@ -216,30 +217,18 @@ void Kernel::kernelWorker(void*)
 
 uint64 Kernel::sysMalloc(Kernel::ArgumentsOfSystemCall *arg)
 {
-//    uint64 returnValue;
-//    returnValue = (uint64)MemoryAllocator::allocateMemory(arg->a0);
-//    return returnValue;
     return (uint64)MemoryAllocator::allocateMemory(arg->a0);
 }
 uint64 Kernel::sysFree(Kernel::ArgumentsOfSystemCall *arg)
 {
-//    uint64 returnValue;
-//    returnValue = (uint64)MemoryAllocator::freeMemory((void*)arg->a0);
-//    return returnValue;
     return (uint64)MemoryAllocator::freeMemory((void*)arg->a0);
 }
 uint64 Kernel::sysGetFreeSpace(Kernel::ArgumentsOfSystemCall *arg)
 {
-//    uint64 returnValue;
-//    returnValue = (uint64)MemoryAllocator::getFreeSpace();
-//    return returnValue;
     return (uint64)MemoryAllocator::getFreeSpace();
 }
 uint64 Kernel::sysLargestFreeBlock(Kernel::ArgumentsOfSystemCall *arg)
 {
-//    uint64 returnValue;
-//    returnValue = (uint64)MemoryAllocator::getLargestFreeBlock();
-//    return (uint64)MemoryAllocator;
     return (uint64)MemoryAllocator::getLargestFreeBlock();
 }
 uint64 Kernel::sysThreadCreate(Kernel::ArgumentsOfSystemCall *arg)
@@ -272,36 +261,53 @@ uint64 Kernel::sysThreadExit(Kernel::ArgumentsOfSystemCall *arg)
     }
     TCB* oldThread = TCB::getRunningThread();
     oldThread->freeWaitThreads();
+    oldThread->resetQueueOfWhichIsPart();
+    oldThread->resetNextThreadInQueue();
     return 0;
 }
 uint64 Kernel::sysThreadStart(ArgumentsOfSystemCall *arg)
 {
     TCB* tempThread = (TCB*)(arg->a0);
+    if(tempThread->getStateOfThread() == KernelConfig::TERMINATED)
+    {
+        return -1;
+    }
     tempThread->setStateOfThread(KernelConfig::READY);
     Scheduler::put(tempThread);
     return 0;
 }
 uint64 Kernel::sysThreadJoin(ArgumentsOfSystemCall *arg)
 {
-    TCB* temp = (TCB*)(arg->a0);
-    if(!temp->isFinished())
+    TCB* tempThread = (TCB*)(arg->a0);
+    if(!tempThread->isFinished())
     {
         TCB* oldThread = TCB::getRunningThread();
         oldThread->resetNextThreadInQueue();
         oldThread->setStateOfThread(KernelConfig::BLOCKED);
-        temp->addThreadToWaitQueue(oldThread);
+        oldThread->setQueueOfWhichIsPart(tempThread->getWaitQueue());
+        tempThread->addThreadToWaitQueue(oldThread);
         TCB::TCB::setRunningThread(Scheduler::get());
         context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
 
     }
 
-    delete temp;
-    poolOfThreads->freeObject(temp);
+    if(tempThread->getStateOfThread() == KernelConfig::TERMINATED)
+    {
+        return 0;
+    }
+    delete tempThread;
+    poolOfThreads->freeObject(tempThread);
     return 0;
 }
 uint64 Kernel::sysThreadTerminate(ArgumentsOfSystemCall *arg)
 {
-
+    TCB* tempThread = (TCB*)(arg->a0);
+    tempThread->setIsFinished();
+    tempThread->setStateOfThread(KernelConfig::FINISHED);
+    tempThread->freeWaitThreads();
+    tempThread->getQueueOfWhichIsPart()->removeElement(tempThread);
+    tempThread->resetQueueOfWhichIsPart();
+    tempThread->resetNextThreadInQueue();
 }
 uint64 Kernel::sysSemaphoreOpen(ArgumentsOfSystemCall *arg)
 {
@@ -311,16 +317,23 @@ uint64 Kernel::sysSemaphoreOpen(ArgumentsOfSystemCall *arg)
     {
         return -1;
     }
-    __asm__ volatile("sd %[ptrSemaphore], 0(%[handle])"::[ptrSemaphore]"r"(newSemaphore), [handle]"r"(arg->a0));
+
     newSemaphore->initializeSemaphore((unsigned)arg->a1, sourcePool);
+    queueOfOpenedSemaphores->append(newSemaphore);
+    __asm__ volatile("sd %[semaphoreHandle], 0(%[handle])"::[semaphoreHandle]"r"(newSemaphore->getID()), [handle]"r"(arg->a0));
     return 0;
 }
 
 uint64 Kernel::sysSemaphoreClose(ArgumentsOfSystemCall *arg)
 {
     uint64 returnValue;
-    KSemaphore* tempSemaphore = (KSemaphore*)(arg->a0);
+    KSemaphore* tempSemaphore = queueOfOpenedSemaphores->findElement((uint64)arg->a0);
+    if(!tempSemaphore)
+    {
+        return -1;
+    }
     returnValue = (uint64)tempSemaphore->close();
+    queueOfOpenedSemaphores->removeElement(tempSemaphore);
     Kernel::poolOfSemaphores->freeObject(tempSemaphore);
     delete tempSemaphore;
     return returnValue;
@@ -328,13 +341,21 @@ uint64 Kernel::sysSemaphoreClose(ArgumentsOfSystemCall *arg)
 
 uint64 Kernel::sysSemaphoreWait(ArgumentsOfSystemCall *arg)
 {
-    KSemaphore* tempSemaphore = (KSemaphore*)(arg->a0);
+    KSemaphore* tempSemaphore = queueOfOpenedSemaphores->findElement((uint64)arg->a0);
+    if(!tempSemaphore)
+    {
+        return -1;
+    }
     return (uint64)tempSemaphore->wait();
 }
 
 uint64 Kernel::sysSemaphoreSignal(ArgumentsOfSystemCall *arg)
 {
-    KSemaphore* tempSemaphore = (KSemaphore*)(arg->a0);
+    KSemaphore* tempSemaphore = queueOfOpenedSemaphores->findElement(arg->a0);
+    if(!tempSemaphore)
+    {
+        return -1;
+    }
     return (uint64)tempSemaphore->signal();
 }
 
@@ -344,6 +365,7 @@ uint64 Kernel::sysTimeSleep(ArgumentsOfSystemCall *arg)
     oldThread->resetNextThreadInQueue();
     oldThread->setTimeToSleep((size_t)arg->a0);
     oldThread->setStateOfThread(KernelConfig::BLOCKED);
+    oldThread->setQueueOfWhichIsPart(queueOfAsleepThreads);
     queueOfAsleepThreads->append(oldThread);
     TCB::setRunningThread(Scheduler::get());
     context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());

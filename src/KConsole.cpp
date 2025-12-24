@@ -16,54 +16,27 @@ Queue<TCB>* KConsole::inputWaitQueue = new Queue<TCB>();
 Queue<TCB>* KConsole::outputWaitQueue = new Queue<TCB>();
 TCB* KConsole::consumerThread = nullptr;
 TCB* KConsole::producerThread = nullptr;
-//TCB* KConsole::headThreadInputWait = nullptr;
-//TCB* KConsole::tailThreadInputWait = nullptr;
-//TCB* KConsole::headThreadOutputWait = nullptr;
-//TCB* KConsole::tailThreadOutputWait = nullptr;
+
 
 void KConsole::addThreadToInputWaitQueue(TCB *thread)
 {
-//    if(!headThreadInputWait)
-//    {
-//        headThreadInputWait = thread;
-//    }
-//    else
-//    {
-//        tailThreadInputWait->addThreadToState(thread);
-//    }
-//    tailThreadInputWait = thread;
     thread->setStateOfThread(KernelConfig::BLOCKED);
+    thread->setQueueOfWhichIsPart(inputWaitQueue);
     inputWaitQueue->append(thread);
 
 }
 
 void KConsole::addThreadToOutputWaitQueue(TCB* thread)
 {
-//    if(!headThreadOutputWait)
-//    {
-//        headThreadOutputWait = thread;
-//    }
-//    else
-//    {
-//        tailThreadOutputWait->addThreadToState(thread);
-//    }
-//    tailThreadOutputWait = thread;
     thread->setStateOfThread(KernelConfig::BLOCKED);
+    thread->setQueueOfWhichIsPart(outputWaitQueue);
     outputWaitQueue->append(thread);
 }
 
 void KConsole::removeThreadFromInputWaitQueue()
 {
-//    if(!headThreadInputWait)
-//    {
-//        return;
-//    }
+
     TCB* oldThread = outputWaitQueue->take();
-//    headThreadInputWait = headThreadInputWait->getState();
-//    if(!headThreadInputWait)
-//    {
-//        tailThreadInputWait = nullptr;
-//    }
     if(oldThread)
     {
         oldThread->resetNextThreadInQueue();
@@ -73,16 +46,8 @@ void KConsole::removeThreadFromInputWaitQueue()
 }
 void KConsole::removeThreadFromOutputWaitQueue()
 {
-    //    if(!headThreadInputWait)
-//    {
-//        return;
-//    }
+
     TCB* oldThread = inputWaitQueue->take();
-//    headThreadInputWait = headThreadInputWait->getState();
-//    if(!headThreadInputWait)
-//    {
-//        tailThreadInputWait = nullptr;
-//    }
     if(oldThread)
     {
         oldThread->resetNextThreadInQueue();
