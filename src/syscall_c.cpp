@@ -18,8 +18,9 @@ extern "C" uint64 system_call(Arguments* arg);
 
 void* mem_alloc(size_t size)
 {
-    uint64 size_of_blocks = (size + MemoryAllocator::getSizeOfMetaData()) / MEM_BLOCK_SIZE;
-    size_of_blocks += (size + MemoryAllocator::getSizeOfMetaData()) % MEM_BLOCK_SIZE ? 1: 0;
+    size_t correctedSize = size + MemoryAllocator::getSizeOfMetaData();
+    uint64 size_of_blocks = correctedSize / MEM_BLOCK_SIZE;
+    size_of_blocks += correctedSize % MEM_BLOCK_SIZE ? 1: 0;
     Arguments arg = {KernelConfig::MEM_ALLOC, size_of_blocks, 0, 0, 0, 0, 0, 0};
     return (void*) system_call(&arg);
 }

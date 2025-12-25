@@ -98,8 +98,9 @@ void Kernel::initializeArguments(Kernel::ArgumentsOfSystemCall* arg, uint64 base
 
 void* Kernel::mallocSystemStack(size_t numOfBytes)
 {
-    size_t numOfBlocks = numOfBytes / MEM_BLOCK_SIZE;
-    numOfBlocks += numOfBytes % MEM_BLOCK_SIZE ? 1 : 0;
+    size_t correctedSize = numOfBytes + MemoryAllocator::getSizeOfMetaData();
+    size_t numOfBlocks = correctedSize / MEM_BLOCK_SIZE;
+    numOfBlocks += correctedSize % MEM_BLOCK_SIZE ? 1 : 0;
     uint8* systemStack = (uint8*)MemoryAllocator::allocateMemory(numOfBlocks);
     return (void*)(&systemStack[KernelConfig::DEFAULT_SYSTEM_STACK_SIZE]);
 }

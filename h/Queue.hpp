@@ -97,8 +97,9 @@ T* Queue<T>::findElement(uint64 id) const
 template<typename T>
 void* Queue<T>::operator new(size_t size)
 {
-    size_t numOfBlocks = size / MEM_BLOCK_SIZE;
-    numOfBlocks += size % MEM_BLOCK_SIZE ? 1 : 0;
+    size_t correctedSize = size + MemoryAllocator::getSizeOfMetaData();
+    size_t numOfBlocks = correctedSize / MEM_BLOCK_SIZE;
+    numOfBlocks += correctedSize % MEM_BLOCK_SIZE ? 1 : 0;
     return MemoryAllocator::allocateMemory(numOfBlocks);
 }
 template<typename T>
