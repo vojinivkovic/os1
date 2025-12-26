@@ -308,9 +308,18 @@ uint64 Kernel::sysThreadTerminate(ArgumentsOfSystemCall *arg)
     tempThread->setIsFinished();
     tempThread->setStateOfThread(KernelConfig::FINISHED);
     tempThread->freeWaitThreads();
-    tempThread->getQueueOfWhichIsPart()->removeElement(tempThread);
+    if(tempThread->getStateOfThread() == KernelConfig::BLOCKED)
+    {
+        tempThread->getQueueOfWhichIsPart()->removeElement(tempThread);
+    }
+    else if (tempThread->getStateOfThread() == KernelConfig::ASLEEP)
+    {
+        queueOfAsleepThreads->removeElement(tempThread);
+    }
+
     tempThread->resetQueueOfWhichIsPart();
     tempThread->resetNextThreadInQueue();
+    return 0;
 }
 uint64 Kernel::sysSemaphoreOpen(ArgumentsOfSystemCall *arg)
 {
@@ -367,8 +376,7 @@ uint64 Kernel::sysTimeSleep(ArgumentsOfSystemCall *arg)
     TCB* oldThread = TCB::getRunningThread();
     oldThread->resetNextThreadInQueue();
     oldThread->setTimeToSleep((size_t)arg->a0);
-    oldThread->setStateOfThread(KernelConfig::BLOCKED);
-    oldThread->setQueueOfWhichIsPart(queueOfAsleepThreads);
+    oldThread->setStateOfThread(KernelConfig::ASLEEP);
     queueOfAsleepThreads->append(oldThread);
     TCB::setRunningThread(Scheduler::get());
     context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());

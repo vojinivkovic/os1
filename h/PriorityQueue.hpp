@@ -15,6 +15,7 @@ public:
     explicit PriorityQueue(Compare c) : cmp(c) {}
 
     void append(T* newElement);
+    void removeElement(T* element);
     T* take();
     T* top();
     static void* operator new(size_t size);
@@ -24,6 +25,32 @@ private:
     Compare cmp;
 };
 
+template<typename T, typename Compare>
+void PriorityQueue<T, Compare>::removeElement(T *element)
+{
+    T* prev = nullptr, *curr = head;
+    while(element != curr && curr)
+    {
+        prev = curr;
+        curr = curr->getNextElementInQueue();
+    }
+    if(!prev)
+    {
+        head = head->getNextElementInQueue();
+        if(!head)
+        {
+            tail = nullptr;
+        }
+    }
+    else
+    {
+        prev->addElementToQueue(element->getNextElementInQueue());
+        if(element == tail)
+        {
+            tail = prev;
+        }
+    }
+}
 template<typename T, typename Compare>
 void PriorityQueue<T, Compare>::append(T *newElement)
 {
@@ -53,6 +80,7 @@ void PriorityQueue<T, Compare>::append(T *newElement)
         curr->setTimeToSleep(curr->getTimeToSleep() - newElement->getTimeToSleep());
     }
 }
+
 template<typename T, typename Compare>
 T* PriorityQueue<T, Compare>::take()
 {

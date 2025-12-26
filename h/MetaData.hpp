@@ -20,6 +20,6 @@ typedef struct OccupiedBlock
     size_t numOfBlocks;
 } OccupiedBlock;
 
-size_t getSizeOfMetaData() { return sizeof(OccupiedBlock); }
+inline size_t getSizeOfMetaData() { return sizeof(OccupiedBlock); }
 
 #endif //PROJECT_BASE_V1_1_METADATA_H

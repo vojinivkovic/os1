@@ -22,6 +22,7 @@ namespace KernelConfig
         BLOCKED,
         FINISHED,
         RUNNING,
+        ASLEEP,
         TERMINATED
     };
 
