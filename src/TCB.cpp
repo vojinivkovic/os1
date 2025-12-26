@@ -32,7 +32,7 @@ void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, v
 
     context = {Machine::readSscratch(), (uint64) ((uint64*)allocatedSystemStack - 32), mode};
     Machine::writeSepc((uint64)&threadWrapper);
-    if(stateOfThread == KernelConfig::ACTIVE)
+    if(stateOfThread == KernelConfig::READY)
     {
         Scheduler::put(this);
     }

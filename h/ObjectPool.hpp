@@ -6,6 +6,7 @@
 #define PROJECT_BASE_V1_1_OBJECTPOOL_H
 #include "../lib/hw.h"
 #include "MemoryAllocator.hpp"
+#include "MetaData.hpp"
 
 
 template <typename T, size_t numOfObjects>
@@ -55,7 +56,8 @@ private:
 template<typename T, size_t numOfObjects>
 void* ObjectPool<T, numOfObjects>::operator new(size_t size)
 {
-    size_t correctedSize = (size + MemoryAllocator::getSizeOfMetaData());
+    //size_t correctedSize = (size + MemoryAllocator::getSizeOfMetaData());
+    size_t correctedSize = size + getSizeOfMetaData();
     size_t numOfBlocks = correctedSize / MEM_BLOCK_SIZE;
     numOfBlocks += correctedSize % MEM_BLOCK_SIZE ? 1 : 0;
     return MemoryAllocator::allocateMemory(numOfBlocks);

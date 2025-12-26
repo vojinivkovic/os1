@@ -16,6 +16,7 @@ ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* Kernel::poolOfThreads = n
 ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* Kernel::poolOfSemaphores = new ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>();
 PriorityQueue<TCB, decltype(cmp)>* Kernel::queueOfAsleepThreads = new PriorityQueue<TCB, decltype(cmp)>(cmp);
 Queue<KSemaphore>* Kernel::queueOfOpenedSemaphores = new Queue<KSemaphore>();
+
 void Kernel::makeConsumerThread()
 {
     void* kernelSystemStack = Kernel::mallocSystemStack(KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
@@ -98,7 +99,8 @@ void Kernel::initializeArguments(Kernel::ArgumentsOfSystemCall* arg, uint64 base
 
 void* Kernel::mallocSystemStack(size_t numOfBytes)
 {
-    size_t correctedSize = numOfBytes + MemoryAllocator::getSizeOfMetaData();
+    //size_t correctedSize = numOfBytes + MemoryAllocator::getSizeOfMetaData();
+    size_t correctedSize = numOfBytes + getSizeOfMetaData();
     size_t numOfBlocks = correctedSize / MEM_BLOCK_SIZE;
     numOfBlocks += correctedSize % MEM_BLOCK_SIZE ? 1 : 0;
     uint8* systemStack = (uint8*)MemoryAllocator::allocateMemory(numOfBlocks);

@@ -1,4 +1,4 @@
-GAS LISTING /tmp/cc7P0inJ.s 			page 1
+GAS LISTING /tmp/ccSAfTlC.s 			page 1
 
 
    1              		.file	"ObjectPool.cpp"
@@ -6,36 +6,102 @@ GAS LISTING /tmp/cc7P0inJ.s 			page 1
    3              		.option norelax
    4              		.text
    5              	.Ltext0:
-   6              	.Letext0:
-   7              		.file 1 "src/../h/../lib/hw.h"
-GAS LISTING /tmp/cc7P0inJ.s 			page 2
+   6              		.align	2
+   7              		.globl	_Z17getSizeOfMetaDatav
+   9              	_Z17getSizeOfMetaDatav:
+  10              	.LFB0:
+  11              		.file 1 "src/../h/MetaData.hpp"
+   1:src/../h/MetaData.hpp **** //
+   2:src/../h/MetaData.hpp **** // Created by os on 12/26/25.
+   3:src/../h/MetaData.hpp **** //
+   4:src/../h/MetaData.hpp **** 
+   5:src/../h/MetaData.hpp **** #ifndef PROJECT_BASE_V1_1_METADATA_H
+   6:src/../h/MetaData.hpp **** #define PROJECT_BASE_V1_1_METADATA_H
+   7:src/../h/MetaData.hpp **** #include "../lib/hw.h"
+   8:src/../h/MetaData.hpp **** 
+   9:src/../h/MetaData.hpp **** typedef struct FreeBlock
+  10:src/../h/MetaData.hpp **** {
+  11:src/../h/MetaData.hpp ****     bool flagFree;
+  12:src/../h/MetaData.hpp ****     size_t numOfBlocks;
+  13:src/../h/MetaData.hpp ****     FreeBlock *nextBlock;
+  14:src/../h/MetaData.hpp ****     FreeBlock *previousBlock;
+  15:src/../h/MetaData.hpp **** } FreeBlock;
+  16:src/../h/MetaData.hpp **** 
+  17:src/../h/MetaData.hpp **** typedef struct OccupiedBlock
+  18:src/../h/MetaData.hpp **** {
+  19:src/../h/MetaData.hpp ****     bool flagFree;
+  20:src/../h/MetaData.hpp ****     size_t numOfBlocks;
+  21:src/../h/MetaData.hpp **** } OccupiedBlock;
+  22:src/../h/MetaData.hpp **** 
+  23:src/../h/MetaData.hpp **** size_t getSizeOfMetaData() { return sizeof(OccupiedBlock); }
+  12              		.loc 1 23 28
+  13              		.cfi_startproc
+  14 0000 130101FF 		addi	sp,sp,-16
+  15              		.cfi_def_cfa_offset 16
+  16 0004 23348100 		sd	s0,8(sp)
+  17              		.cfi_offset 8, -8
+  18 0008 13040101 		addi	s0,sp,16
+  19              		.cfi_def_cfa 8, 0
+  20              		.loc 1 23 30
+  21              		.loc 1 23 60 is_stmt 0
+  22 000c 13050001 		li	a0,16
+  23 0010 03348100 		ld	s0,8(sp)
+  24              		.cfi_restore 8
+  25              		.cfi_def_cfa 2, 16
+  26 0014 13010101 		addi	sp,sp,16
+  27              		.cfi_def_cfa_offset 0
+  28 0018 67800000 		jr	ra
+  29              		.cfi_endproc
+  30              	.LFE0:
+  32              	.Letext0:
+  33              		.file 2 "src/../h/../lib/hw.h"
+GAS LISTING /tmp/ccSAfTlC.s 			page 2
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 ObjectPool.cpp
-     /tmp/cc7P0inJ.s:138    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
-     /tmp/cc7P0inJ.s:303    .debug_str:00000000000000ab .LASF18
-     /tmp/cc7P0inJ.s:315    .debug_str:00000000000001d5 .LASF19
-     /tmp/cc7P0inJ.s:313    .debug_str:00000000000001b2 .LASF20
-     /tmp/cc7P0inJ.s:277    .debug_line:0000000000000000 .Ldebug_line0
-     /tmp/cc7P0inJ.s:305    .debug_str:000000000000016f .LASF0
-     /tmp/cc7P0inJ.s:299    .debug_str:000000000000008c .LASF1
-     /tmp/cc7P0inJ.s:295    .debug_str:000000000000006c .LASF2
-     /tmp/cc7P0inJ.s:285    .debug_str:0000000000000028 .LASF4
-     /tmp/cc7P0inJ.s:297    .debug_str:000000000000007a .LASF3
-     /tmp/cc7P0inJ.s:281    .debug_str:0000000000000013 .LASF5
-     /tmp/cc7P0inJ.s:279    .debug_str:0000000000000000 .LASF6
-     /tmp/cc7P0inJ.s:291    .debug_str:000000000000004a .LASF7
-     /tmp/cc7P0inJ.s:307    .debug_str:000000000000017c .LASF8
-     /tmp/cc7P0inJ.s:283    .debug_str:000000000000001a .LASF9
-     /tmp/cc7P0inJ.s:319    .debug_str:00000000000001f8 .LASF10
-     /tmp/cc7P0inJ.s:293    .debug_str:000000000000005d .LASF11
-     /tmp/cc7P0inJ.s:317    .debug_str:00000000000001e8 .LASF12
-     /tmp/cc7P0inJ.s:311    .debug_str:00000000000001a2 .LASF13
-     /tmp/cc7P0inJ.s:301    .debug_str:000000000000009f .LASF14
-     /tmp/cc7P0inJ.s:289    .debug_str:0000000000000034 .LASF15
-     /tmp/cc7P0inJ.s:309    .debug_str:000000000000018c .LASF16
-     /tmp/cc7P0inJ.s:287    .debug_str:000000000000002f .LASF17
-     /tmp/cc7P0inJ.s:9      .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/ccSAfTlC.s:9      .text:0000000000000000 _Z17getSizeOfMetaDatav
+     /tmp/ccSAfTlC.s:13     .text:0000000000000000 .L0 
+     /tmp/ccSAfTlC.s:14     .text:0000000000000000 .L0 
+     /tmp/ccSAfTlC.s:15     .text:0000000000000004 .L0 
+     /tmp/ccSAfTlC.s:17     .text:0000000000000008 .L0 
+     /tmp/ccSAfTlC.s:19     .text:000000000000000c .L0 
+     /tmp/ccSAfTlC.s:21     .text:000000000000000c .L0 
+     /tmp/ccSAfTlC.s:22     .text:000000000000000c .L0 
+     /tmp/ccSAfTlC.s:24     .text:0000000000000014 .L0 
+     /tmp/ccSAfTlC.s:25     .text:0000000000000014 .L0 
+     /tmp/ccSAfTlC.s:27     .text:0000000000000018 .L0 
+     /tmp/ccSAfTlC.s:29     .text:000000000000001c .L0 
+     /tmp/ccSAfTlC.s:34     .text:000000000000001c .L0 
+     /tmp/ccSAfTlC.s:177    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccSAfTlC.s:379    .debug_str:00000000000000d4 .LASF18
+     /tmp/ccSAfTlC.s:391    .debug_str:00000000000001fe .LASF19
+     /tmp/ccSAfTlC.s:389    .debug_str:00000000000001db .LASF20
+     /tmp/ccSAfTlC.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccSAfTlC.s:32     .text:000000000000001c .Letext0
+     /tmp/ccSAfTlC.s:349    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccSAfTlC.s:381    .debug_str:0000000000000198 .LASF0
+     /tmp/ccSAfTlC.s:371    .debug_str:000000000000008c .LASF1
+     /tmp/ccSAfTlC.s:367    .debug_str:000000000000006c .LASF2
+     /tmp/ccSAfTlC.s:357    .debug_str:0000000000000028 .LASF4
+     /tmp/ccSAfTlC.s:369    .debug_str:000000000000007a .LASF3
+     /tmp/ccSAfTlC.s:353    .debug_str:0000000000000013 .LASF5
+     /tmp/ccSAfTlC.s:351    .debug_str:0000000000000000 .LASF6
+     /tmp/ccSAfTlC.s:363    .debug_str:000000000000004a .LASF7
+     /tmp/ccSAfTlC.s:383    .debug_str:00000000000001a5 .LASF8
+     /tmp/ccSAfTlC.s:355    .debug_str:000000000000001a .LASF9
+     /tmp/ccSAfTlC.s:395    .debug_str:0000000000000221 .LASF10
+     /tmp/ccSAfTlC.s:365    .debug_str:000000000000005d .LASF11
+     /tmp/ccSAfTlC.s:393    .debug_str:0000000000000211 .LASF12
+     /tmp/ccSAfTlC.s:387    .debug_str:00000000000001cb .LASF13
+     /tmp/ccSAfTlC.s:373    .debug_str:000000000000009f .LASF14
+     /tmp/ccSAfTlC.s:361    .debug_str:0000000000000034 .LASF15
+     /tmp/ccSAfTlC.s:385    .debug_str:00000000000001b5 .LASF16
+     /tmp/ccSAfTlC.s:359    .debug_str:000000000000002f .LASF17
+     /tmp/ccSAfTlC.s:375    .debug_str:00000000000000ab .LASF21
+     /tmp/ccSAfTlC.s:377    .debug_str:00000000000000bd .LASF22
+     /tmp/ccSAfTlC.s:10     .text:0000000000000000 .LFB0
+     /tmp/ccSAfTlC.s:30     .text:000000000000001c .LFE0
+     /tmp/ccSAfTlC.s:35     .debug_info:0000000000000000 .Ldebug_info0
 
 NO UNDEFINED SYMBOLS

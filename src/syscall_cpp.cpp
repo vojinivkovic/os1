@@ -25,9 +25,9 @@ int Thread::sleep(time_t time)
     return time_sleep(time);
 }
 
-Thread::Thread(void (*body)(void *), void *arg): body(body), arg(arg), myHandle(nullptr)
+Thread::Thread(void (*body)(void *), void *arg): myHandle(nullptr), body(body), arg(arg)
 {
-    if(thread_create(&myHandle, body, arg))
+    if(thread_create(&myHandle, this->body, this->arg))
     {
        myHandle = nullptr;
     }
@@ -49,7 +49,7 @@ int Thread::start()
 
 }
 
-Thread::Thread(): body(nullptr), arg(nullptr), myHandle(nullptr)
+Thread::Thread(): myHandle(nullptr), body(nullptr), arg(nullptr)
 {
     if(thread_create(&myHandle, &(Thread::wrapperRun), this))
     {
@@ -62,7 +62,7 @@ void PeriodicThread::wrapperPeriodicThread(void * thread)
     while(1)
     {
         tempThread->periodicActivation();
-        time_sleep(period);
+        time_sleep(tempThread->period);
     }
 }
 PeriodicThread::PeriodicThread(time_t period) : Thread(&(PeriodicThread::wrapperPeriodicThread), this),
@@ -86,10 +86,7 @@ int Semaphore::wait()
 {
     return sem_wait(myHandle);
 }
-int Semaphore::close()
-{
-    return sem_close(myHandle);
-}
+
 
 char Console::getc()
 {

@@ -7,7 +7,7 @@
 uint8 MemoryAllocator::flagSystemInitialize = 0;
 size_t MemoryAllocator::NUM_OF_BLOCKS = 0;
 size_t MemoryAllocator::numOfFreeBlocks = 0;
-MemoryAllocator::FreeBlock* MemoryAllocator::firstFreeBlock = nullptr;
+FreeBlock* MemoryAllocator::firstFreeBlock = nullptr;
 
 void MemoryAllocator::initializeMemory()
 {
@@ -115,7 +115,7 @@ void MemoryAllocator::remapMemory(FreeBlock **head, FreeBlock *allocatedBlocks, 
     }
 
 }
-MemoryAllocator::FreeBlock* MemoryAllocator::findNextFreeBlock(FreeBlock* memoryToFree)
+FreeBlock* MemoryAllocator::findNextFreeBlock(FreeBlock* memoryToFree)
 {
     for(uint8* i = (uint8*)memoryToFree; i + MEM_BLOCK_SIZE <= (uint8*)HEAP_END_ADDR; i+= (((OccupiedBlock*)i)->numOfBlocks * MEM_BLOCK_SIZE))
     {
@@ -127,7 +127,7 @@ MemoryAllocator::FreeBlock* MemoryAllocator::findNextFreeBlock(FreeBlock* memory
     return nullptr;
 }
 
-MemoryAllocator::FreeBlock* MemoryAllocator::findPreviousFreeBlock(FreeBlock* head, FreeBlock* memoryToFree)
+FreeBlock* MemoryAllocator::findPreviousFreeBlock(FreeBlock* head, FreeBlock* memoryToFree)
 {
     FreeBlock* temp = head;
     for(; temp && temp <= memoryToFree; temp = temp->nextBlock){}
@@ -225,7 +225,7 @@ size_t MemoryAllocator::getFreeSpace()
     return numOfFreeBlocks * MEM_BLOCK_SIZE;
 }
 
-size_t MemoryAllocator::getSizeOfMetaData()
-{
-    return sizeof(OccupiedBlock);
-}
+//size_t MemoryAllocator::getSizeOfMetaData()
+//{
+//    return sizeof(OccupiedBlock);
+//}

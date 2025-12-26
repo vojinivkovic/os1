@@ -3,8 +3,8 @@
 //
 
 #include "../h/syscall_c.hpp"
-#include "../h/MemoryAllocator.hpp"
 #include "../h/Config.hpp"
+#include "../h/MetaData.hpp"
 
 
 typedef struct Arguments
@@ -18,7 +18,8 @@ extern "C" uint64 system_call(Arguments* arg);
 
 void* mem_alloc(size_t size)
 {
-    size_t correctedSize = size + MemoryAllocator::getSizeOfMetaData();
+    //size_t correctedSize = size + MemoryAllocator::getSizeOfMetaData();
+    size_t correctedSize = size + getSizeOfMetaData();
     uint64 size_of_blocks = correctedSize / MEM_BLOCK_SIZE;
     size_of_blocks += correctedSize % MEM_BLOCK_SIZE ? 1: 0;
     Arguments arg = {KernelConfig::MEM_ALLOC, size_of_blocks, 0, 0, 0, 0, 0, 0};
@@ -68,7 +69,7 @@ int thread_exit()
 int thread_start(thread_t handle)
 {
     Arguments arg = {KernelConfig::THREAD_START,(uint64)handle, 0, 0, 0, 0, 0, 0};
-    system_call(&arg);
+    return (uint64)system_call(&arg);
 }
 
 void thread_join(thread_t handle)

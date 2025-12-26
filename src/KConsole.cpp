@@ -40,7 +40,7 @@ void KConsole::removeThreadFromInputWaitQueue()
     if(oldThread)
     {
         oldThread->resetNextThreadInQueue();
-        thread->setStateOfThread(KernelConfig::READY);
+        oldThread->setStateOfThread(KernelConfig::READY);
         Scheduler::put(oldThread);
     }
 }
@@ -51,7 +51,7 @@ void KConsole::removeThreadFromOutputWaitQueue()
     if(oldThread)
     {
         oldThread->resetNextThreadInQueue();
-        thread->setStateOfThread(KernelConfig::READY);
+        oldThread->setStateOfThread(KernelConfig::READY);
         Scheduler::put(oldThread);
     }
 }

@@ -6,6 +6,7 @@
 #define PROJECT_BASE_V1_1_KERNEL_H
 #include "Machine.hpp"
 #include "MemoryAllocator.hpp"
+#include "MetaData.hpp"
 #include "Config.hpp"
 #include "ObjectPool.hpp"
 #include "PriorityQueue.hpp"

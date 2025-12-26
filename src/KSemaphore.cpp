@@ -87,7 +87,7 @@ int KSemaphore::close()
     {
         return 0;
     }
-    for(;tempThread; tempThread = tempThread->getNextThreadInQueue())
+    for(;tempThread; tempThread = tempThread->getNextElementInQueue())
     {
         unblockThread(KernelConfig::WAKE_UP_SEMAPHORE_CLOSE);
     }

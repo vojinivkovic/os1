@@ -45,7 +45,7 @@ public:
     void* getSystemStack() const { return systemStack; }
     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* getSourcePool() { return sourcePool; }
 
-    Queue<TCB*> getWaitQueue() const { return queueOfWaitThreads; }
+    Queue<TCB>* getWaitQueue() { return queueOfWaitThreads; }
     Queue<TCB>* getQueueOfWhichIsPart() const { return queueOfWhichIsPart; }
     void setQueueOfWhichIsPart(Queue<TCB>* queue) { queueOfWhichIsPart = queue; }
     void resetQueueOfWhichIsPart() { queueOfWhichIsPart = nullptr; }

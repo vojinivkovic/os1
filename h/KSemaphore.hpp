@@ -21,7 +21,7 @@ public:
     int signal();
 	int close();
 	void addElementToQueue(KSemaphore* newSemaphore) { nextSemaphoreInQueue = newSemaphore; }
-	TCB* getNextElementInQueue() const { return nextSemaphoreInQueue; }
+	KSemaphore* getNextElementInQueue() const { return nextSemaphoreInQueue; }
 	void resetNextSemaphoreInQueue() { nextSemaphoreInQueue = nullptr; }
 	uint64 getID() const { return semId; }
 private:

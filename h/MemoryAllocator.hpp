@@ -6,7 +6,7 @@
 #define PROJECT_BASE_V1_1_MEMORYALLOCATOR_HPP
 
 #include "../lib/hw.h"
-
+#include "MetaData.hpp"
 
 
 
@@ -24,21 +24,21 @@ public:
     static int freeMemory(void* addressToFree);
     static size_t getLargestFreeBlock();
     static size_t getFreeSpace();
-    static size_t getSizeOfMetaData();
+    //static size_t getSizeOfMetaData();
 private:
-    typedef struct FreeBlock
-    {
-        bool flagFree;
-        size_t numOfBlocks;
-        FreeBlock *nextBlock;
-        FreeBlock *previousBlock;
-    } FreeBlock;
-    
-    typedef struct OccupiedBlock
-    {
-        bool flagFree;
-        size_t numOfBlocks;
-    } OccupiedBlock;
+//    typedef struct FreeBlock
+//    {
+//        bool flagFree;
+//        size_t numOfBlocks;
+//        FreeBlock *nextBlock;
+//        FreeBlock *previousBlock;
+//    } FreeBlock;
+//
+//    typedef struct OccupiedBlock
+//    {
+//        bool flagFree;
+//        size_t numOfBlocks;
+//    } OccupiedBlock;
 
 
 
