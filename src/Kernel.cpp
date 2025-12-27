@@ -99,7 +99,6 @@ void Kernel::initializeArguments(Kernel::ArgumentsOfSystemCall* arg, uint64 base
 
 void* Kernel::mallocSystemStack(size_t numOfBytes)
 {
-    //size_t correctedSize = numOfBytes + MemoryAllocator::getSizeOfMetaData();
     size_t correctedSize = numOfBytes + getSizeOfMetaData();
     size_t numOfBlocks = correctedSize / MEM_BLOCK_SIZE;
     numOfBlocks += correctedSize % MEM_BLOCK_SIZE ? 1 : 0;
@@ -242,8 +241,13 @@ uint64 Kernel::sysThreadCreate(Kernel::ArgumentsOfSystemCall *arg)
     {
         return -1;
     }
-    __asm__ volatile("sd %[ptrThread], 0(%[handle])"::[ptrThread]"r"(newThread), [handle]"r"(arg->a0));
     void* kernelSystemStack = Kernel::mallocSystemStack(KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
+    if(!kernelSystemStack)
+    {
+        return -1;
+    }
+    __asm__ volatile("sd %[ptrThread], 0(%[handle])"::[ptrThread]"r"(newThread), [handle]"r"(arg->a0));
+
     newThread->initializeThread((TCB::Body) arg->a1, (void*)arg->a2, (void*)arg->a3, kernelSystemStack, sourcePool);
     return 0;
 }
@@ -254,23 +258,30 @@ uint64 Kernel::sysThreadDispatch(Kernel::ArgumentsOfSystemCall *arg)
 }
 uint64 Kernel::sysThreadExit(Kernel::ArgumentsOfSystemCall *arg)
 {
-
-    TCB::getRunningThread()->setIsFinished();
-    TCB::getRunningThread()->setStateOfThread(KernelConfig::FINISHED);
-    if(!TCB::getRunningThread()->getSemaphoreOnWait())
-    {
-        KSemaphore* tempSemaphore = TCB::getRunningThread()->getSemaphoreOnWait();
-        tempSemaphore->removeThreadFromBlockedQueue(TCB::getRunningThread());
-    }
     TCB* oldThread = TCB::getRunningThread();
+    oldThread->setIsFinished();
+    oldThread->setStateOfThread(KernelConfig::FINISHED);
+
+    // da li ce ovaj uslov biti ikada ispunjen??
+//    if(!TCB::getRunningThread()->getSemaphoreOnWait())
+//    {
+//        KSemaphore* tempSemaphore = TCB::getRunningThread()->getSemaphoreOnWait();
+//        tempSemaphore->removeThreadFromBlockedQueue(TCB::getRunningThread());
+//    }
+
     oldThread->freeWaitThreads();
-    oldThread->resetQueueOfWhichIsPart();
-    oldThread->resetNextThreadInQueue();
+//    oldThread->resetQueueOfWhichIsPart();
+//    oldThread->resetNextThreadInQueue();
     return 0;
 }
 uint64 Kernel::sysThreadStart(ArgumentsOfSystemCall *arg)
 {
     TCB* tempThread = (TCB*)(arg->a0);
+    if(!tempThread)
+    {
+        return -1;
+    }
+
     if(tempThread->getStateOfThread() == KernelConfig::TERMINATED)
     {
         return -1;
@@ -289,7 +300,7 @@ uint64 Kernel::sysThreadJoin(ArgumentsOfSystemCall *arg)
         oldThread->setStateOfThread(KernelConfig::BLOCKED);
         oldThread->setQueueOfWhichIsPart(tempThread->getWaitQueue());
         tempThread->addThreadToWaitQueue(oldThread);
-        TCB::TCB::setRunningThread(Scheduler::get());
+        TCB::setRunningThread(Scheduler::get());
         context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
 
     }
@@ -329,7 +340,6 @@ uint64 Kernel::sysSemaphoreOpen(ArgumentsOfSystemCall *arg)
     {
         return -1;
     }
-
     newSemaphore->initializeSemaphore((unsigned)arg->a1, sourcePool);
     queueOfOpenedSemaphores->append(newSemaphore);
     __asm__ volatile("sd %[semaphoreHandle], 0(%[handle])"::[semaphoreHandle]"r"(newSemaphore->getID()), [handle]"r"(arg->a0));
@@ -346,8 +356,10 @@ uint64 Kernel::sysSemaphoreClose(ArgumentsOfSystemCall *arg)
     }
     returnValue = (uint64)tempSemaphore->close();
     queueOfOpenedSemaphores->removeElement(tempSemaphore);
-    Kernel::poolOfSemaphores->freeObject(tempSemaphore);
+    tempSemaphore->resetNextSemaphoreInQueue();
     delete tempSemaphore;
+    Kernel::poolOfSemaphores->freeObject(tempSemaphore);
+
     return returnValue;
 }
 

@@ -18,7 +18,6 @@ extern "C" uint64 system_call(Arguments* arg);
 
 void* mem_alloc(size_t size)
 {
-    //size_t correctedSize = size + MemoryAllocator::getSizeOfMetaData();
     size_t correctedSize = size + getSizeOfMetaData();
     uint64 size_of_blocks = correctedSize / MEM_BLOCK_SIZE;
     size_of_blocks += correctedSize % MEM_BLOCK_SIZE ? 1: 0;
