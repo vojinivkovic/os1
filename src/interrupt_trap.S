@@ -7,13 +7,14 @@ interrupt_trap:
     sd t0, 8(sp)
 
     csrr t0, sstatus
-    andi t0, t0, 0x10
+    andi t0, t0, 0x100
     bne t0, x0, system_stack
 
-    addi t0, sp, 0
+
     csrr sp, sscratch
 
-system_stack:    addi sp, sp, -256
+system_stack:    addi t0, sp, 0
+    addi sp, sp, -256
 
     sd x0, 0 * 8(sp)
     sd x1, 1 * 8(sp)
@@ -35,7 +36,7 @@ system_stack:    addi sp, sp, -256
     ld x1, 1 * 8(sp)
     ld t0, 2 * 8(sp)
     .irp index,  3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
-    sd x\index, \index * 8(sp)
+    ld x\index, \index * 8(sp)
     .endr
 
     addi sp, sp, 256

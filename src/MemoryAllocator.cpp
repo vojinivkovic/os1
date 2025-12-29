@@ -21,7 +21,7 @@ void MemoryAllocator::initialize()
     firstFreeBlock->numOfBlocks = NUM_OF_BLOCKS;
     firstFreeBlock->nextBlock = nullptr;
     firstFreeBlock->previousBlock = nullptr;
-    flagSystemInitialize = 1;
+    //flagSystemInitialize = 1;
 }
 
 void* MemoryAllocator::allocateMemory(size_t blocksToAllocate)

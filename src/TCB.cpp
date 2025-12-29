@@ -29,9 +29,16 @@ void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, v
     systemStack = (void*)((uint8*)allocatedSystemStack - KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
 
     *((uint64*)allocatedSystemStack - 30) = (uint64)((uint64*)allocatedStack - 2);
+    if(mode == KernelConfig::USER_MODE)
+    {
+        context = {Machine::readSscratch(), (uint64) ((uint64 *) allocatedSystemStack - 32), mode};
+        Machine::writeSepc((uint64) &threadWrapper);
+    }
+    else
+    {
+        context = {(uint64)&threadWrapper, (uint64) ((uint64 *) allocatedSystemStack - 32), mode};
+    }
 
-    context = {Machine::readSscratch(), (uint64) ((uint64*)allocatedSystemStack - 32), mode};
-    Machine::writeSepc((uint64)&threadWrapper);
     if(stateOfThread == KernelConfig::READY)
     {
         Scheduler::put(this);
@@ -51,7 +58,7 @@ void TCB::yield(TCB *oldThread, TCB *newThread)
 void TCB::dispatch()
 {
     TCB* oldThread = running;
-    if(!oldThread->isFinished())
+    if(!oldThread->isFinished() )
     {
         oldThread->setStateOfThread(KernelConfig::READY);
         Scheduler::put(oldThread);

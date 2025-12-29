@@ -10,12 +10,14 @@
 
 extern "C" void interrupt_trap(void);
 extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
+void userMain();
 
 uint64 (*Kernel::systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(Kernel::ArgumentsOfSystemCall* arg) = {nullptr};
 ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* Kernel::poolOfThreads = nullptr;
 ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* Kernel::poolOfSemaphores = nullptr;
 PriorityQueue<TCB, decltype(cmp)>* Kernel::queueOfAsleepThreads = nullptr;
-Queue<KSemaphore>* Kernel::queueOfOpenedSemaphores = new Queue<KSemaphore>();
+Queue<KSemaphore>* Kernel::queueOfOpenedSemaphores = nullptr;
+TCB* Kernel::demonThread = nullptr;
 
 void Kernel::makeConsumerThread()
 {
@@ -42,17 +44,17 @@ void Kernel::makeProducerThread()
     producerThread->initializeThread(&KConsole::produceInputBuffer, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::BLOCKED, KernelConfig::KERNEL_MODE);
     KConsole::setProducerThread(producerThread);
 }
-void Kernel::makeIdleThread()
+void Kernel::makeDemonThread()
 {
     void* kernelSystemStack = Kernel::mallocSystemStack(KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
-    TCB* idleThread = poolOfThreads->mallocObject(&sourcePool);
-    while(!idleThread)
+    demonThread = poolOfThreads->mallocObject(&sourcePool);
+    while(!demonThread)
     {
-        idleThread = poolOfThreads->mallocObject(&sourcePool);
+        demonThread = poolOfThreads->mallocObject(&sourcePool);
     }
-    idleThread->initializeThread(&kernelWorker, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::BLOCKED, KernelConfig::KERNEL_MODE);
-    Scheduler::setIdleThread(idleThread);
+    demonThread->initializeThread(&kernelWorker, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::READY, KernelConfig::KERNEL_MODE);
+    Scheduler::setIdleThread(demonThread);
 }
 void Kernel::initializeKernelThreads(void)
 {
@@ -63,6 +65,8 @@ void Kernel::initializeKernelThreads(void)
 
 void Kernel::initializeKernel()
 {
+    MemoryAllocator::initialize();
+
     Kernel::setInterruptRoutine(&interrupt_trap);
     poolOfThreads = new ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>();
     poolOfSemaphores = new ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>();
@@ -70,7 +74,6 @@ void Kernel::initializeKernel()
     queueOfOpenedSemaphores = new Queue<KSemaphore>();
 
     KConsole::initialize();
-    MemoryAllocator::initialize();
     Scheduler::initialize();
 
     while(!poolOfThreads)
@@ -130,7 +133,7 @@ void Kernel::wakeUpThreads()
 void Kernel::interruptHandler()
 {
     volatile uint64 basePointer;
-    __asm__ volatile ("addi %[reg], s0, 0x0": [reg]"=r"(basePointer)); // Problem: da li mozemo biti 100% sigurni da ce s0 biti nepromenjen; resenje inline f-ja
+    __asm__ volatile ("addi %[reg], %[src], 0x0": [reg]"=r"(basePointer):[src]"r"(s0)); // Problem: da li mozemo biti 100% sigurni da ce s0 biti nepromenjen; resenje inline f-ja
     uint64 scause = Machine::readScause();
     switch (scause)
     {
@@ -217,15 +220,41 @@ void Kernel::interruptHandler()
     }
 
 }
-
+void Kernel::userWorker(void *)
+{
+    userMain();
+}
 void Kernel::kernelWorker(void*)
 {
+    void* kernelSystemStack = Kernel::mallocSystemStack(KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
+
+    size_t correctedSize = DEFAULT_STACK_SIZE + getSizeOfMetaData();
+    size_t numOfBlocks = correctedSize / MEM_BLOCK_SIZE;
+    numOfBlocks += correctedSize % MEM_BLOCK_SIZE ? 1 : 0;
+    uint8* systemStack = (uint8*)MemoryAllocator::allocateMemory(numOfBlocks);
+
+    return (void*)(&systemStack[KernelConfig::DEFAULT_SYSTEM_STACK_SIZE]);
+    ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
+    TCB* userThread = poolOfThreads->mallocObject(&sourcePool);
+
+    while(!userThread)
+    {
+        userThread = poolOfThreads->mallocObject(&sourcePool);
+    }
+    userThread->initializeThread(&userWorker, nullptr, &(systemStack[DEFAULT_STACK_SIZE]), kernelSystemStack, sourcePool, KernelConfig::BLOCKED, KernelConfig::USER_MODE);
+    //Scheduler::setIdleThread(demonThread);
+    TCB::start(userThread);
+    TCB::dispatch();
     while(1)
     {
 
     }
 }
+void Kernel::startExecution()
+{
+    TCB::setRunningThread(demonThread);
 
+}
 uint64 Kernel::sysMalloc(Kernel::ArgumentsOfSystemCall *arg)
 {
     return (uint64)MemoryAllocator::allocateMemory(arg->a0);

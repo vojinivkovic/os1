@@ -58,10 +58,12 @@ private:
 
 
     static void initializeKernelThreads(void);
-    static void makeIdleThread(void);
+    static void makeDemonThread(void);
     static void makeConsumerThread(void);
     static void makeProducerThread(void);
     static void kernelWorker(void*);
+    static void userWorker(void*);
+    static void startExecution();
 
     static void destroy();
     static uint64 (*systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(ArgumentsOfSystemCall* arg);
@@ -75,6 +77,7 @@ private:
     static ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* poolOfSemaphores;
     static PriorityQueue<TCB, decltype(cmp)>* queueOfAsleepThreads;
     static Queue<KSemaphore>* queueOfOpenedSemaphores;
+    static TCB* demonThread;
 
 
 };
