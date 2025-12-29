@@ -86,7 +86,10 @@ int Semaphore::wait()
 {
     return sem_wait(myHandle);
 }
-
+int Semaphore::signal()
+{
+    return sem_signal(myHandle);
+}
 
 char Console::getc()
 {

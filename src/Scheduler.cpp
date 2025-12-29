@@ -7,9 +7,12 @@
 #include "../h/Config.hpp"
 //TCB* Scheduler::headReadyThread = nullptr;
 //TCB* Scheduler::tailReadyThread = nullptr;
-Queue<TCB>* Scheduler::queueReadyThreads = new Queue<TCB>();
+Queue<TCB>* Scheduler::queueReadyThreads = nullptr;
 TCB* Scheduler::idleThread = nullptr;
-
+void Scheduler::initialize()
+{
+    queueReadyThreads = new Queue<TCB>();
+}
 void Scheduler::put(TCB *readyThread)
 {
     readyThread->setQueueOfWhichIsPart(queueReadyThreads);

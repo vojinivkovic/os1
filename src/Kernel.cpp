@@ -12,9 +12,9 @@ extern "C" void interrupt_trap(void);
 extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
 
 uint64 (*Kernel::systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(Kernel::ArgumentsOfSystemCall* arg) = {nullptr};
-ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* Kernel::poolOfThreads = new ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>();
-ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* Kernel::poolOfSemaphores = new ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>();
-PriorityQueue<TCB, decltype(cmp)>* Kernel::queueOfAsleepThreads = new PriorityQueue<TCB, decltype(cmp)>(cmp);
+ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* Kernel::poolOfThreads = nullptr;
+ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* Kernel::poolOfSemaphores = nullptr;
+PriorityQueue<TCB, decltype(cmp)>* Kernel::queueOfAsleepThreads = nullptr;
 Queue<KSemaphore>* Kernel::queueOfOpenedSemaphores = new Queue<KSemaphore>();
 
 void Kernel::makeConsumerThread()
@@ -64,6 +64,15 @@ void Kernel::initializeKernelThreads(void)
 void Kernel::initializeKernel()
 {
     Kernel::setInterruptRoutine(&interrupt_trap);
+    poolOfThreads = new ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>();
+    poolOfSemaphores = new ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>();
+    queueOfAsleepThreads = new PriorityQueue<TCB, decltype(cmp)>(cmp);
+    queueOfOpenedSemaphores = new Queue<KSemaphore>();
+
+    KConsole::initialize();
+    MemoryAllocator::initialize();
+    Scheduler::initialize();
+
     while(!poolOfThreads)
     {
      poolOfThreads = new ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>();

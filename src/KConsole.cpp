@@ -10,14 +10,21 @@
 extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
 
 
-Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>* KConsole::inputBuffer = new Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>();
-Buffer<char, KernelConfig::SIZE_OUTPUT_BUFFER>* KConsole::outputBuffer = new Buffer<char, KernelConfig::SIZE_OUTPUT_BUFFER>();
-Queue<TCB>* KConsole::inputWaitQueue = new Queue<TCB>();
-Queue<TCB>* KConsole::outputWaitQueue = new Queue<TCB>();
+Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>* KConsole::inputBuffer = nullptr;
+Buffer<char, KernelConfig::SIZE_OUTPUT_BUFFER>* KConsole::outputBuffer = nullptr;
+Queue<TCB>* KConsole::inputWaitQueue = nullptr;
+Queue<TCB>* KConsole::outputWaitQueue = nullptr;
 TCB* KConsole::consumerThread = nullptr;
 TCB* KConsole::producerThread = nullptr;
 
+void KConsole::initialize()
+{
 
+    inputBuffer = new Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>();
+    outputBuffer = new Buffer<char, KernelConfig::SIZE_OUTPUT_BUFFER>();
+    inputWaitQueue = new Queue<TCB>();
+    outputWaitQueue = new Queue<TCB>();
+}
 void KConsole::addThreadToInputWaitQueue(TCB *thread)
 {
     thread->setStateOfThread(KernelConfig::BLOCKED);

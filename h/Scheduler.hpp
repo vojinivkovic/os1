@@ -18,6 +18,7 @@ public:
     static TCB* get(void);
     static void setIdleThread(TCB* thread) { idleThread = thread; }
     static void destroy();
+    static void initialize();
 private:
     static Queue<TCB>* queueReadyThreads;
     static TCB* idleThread;

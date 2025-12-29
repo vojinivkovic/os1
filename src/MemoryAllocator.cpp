@@ -4,12 +4,12 @@
 
 #include "../h/MemoryAllocator.hpp"
 
-uint8 MemoryAllocator::flagSystemInitialize = 0;
+
 size_t MemoryAllocator::NUM_OF_BLOCKS = 0;
 size_t MemoryAllocator::numOfFreeBlocks = 0;
 FreeBlock* MemoryAllocator::firstFreeBlock = nullptr;
 
-void MemoryAllocator::initializeMemory()
+void MemoryAllocator::initialize()
 {
 
     NUM_OF_BLOCKS = ((uint8*)HEAP_END_ADDR - (uint8*)HEAP_START_ADDR) / MEM_BLOCK_SIZE;
@@ -28,10 +28,10 @@ void* MemoryAllocator::allocateMemory(size_t blocksToAllocate)
 {
 
 
-    if(!flagSystemInitialize)
-    {
-        initializeMemory();
-    }
+//    if(!flagSystemInitialize)
+//    {
+//        initializeMemory();
+//    }
     if(numOfFreeBlocks < blocksToAllocate)
     {
         return nullptr;

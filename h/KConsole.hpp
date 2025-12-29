@@ -19,6 +19,7 @@ public:
     static void destroy();
     static void consumeOutputBuffer(void*);
     static void produceInputBuffer(void*);
+    static void initialize();
 
     static TCB* getConsumerThread() { return consumerThread; }
     static void setConsumerThread(TCB* thread) { consumerThread = thread; }
