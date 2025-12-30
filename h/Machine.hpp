@@ -21,6 +21,12 @@ public:
         SSIP = 1 << 1, // software interrupt
         SEIP = 1 << 9 // (external) hardware interrupt
     };
+    enum BitsMaskSstatus
+    {
+        SSP = 1 << 8,
+        SIE = 1 << 1,
+        SPIE = 1 << 5
+    };
 private:
     static void writeStvec(uint64 interruptAddress);
     static uint64 readScause(void);
@@ -32,6 +38,7 @@ private:
     static void writeSscratch(uint64 systemSP);
     static uint64 readSscratch();
     static void bc_sip(uint64 mask);
+    static void bs_sstatus(uint64 mask);
     friend class Kernel;
     friend class TCB;
 
@@ -57,6 +64,10 @@ inline void Machine::writeSscratch(uint64 systemSP)
 inline void Machine::bc_sip(uint64 mask)
 {
     __asm__ volatile ("csrc sip, %[reg]":: [reg] "r"(mask));
+}
+inline void Machine::bs_sstatus(uint64 mask)
+{
+    __asm__ volatile ("csrs sstatus, %[reg]":: [reg] "r"(mask));
 }
 inline uint64 Machine::readSscratch()
 {

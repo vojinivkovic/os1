@@ -243,6 +243,8 @@ void Kernel::kernelWorker(void*)
     }
     userThread->initializeThread(&userWorker, nullptr, &(systemStack[DEFAULT_STACK_SIZE]), kernelSystemStack, sourcePool, KernelConfig::BLOCKED, KernelConfig::USER_MODE);
     //Scheduler::setIdleThread(demonThread);
+    //postaviti odgovarajucu vrednost za prekide, odnosno dozvoliti prekide
+    Machine::bs_sstatus(Machine::SPIE);
     TCB::start(userThread);
     TCB::dispatch();
     while(1)
@@ -253,6 +255,7 @@ void Kernel::kernelWorker(void*)
 void Kernel::startExecution()
 {
     TCB::setRunningThread(demonThread);
+    TCB::dispatch();
 
 }
 uint64 Kernel::sysMalloc(Kernel::ArgumentsOfSystemCall *arg)

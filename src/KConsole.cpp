@@ -43,7 +43,7 @@ void KConsole::addThreadToOutputWaitQueue(TCB* thread)
 void KConsole::removeThreadFromInputWaitQueue()
 {
 
-    TCB* oldThread = outputWaitQueue->take();
+    TCB* oldThread = inputWaitQueue->take();
     if(oldThread)
     {
         oldThread->resetNextThreadInQueue();
@@ -54,7 +54,7 @@ void KConsole::removeThreadFromInputWaitQueue()
 void KConsole::removeThreadFromOutputWaitQueue()
 {
 
-    TCB* oldThread = inputWaitQueue->take();
+    TCB* oldThread = outputWaitQueue->take();
     if(oldThread)
     {
         oldThread->resetNextThreadInQueue();

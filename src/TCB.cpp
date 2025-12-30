@@ -7,6 +7,7 @@
 #include "../h/syscall_c.hpp"
 
 extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
+extern "C" char first_born;
 
 size_t TCB::numOfTicks = 0;
 TCB* TCB::running = nullptr;
@@ -31,18 +32,15 @@ void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, v
     *((uint64*)allocatedSystemStack - 30) = (uint64)((uint64*)allocatedStack - 2);
     if(mode == KernelConfig::USER_MODE)
     {
-        context = {Machine::readSscratch(), (uint64) ((uint64 *) allocatedSystemStack - 32), mode};
+        context = {(uint64)&first_born, (uint64) ((uint64 *) allocatedSystemStack - 32), mode};
         Machine::writeSepc((uint64) &threadWrapper);
+
     }
     else
     {
         context = {(uint64)&threadWrapper, (uint64) ((uint64 *) allocatedSystemStack - 32), mode};
     }
-
-    if(stateOfThread == KernelConfig::READY)
-    {
-        Scheduler::put(this);
-    }
+    Machine::bs_sstatus(Machine::SPIE);
 }
 void TCB::threadWrapper()
 {
@@ -58,7 +56,7 @@ void TCB::yield(TCB *oldThread, TCB *newThread)
 void TCB::dispatch()
 {
     TCB* oldThread = running;
-    if(!oldThread->isFinished() )
+    if(!oldThread->isFinished() && oldThread != Scheduler::getIdleThread())
     {
         oldThread->setStateOfThread(KernelConfig::READY);
         Scheduler::put(oldThread);
