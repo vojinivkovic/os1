@@ -19,7 +19,6 @@ public:
     {
         uint64 ra;
         uint64 sp;
-        KernelConfig::Mode mode;
     } Context;
     using Body = void(*)(void*);
     TCB() = default;
@@ -41,6 +40,7 @@ public:
     TCB* getNextElementInQueue() const { return nextThreadInQueue; }
     void resetNextThreadInQueue() { nextThreadInQueue = nullptr; }
     Context* getContext() { return &context; }
+    //KernelConfig::Mode getMode() { return context.mode; }
     void* getUserStack() const { return userStack; }
     void* getSystemStack() const { return systemStack; }
     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* getSourcePool() { return sourcePool; }

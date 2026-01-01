@@ -33,6 +33,7 @@ private:
 	Queue<TCB>* queueBlockedThreads;
     ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* sourcePool;
     uint64 semId;
+    long cap;
 };
 
 

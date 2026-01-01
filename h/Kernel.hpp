@@ -26,7 +26,7 @@ public:
     Kernel(const Kernel& kernel) = delete;
     Kernel& operator=(const Kernel& kernel) = delete;
     static void initializeKernel(void);
-
+    static void startExecution();
 
 private:
     typedef struct ArgumentsOfSystemCall
@@ -56,14 +56,14 @@ private:
     static uint64 sysPutc(ArgumentsOfSystemCall* arg);
 
 
-
+    static void initializeKernelSemaphores(void);
     static void initializeKernelThreads(void);
     static void makeDemonThread(void);
     static void makeConsumerThread(void);
     static void makeProducerThread(void);
     static void kernelWorker(void*);
     static void userWorker(void*);
-    static void startExecution();
+
 
     static void destroy();
     static uint64 (*systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(ArgumentsOfSystemCall* arg);
@@ -78,6 +78,10 @@ private:
     static PriorityQueue<TCB, decltype(cmp)>* queueOfAsleepThreads;
     static Queue<KSemaphore>* queueOfOpenedSemaphores;
     static TCB* demonThread;
+    static bool outputBufferReady;
+    static bool inputBufferReady;
+    static KSemaphore* semaphoreOutputBuffer;
+    static KSemaphore* semaphoreInputBuffer;
 
 
 };

@@ -28,8 +28,8 @@ namespace KernelConfig
 
     enum Mode
     {
-        USER_MODE = 0x0,
-        KERNEL_MODE = 0x1
+        USER_MODE = 0x0 << 8,
+        KERNEL_MODE = 0x1 << 8
     };
     enum WakeUpReason
     {

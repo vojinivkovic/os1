@@ -30,17 +30,19 @@ void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, v
     systemStack = (void*)((uint8*)allocatedSystemStack - KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
 
     *((uint64*)allocatedSystemStack - 30) = (uint64)((uint64*)allocatedStack - 2);
-    if(mode == KernelConfig::USER_MODE)
-    {
-        context = {(uint64)&first_born, (uint64) ((uint64 *) allocatedSystemStack - 32), mode};
-        Machine::writeSepc((uint64) &threadWrapper);
+//    if(mode == KernelConfig::USER_MODE)
+//    {
+    context = {(uint64)&first_born, (uint64) ((uint64 *) allocatedSystemStack - 32)};
+    Machine::writeSepc((uint64) &threadWrapper);
+    uint64 status = mode | (0x1 << 5);
+    Machine::writeSstatus(status);
 
-    }
-    else
-    {
-        context = {(uint64)&threadWrapper, (uint64) ((uint64 *) allocatedSystemStack - 32), mode};
-    }
-    Machine::bs_sstatus(Machine::SPIE);
+//    }
+//    else
+//    {
+//        context = {(uint64)&threadWrapper, (uint64) ((uint64 *) allocatedSystemStack - 32), mode};
+//    }
+    //Machine::bs_sstatus(Machine::SPIE);
 }
 void TCB::threadWrapper()
 {
@@ -62,7 +64,12 @@ void TCB::dispatch()
         Scheduler::put(oldThread);
     }
     running = Scheduler::get();
-    yield(oldThread, running);
+    if(oldThread != running)
+    {
+        TCB::resetNumOfTicks();
+        yield(oldThread, running);
+    }
+
 }
 TCB::~TCB()
 {

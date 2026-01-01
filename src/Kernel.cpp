@@ -18,6 +18,10 @@ ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* Kernel::poolOfS
 PriorityQueue<TCB, decltype(cmp)>* Kernel::queueOfAsleepThreads = nullptr;
 Queue<KSemaphore>* Kernel::queueOfOpenedSemaphores = nullptr;
 TCB* Kernel::demonThread = nullptr;
+KSemaphore* Kernel::semaphoreInputBuffer = nullptr;
+KSemaphore* Kernel::semaphoreOutputBuffer = nullptr;
+bool Kernel::outputBufferReady = false;
+bool Kernel::inputBufferReady = false;
 
 void Kernel::makeConsumerThread()
 {
@@ -60,9 +64,26 @@ void Kernel::initializeKernelThreads(void)
 {
     makeConsumerThread();
     makeProducerThread();
-    makeIdleThread();
+    makeDemonThread();
 }
+void Kernel::initializeKernelSemaphores(void)
+{
+    ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* sourcePoolOutput, *sourcePoolInput;
+    semaphoreOutputBuffer = poolOfSemaphores->mallocObject(&sourcePoolOutput);
+    while(!semaphoreOutputBuffer)
+    {
+        semaphoreOutputBuffer = poolOfSemaphores->mallocObject(&sourcePoolOutput);
+    }
+    semaphoreOutputBuffer->initializeSemaphore(1, sourcePoolOutput);
 
+    semaphoreInputBuffer = poolOfSemaphores->mallocObject(&sourcePoolInput);
+    while(!semaphoreInputBuffer)
+    {
+        semaphoreInputBuffer =  poolOfSemaphores->mallocObject(&sourcePoolInput);
+    }
+    semaphoreInputBuffer->initializeSemaphore(1, sourcePoolInput);
+
+}
 void Kernel::initializeKernel()
 {
     MemoryAllocator::initialize();
@@ -85,8 +106,11 @@ void Kernel::initializeKernel()
         poolOfSemaphores = new ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>();
     }
 
+    initializeKernelSemaphores();
     initializeKernelThreads();
     initializeSystemCalls();
+    outputBufferReady = false;
+    inputBufferReady = false;
 
 }
 void Kernel::destroy()
@@ -95,6 +119,8 @@ void Kernel::destroy()
     delete poolOfSemaphores;
     delete queueOfAsleepThreads;
     delete queueOfOpenedSemaphores;
+    delete KConsole::getProducerThread();
+    delete KConsole::getConsumerThread();
 }
 
 void Kernel::initializeArguments(Kernel::ArgumentsOfSystemCall* arg, uint64 basePointer)
@@ -133,7 +159,7 @@ void Kernel::wakeUpThreads()
 void Kernel::interruptHandler()
 {
     volatile uint64 basePointer;
-    __asm__ volatile ("addi %[reg], %[src], 0x0": [reg]"=r"(basePointer):[src]"r"(s0)); // Problem: da li mozemo biti 100% sigurni da ce s0 biti nepromenjen; resenje inline f-ja
+    __asm__ volatile ("addi %[reg], s0, 0x0": [reg]"=r"(basePointer)); // Problem: da li mozemo biti 100% sigurni da ce s0 biti nepromenjen; resenje inline f-ja
     uint64 scause = Machine::readScause();
     switch (scause)
     {
@@ -172,7 +198,8 @@ void Kernel::interruptHandler()
             TCB::incrementNumOfTicks();
             if (TCB::getNumOfTicks() >= TCB::getRunningThread()->getTimeSlice()) {
                 TCB::resetNumOfTicks();
-                uint64 sepc = Machine::readSepc() + 4;
+
+                uint64 sepc = Machine::readSepc();
                 uint64 sstatus = Machine::readSstatus();
 
                 TCB::dispatch();
@@ -189,23 +216,25 @@ void Kernel::interruptHandler()
             // hardware interrupt from console
             Machine::bc_sip(Machine::SEIP);
 
-            uint64 sepc = Machine::readSepc() + 4;
+            uint64 sepc = Machine::readSepc();
             uint64 sstatus = Machine::readSstatus();
 
-            int numOfDevice = plic_claim();
+//int numOfDevice = plic_claim();
             uint8 statusReg;
             __asm__ volatile("lb %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS));
 
             if (statusReg & CONSOLE_TX_STATUS_BIT) {
-                if (KConsole::isOutputBufferEmpty()) {
-                    plic_complete(numOfDevice);
-                } else {
+                outputBufferReady = true;
+                if (!KConsole::isOutputBufferEmpty())
+                {
+                    KConsole::getConsumerThread()->setStateOfThread(KernelConfig::READY);
                     Scheduler::put(KConsole::getConsumerThread());
                 }
             } else {
-                if (KConsole::isInputBufferFull()) {
-                    plic_complete(numOfDevice);
-                } else {
+                inputBufferReady = true;
+                if (!KConsole::isInputBufferFull())
+                {
+                    KConsole::getProducerThread()->setStateOfThread(KernelConfig::READY);
                     Scheduler::put(KConsole::getProducerThread());
                 }
             }
@@ -233,7 +262,7 @@ void Kernel::kernelWorker(void*)
     numOfBlocks += correctedSize % MEM_BLOCK_SIZE ? 1 : 0;
     uint8* systemStack = (uint8*)MemoryAllocator::allocateMemory(numOfBlocks);
 
-    return (void*)(&systemStack[KernelConfig::DEFAULT_SYSTEM_STACK_SIZE]);
+    //return (void*)(&systemStack[KernelConfig::DEFAULT_SYSTEM_STACK_SIZE]);
     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
     TCB* userThread = poolOfThreads->mallocObject(&sourcePool);
 
@@ -241,7 +270,7 @@ void Kernel::kernelWorker(void*)
     {
         userThread = poolOfThreads->mallocObject(&sourcePool);
     }
-    userThread->initializeThread(&userWorker, nullptr, &(systemStack[DEFAULT_STACK_SIZE]), kernelSystemStack, sourcePool, KernelConfig::BLOCKED, KernelConfig::USER_MODE);
+    userThread->initializeThread(&userWorker, nullptr, systemStack, kernelSystemStack, sourcePool, KernelConfig::BLOCKED, KernelConfig::USER_MODE);
     //Scheduler::setIdleThread(demonThread);
     //postaviti odgovarajucu vrednost za prekide, odnosno dozvoliti prekide
     Machine::bs_sstatus(Machine::SPIE);
@@ -445,6 +474,7 @@ uint64 Kernel::sysGetc(ArgumentsOfSystemCall *arg)
         KConsole::addThreadToInputWaitQueue(oldThread);
         context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
     }
+
     return (uint64)KConsole::getCharFromInputBuffer();
 }
 uint64 Kernel::sysPutc(ArgumentsOfSystemCall *arg)
@@ -457,7 +487,14 @@ uint64 Kernel::sysPutc(ArgumentsOfSystemCall *arg)
         KConsole::addThreadToOutputWaitQueue(oldThread);
         context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
     }
+    semaphoreOutputBuffer->wait();
     KConsole::addCharToOutputBuffer(arg->a0);
+    if(outputBufferReady && KConsole::getConsumerThread()->getStateOfThread() == KernelConfig::BLOCKED)
+    {
+        KConsole::getConsumerThread()->setStateOfThread(KernelConfig::READY);
+        Scheduler::put(KConsole::getConsumerThread());
+    }
+    semaphoreOutputBuffer->signal();
     return 0;
 }
 

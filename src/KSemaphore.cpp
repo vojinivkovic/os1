@@ -17,6 +17,7 @@ void KSemaphore::initializeSemaphore(unsigned value, ObjectPool<KSemaphore, Kern
     sourcePool = pool;
     semId = countOfSemaphores++;
     nextSemaphoreInQueue = nullptr;
+    cap = value;
 }
 
 void KSemaphore::blockThread(TCB* threadToBlock)
@@ -71,7 +72,10 @@ int KSemaphore::wait()
 
 int KSemaphore::signal()
 {
-
+    if(semaphoreVal == cap)
+    {
+        return 0;
+    }
     semaphoreVal++;
     if(semaphoreVal <= 0)
     {
