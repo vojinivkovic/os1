@@ -474,11 +474,13 @@ uint64 Kernel::sysGetc(ArgumentsOfSystemCall *arg)
         KConsole::addThreadToInputWaitQueue(oldThread);
         context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
     }
-
+    semaphoreInputBuffer->wait();
+    semaphoreInputBuffer->signal();
     return (uint64)KConsole::getCharFromInputBuffer();
 }
 uint64 Kernel::sysPutc(ArgumentsOfSystemCall *arg)
 {
+
     if(KConsole::isOutputBufferFull())
     {
         TCB* oldThread = TCB::getRunningThread();
@@ -489,12 +491,13 @@ uint64 Kernel::sysPutc(ArgumentsOfSystemCall *arg)
     }
     semaphoreOutputBuffer->wait();
     KConsole::addCharToOutputBuffer(arg->a0);
+    semaphoreOutputBuffer->signal();
     if(outputBufferReady && KConsole::getConsumerThread()->getStateOfThread() == KernelConfig::BLOCKED)
     {
         KConsole::getConsumerThread()->setStateOfThread(KernelConfig::READY);
         Scheduler::put(KConsole::getConsumerThread());
     }
-    semaphoreOutputBuffer->signal();
+
     return 0;
 }
 

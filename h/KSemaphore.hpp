@@ -7,6 +7,7 @@
 #include "Config.hpp"
 #include "ObjectPool.hpp"
 #include "Queue.hpp"
+#include "../lib/hw.h"
 
 class TCB;
 class KSemaphore
@@ -34,6 +35,7 @@ private:
     ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* sourcePool;
     uint64 semId;
     long cap;
+    uint64 lck;
 };
 
 

@@ -8,6 +8,7 @@
 
 
 extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
+extern "C" uint64 copy_and_swap(uint64* lock, uint64 expected, uint64 desired);
 uint64 KSemaphore::countOfSemaphores = 0;
 
 void KSemaphore::initializeSemaphore(unsigned value, ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* pool)
@@ -18,6 +19,7 @@ void KSemaphore::initializeSemaphore(unsigned value, ObjectPool<KSemaphore, Kern
     semId = countOfSemaphores++;
     nextSemaphoreInQueue = nullptr;
     cap = value;
+    lck = 0;
 }
 
 void KSemaphore::blockThread(TCB* threadToBlock)
@@ -46,7 +48,7 @@ int KSemaphore::unblockThread(KernelConfig::WakeUpReason reason)
 
 int KSemaphore::wait()
 {
-
+    while(copy_and_swap(&lck, 0, 1));
     semaphoreVal--;
     if(semaphoreVal < 0)
     {
@@ -67,11 +69,13 @@ int KSemaphore::wait()
         }
 
     }
+    lck = 0;
     return 0;
 }
 
 int KSemaphore::signal()
 {
+    while(copy_and_swap(&lck, 0, 1));
     if(semaphoreVal == cap)
     {
         return 0;
@@ -81,11 +85,13 @@ int KSemaphore::signal()
     {
         return unblockThread(KernelConfig::WAKE_UP_SEMAPHORE_SIGNAL);
     }
+    lck = 0;
     return 0;
 }
 
 int KSemaphore::close()
 {
+
     TCB* tempThread = queueBlockedThreads->top();
     if(!tempThread)
     {

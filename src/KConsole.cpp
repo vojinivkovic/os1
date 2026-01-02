@@ -5,7 +5,8 @@
 #include "../h/KConsole.hpp"
 #include "../h/TCB.hpp"
 #include "../h/Scheduler.hpp"
-
+#include "../h/Kernel.hpp"
+#include "../h/KSemaphore.hpp"
 
 extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
 
@@ -79,11 +80,12 @@ void KConsole::consumeOutputBuffer(void*)
     {
         volatile int numOfDevice = plic_claim();
         do {
-
+            Kernel::getSemaphoreOutput()->wait();
             data = *(outputBuffer->take());
             __asm__ volatile("sb %[regData], 0(%[address])":: [regData]"r"(data), [address]"r"(CONSOLE_TX_DATA));
             __asm__ volatile("lb %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS));
             removeThreadFromOutputWaitQueue();
+            Kernel::getSemaphoreOutput()->signal();
         } while ((statusReg & CONSOLE_TX_STATUS_BIT) && !outputBuffer->isBufferEmpty());
         plic_complete(numOfDevice);
         TCB *oldThread = TCB::getRunningThread();
@@ -100,12 +102,15 @@ void KConsole::produceInputBuffer(void*)
     volatile uint8 data;
     while(1) {
         volatile int numOfDevice = plic_claim();
+
         do {
+            Kernel::getSemaphoreInput()->wait();
             __asm__ volatile("lb %[regData], 0(%[address])" : [regData]"=r"(data): [address]"r"(CONSOLE_RX_DATA));
             char c = data;
             inputBuffer->append(&c);
             __asm__ volatile("lb %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS));
             removeThreadFromInputWaitQueue();
+            Kernel::getSemaphoreInput()->signal();
         } while ((statusReg & CONSOLE_RX_STATUS_BIT) && !inputBuffer->isBufferFull());
         plic_complete(numOfDevice);
 

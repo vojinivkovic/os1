@@ -27,6 +27,8 @@ public:
     Kernel& operator=(const Kernel& kernel) = delete;
     static void initializeKernel(void);
     static void startExecution();
+    static KSemaphore* getSemaphoreOutput() { return semaphoreOutputBuffer; }
+    static KSemaphore* getSemaphoreInput() { return semaphoreInputBuffer; }
 
 private:
     typedef struct ArgumentsOfSystemCall
