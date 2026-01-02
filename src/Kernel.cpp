@@ -262,12 +262,12 @@ void Kernel::userWorker(void *)
 }
 void Kernel::kernelWorker(void*)
 {
-    void* kernelSystemStack = Kernel::mallocSystemStack(KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
+    void* systemStack = Kernel::mallocSystemStack(KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
 
     size_t correctedSize = DEFAULT_STACK_SIZE + getSizeOfMetaData();
     size_t numOfBlocks = correctedSize / MEM_BLOCK_SIZE;
     numOfBlocks += correctedSize % MEM_BLOCK_SIZE ? 1 : 0;
-    uint8* systemStack = (uint8*)MemoryAllocator::allocateMemory(numOfBlocks);
+    uint8* userStack = (uint8*)MemoryAllocator::allocateMemory(numOfBlocks);
 
     //return (void*)(&systemStack[KernelConfig::DEFAULT_SYSTEM_STACK_SIZE]);
     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
@@ -277,7 +277,7 @@ void Kernel::kernelWorker(void*)
     {
         userThread = poolOfThreads->mallocObject(&sourcePool);
     }
-    userThread->initializeThread(&userWorker, nullptr, systemStack, kernelSystemStack, sourcePool, KernelConfig::BLOCKED, KernelConfig::USER_MODE);
+    userThread->initializeThread(&userWorker, nullptr, &(userStack[DEFAULT_STACK_SIZE]), systemStack, sourcePool, KernelConfig::BLOCKED, KernelConfig::USER_MODE);
     //Scheduler::setIdleThread(demonThread);
     //postaviti odgovarajucu vrednost za prekide, odnosno dozvoliti prekide
     TCB::start(userThread);

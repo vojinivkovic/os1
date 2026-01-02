@@ -6,14 +6,16 @@
 interrupt_trap:
     addi sp, sp, -16
     sd t0, 8(sp)
+    sd t1, 0(sp)
 
-    csrr t0, sstatus
-    andi t0, t0, 0x100
-    bne t0, x0, system_stack
+    addi t0, sp, 0
+    csrr t1, sstatus
+    andi t1, t1, 0x100
+    bne t1, x0, system_mode
 
     csrr sp, sscratch
 
-system_stack:    addi t0, sp, 0
+system_mode: ld t1, 0(t0)
     addi sp, sp, -256
 
     sd x0, 0 * 8(sp)
