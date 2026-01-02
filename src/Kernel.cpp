@@ -32,7 +32,8 @@ void Kernel::makeConsumerThread()
     {
         consumerThread = poolOfThreads->mallocObject(&sourcePool);
     }
-    consumerThread->initializeThread(&KConsole::consumeOutputBuffer, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::BLOCKED, KernelConfig::KERNEL_MODE);
+    consumerThread->initializeThread(&KConsole::consumeOutputBuffer, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::BLOCKED, KernelConfig::KERNEL_MODE,
+                                     true);
     KConsole::setConsumerThread(consumerThread);
 }
 
@@ -45,7 +46,8 @@ void Kernel::makeProducerThread()
     {
         producerThread = poolOfThreads->mallocObject(&sourcePool);
     }
-    producerThread->initializeThread(&KConsole::produceInputBuffer, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::BLOCKED, KernelConfig::KERNEL_MODE);
+    producerThread->initializeThread(&KConsole::produceInputBuffer, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::BLOCKED, KernelConfig::KERNEL_MODE,
+                                     true);
     KConsole::setProducerThread(producerThread);
 }
 void Kernel::makeDemonThread()
@@ -57,7 +59,8 @@ void Kernel::makeDemonThread()
     {
         demonThread = poolOfThreads->mallocObject(&sourcePool);
     }
-    demonThread->initializeThread(&kernelWorker, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::READY, KernelConfig::KERNEL_MODE);
+    demonThread->initializeThread(&kernelWorker, nullptr, kernelSystemStack, kernelSystemStack, sourcePool, KernelConfig::READY, KernelConfig::KERNEL_MODE,
+                                  false);
     Scheduler::setIdleThread(demonThread);
 }
 void Kernel::initializeKernelThreads(void)
@@ -146,6 +149,10 @@ void* Kernel::mallocSystemStack(size_t numOfBytes)
 
 void Kernel::wakeUpThreads()
 {
+    if(!queueOfAsleepThreads->top())
+    {
+        return;
+    }
     queueOfAsleepThreads->top()->decrementTimeToSleep();
 
     while(!queueOfAsleepThreads->top()->getTimeToSleep())
@@ -273,9 +280,10 @@ void Kernel::kernelWorker(void*)
     userThread->initializeThread(&userWorker, nullptr, systemStack, kernelSystemStack, sourcePool, KernelConfig::BLOCKED, KernelConfig::USER_MODE);
     //Scheduler::setIdleThread(demonThread);
     //postaviti odgovarajucu vrednost za prekide, odnosno dozvoliti prekide
-    Machine::bs_sstatus(Machine::SPIE);
     TCB::start(userThread);
     TCB::dispatch();
+    Machine::bs_sstatus(Machine::SPIE);
+    Machine::bs_sstatus(Machine::SIE);
     while(1)
     {
 
@@ -284,7 +292,12 @@ void Kernel::kernelWorker(void*)
 void Kernel::startExecution()
 {
     TCB::setRunningThread(demonThread);
-    TCB::dispatch();
+    //TCB::dispatch();
+    Machine::writeRa(demonThread->getContext()->ra);
+    Machine::writeSp(demonThread->getContext()->sp);
+    Machine::writeSepc(demonThread->getContext()->sepc);
+    Machine::writeSstatus(demonThread->getContext()->sstatus);
+    __asm__ volatile ("ret");
 
 }
 uint64 Kernel::sysMalloc(Kernel::ArgumentsOfSystemCall *arg)

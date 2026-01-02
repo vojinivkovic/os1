@@ -37,6 +37,8 @@ private:
     static uint64 readSstatus();
     static void writeSscratch(uint64 systemSP);
     static uint64 readSscratch();
+    static void writeRa(uint64 newRa);
+    static void writeSp(uint64 newSp);
     static void bc_sip(uint64 mask);
     static void bs_sstatus(uint64 mask);
     friend class Kernel;
@@ -95,5 +97,13 @@ inline uint64 Machine::readSstatus()
     __asm__ volatile ("csrr %[reg], sstatus": [reg] "=r"(returnStatus));
     return returnStatus;
 }
+inline void Machine::writeRa(uint64 newRa)
+{
+    __asm__ volatile ("addi ra, %[reg], 0":: [reg]"r"(newRa));
+}
 
+inline void Machine::writeSp(uint64 newSp)
+{
+    __asm__ volatile ("addi sp, %[reg], 0":: [reg]"r"(newSp));
+}
 #endif //PROJECT_BASE_V1_1_MACHINE_H

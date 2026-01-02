@@ -12,7 +12,7 @@ extern "C" char first_born;
 size_t TCB::numOfTicks = 0;
 TCB* TCB::running = nullptr;
 void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, void* allocatedSystemStack, ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool,
-                           KernelConfig::StateOfThread state, KernelConfig::Mode mode)
+                           KernelConfig::StateOfThread state, KernelConfig::Mode mmode, bool enableInterrupts)
 {
 
     body = function;
@@ -26,16 +26,19 @@ void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, v
     sourcePool = pool;
     queueOfWaitThreads = nullptr;
     queueOfWhichIsPart = nullptr;
-    userStack = (void*)((uint8*)allocatedStack - DEFAULT_STACK_SIZE);
-    systemStack = (void*)((uint8*)allocatedSystemStack - KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
+    mode = mmode;
 
+
+    systemStack = (void*)((uint8*)allocatedSystemStack - KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
+    userStack = mode == KernelConfig::KERNEL_MODE ? systemStack : (void*)((uint8*)allocatedStack - DEFAULT_STACK_SIZE);
     *((uint64*)allocatedSystemStack - 30) = (uint64)((uint64*)allocatedStack - 2);
 //    if(mode == KernelConfig::USER_MODE)
 //    {
-    context = {(uint64)&first_born, (uint64) ((uint64 *) allocatedSystemStack - 32)};
-    Machine::writeSepc((uint64) &threadWrapper);
-    uint64 status = mode | (0x1 << 5);
-    Machine::writeSstatus(status);
+    uint64 status = mode | (enableInterrupts ? 0x1 << 5 : 0);
+    context = {(uint64)&first_born, (uint64) ((uint64 *) allocatedSystemStack - 32), (uint64) &threadWrapper, status};
+    //Machine::writeSepc((uint64) &threadWrapper);
+
+
 
 //    }
 //    else
@@ -73,8 +76,13 @@ void TCB::dispatch()
 }
 TCB::~TCB()
 {
-    MemoryAllocator::freeMemory(userStack);
+
     MemoryAllocator::freeMemory(systemStack);
+    if(mode == KernelConfig::USER_MODE)
+    {
+        MemoryAllocator::freeMemory(userStack);
+    }
+
     stateOfThread = KernelConfig::TERMINATED;
 }
 void TCB::start(TCB* readyThread)

@@ -7,6 +7,11 @@ context_switch:
 
     ld ra, 0 * 8(a1)
     ld sp, 1 * 8(a1)
+    ld t0, 2 * 8(a1)
+    csrw sepc, t0
+    ld t0, 3 * 8(a1)
+    csrw sstatus, t0
+
     #ld t0, 2 * 8(a1)
 
 #    beq t0, x0, continue

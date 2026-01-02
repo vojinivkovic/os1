@@ -19,12 +19,14 @@ public:
     {
         uint64 ra;
         uint64 sp;
+        uint64 sepc;
+        uint64 sstatus;
     } Context;
     using Body = void(*)(void*);
     TCB() = default;
     ~TCB();
     void initializeThread(Body body, void*arg, void* stack, void* systemStack, ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool,
-                          KernelConfig::StateOfThread state = KernelConfig::BLOCKED, KernelConfig::Mode mode = KernelConfig::USER_MODE);
+                          KernelConfig::StateOfThread state = KernelConfig::BLOCKED, KernelConfig::Mode mode = KernelConfig::USER_MODE, bool enableInterrupts = true);
 
     size_t getTimeSlice() const { return timeSlice; }
     bool isFinished() const { return finished; }
@@ -88,6 +90,7 @@ private:
     Queue<TCB>* queueOfWaitThreads;
     Queue<TCB>* queueOfWhichIsPart;
     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
+    KernelConfig::Mode mode;
 
 
     static TCB* running;
