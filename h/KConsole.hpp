@@ -41,12 +41,20 @@ public:
 
     static void addCharToOutputBuffer(char c);
     static char getCharFromInputBuffer();
+
+    static void setOutputBufferReady() { outputBufferReady = true; }
+    static void resetOutputBufferReady() { outputBufferReady = false; }
+
+    static void setInputBufferReady() { inputBufferReady = true; }
+    static void resetInputBufferReady() { outputBufferReady = false; }
 private:
     static TCB* consumerThread, *producerThread;
     static Queue<TCB>* inputWaitQueue, *outputWaitQueue;
 
     static Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>* inputBuffer;
     static Buffer<char, KernelConfig::SIZE_OUTPUT_BUFFER>* outputBuffer;
+    static bool outputBufferReady;
+    static bool inputBufferReady;
 };
 
 

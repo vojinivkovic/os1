@@ -80,8 +80,7 @@ private:
     static PriorityQueue<TCB, decltype(cmp)>* queueOfAsleepThreads;
     static Queue<KSemaphore>* queueOfOpenedSemaphores;
     static TCB* demonThread;
-    static bool outputBufferReady;
-    static bool inputBufferReady;
+
     static KSemaphore* semaphoreOutputBuffer;
     static KSemaphore* semaphoreInputBuffer;
 

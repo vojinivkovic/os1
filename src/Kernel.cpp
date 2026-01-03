@@ -20,8 +20,7 @@ Queue<KSemaphore>* Kernel::queueOfOpenedSemaphores = nullptr;
 TCB* Kernel::demonThread = nullptr;
 KSemaphore* Kernel::semaphoreInputBuffer = nullptr;
 KSemaphore* Kernel::semaphoreOutputBuffer = nullptr;
-bool Kernel::outputBufferReady = false;
-bool Kernel::inputBufferReady = false;
+
 
 void Kernel::makeConsumerThread()
 {
@@ -221,31 +220,44 @@ void Kernel::interruptHandler()
         case 0x8000000000000009UL:
         {
             // hardware interrupt from console
-            Machine::bc_sip(Machine::SEIP);
+
 
             uint64 sepc = Machine::readSepc();
             uint64 sstatus = Machine::readSstatus();
 
-//int numOfDevice = plic_claim();
+            int numOfDevice = plic_claim();
             uint8 statusReg;
-            __asm__ volatile("lb %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS));
+            __asm__ volatile("lbu %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS):"memory");
 
-            if (statusReg & CONSOLE_TX_STATUS_BIT) {
-                outputBufferReady = true;
-                if (!KConsole::isOutputBufferEmpty())
+            if (statusReg & CONSOLE_TX_STATUS_BIT)
+            {
+                //KConsole::setOutputBufferReady();
+                //if (!KConsole::isOutputBufferEmpty())
+                //{
+                if(KConsole::getConsumerThread()->getStateOfThread() == KernelConfig::BLOCKED)
                 {
                     KConsole::getConsumerThread()->setStateOfThread(KernelConfig::READY);
                     Scheduler::put(KConsole::getConsumerThread());
                 }
-            } else {
-                inputBufferReady = true;
-                if (!KConsole::isInputBufferFull())
+
+                //}
+            }
+
+            if(statusReg & CONSOLE_RX_STATUS_BIT)
+            {
+//               KConsole::setInputBufferReady();
+//                if (!KConsole::isInputBufferFull())
+//                {
+                if(KConsole::getProducerThread()->getStateOfThread() == KernelConfig::BLOCKED)
                 {
                     KConsole::getProducerThread()->setStateOfThread(KernelConfig::READY);
                     Scheduler::put(KConsole::getProducerThread());
                 }
-            }
 
+                //}
+            }
+            plic_complete(numOfDevice);
+            Machine::bc_sie(Machine::SEIE);
             TCB::dispatch();
 
             Machine::writeSepc(sepc);
@@ -505,11 +517,6 @@ uint64 Kernel::sysPutc(ArgumentsOfSystemCall *arg)
     semaphoreOutputBuffer->wait();
     KConsole::addCharToOutputBuffer(arg->a0);
     semaphoreOutputBuffer->signal();
-    if(outputBufferReady && KConsole::getConsumerThread()->getStateOfThread() == KernelConfig::BLOCKED)
-    {
-        KConsole::getConsumerThread()->setStateOfThread(KernelConfig::READY);
-        Scheduler::put(KConsole::getConsumerThread());
-    }
 
     return 0;
 }

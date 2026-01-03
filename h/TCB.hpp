@@ -66,7 +66,7 @@ public:
     static void setRunningThread(TCB* newRunningThread) { running = newRunningThread; }
 
     static size_t getNumOfTicks() { return numOfTicks; }
-    static void resetNumOfTicks() { numOfTicks = DEFAULT_TIME_SLICE; }
+    static void resetNumOfTicks() { numOfTicks = 0; }
     static void incrementNumOfTicks() { numOfTicks++; }
 
 

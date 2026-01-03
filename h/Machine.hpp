@@ -8,7 +8,7 @@
 
 class Kernel; //forward declaration
 class TCB;
-
+class KConsole;
 class Machine
 {
 public:
@@ -27,6 +27,11 @@ public:
         SIE = 1 << 1,
         SPIE = 1 << 5
     };
+    enum BitsMaskSie
+    {
+        SSIE = 1 << 1,
+        SEIE = 1 << 9
+    };
 private:
     static void writeStvec(uint64 interruptAddress);
     static uint64 readScause(void);
@@ -41,8 +46,11 @@ private:
     static void writeSp(uint64 newSp);
     static void bc_sip(uint64 mask);
     static void bs_sstatus(uint64 mask);
+    static void bc_sie(uint64 mask);
+    static void bs_sie(uint64 mask);
     friend class Kernel;
     friend class TCB;
+    friend class KConsole;
 
 };
 
@@ -105,5 +113,15 @@ inline void Machine::writeRa(uint64 newRa)
 inline void Machine::writeSp(uint64 newSp)
 {
     __asm__ volatile ("addi sp, %[reg], 0":: [reg]"r"(newSp));
+}
+
+inline void Machine::bs_sie(uint64 mask)
+{
+    __asm__ volatile ("csrs sie, %[reg]":: [reg] "r"(mask));
+}
+
+inline void Machine::bc_sie(uint64 mask)
+{
+    __asm__ volatile ("csrc sie, %[reg]":: [reg] "r"(mask));
 }
 #endif //PROJECT_BASE_V1_1_MACHINE_H
