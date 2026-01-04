@@ -21,7 +21,7 @@ public:
     static void* operator new(size_t size);
     static void operator delete(void* obj);
 private:
-    T* head = nullptr, *tail = nullptr;
+    T* head = nullptr;
     Compare cmp;
 };
 
@@ -36,19 +36,26 @@ void PriorityQueue<T, Compare>::removeElement(T *element)
     }
     if(!prev)
     {
-        head = head->getNextElementInQueue();
-        if(!head)
+        if(head)
         {
-            tail = nullptr;
+            head = head->getNextElementInQueue();
         }
+
+//        if(!head)
+//        {
+//            tail = nullptr;
+//        }
     }
     else
     {
-        prev->addElementToQueue(element->getNextElementInQueue());
-        if(element == tail)
-        {
-            tail = prev;
-        }
+        T* tempElement = element->getNextElementInQueue();
+        prev->addElementToQueue(tempElement);
+        tempElement->setTimeToSleep(tempElement->getTimeToSleep() + element->getTimeToSleep());
+
+//        if(element == tail)
+//        {
+//            tail = prev;
+//        }
     }
 }
 template<typename T, typename Compare>
@@ -57,6 +64,8 @@ void PriorityQueue<T, Compare>::append(T *newElement)
     if(head == nullptr)
     {
         head = newElement;
+        //tail = newElement;
+        return;
     }
 
     T* curr = head, *prev = nullptr;
@@ -77,7 +86,11 @@ void PriorityQueue<T, Compare>::append(T *newElement)
     {
         newElement->addElementToQueue(curr);
         prev->addElementToQueue(newElement);
-        curr->setTimeToSleep(curr->getTimeToSleep() - newElement->getTimeToSleep());
+        if(curr)
+        {
+            curr->setTimeToSleep(curr->getTimeToSleep() - newElement->getTimeToSleep());
+        }
+
     }
 }
 
@@ -86,10 +99,10 @@ T* PriorityQueue<T, Compare>::take()
 {
     T* oldElement = head;
     head = head->getNextElementInQueue();
-    if(!head)
-    {
-        tail = nullptr;
-    }
+//    if(!head)
+//    {
+//        tail = nullptr;
+//    }
     return oldElement;
 }
 template<typename T, typename Compare>

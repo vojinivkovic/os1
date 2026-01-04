@@ -3,10 +3,10 @@
 context_switch:
     sd ra, 0 * 8(a0)
     sd sp, 1 * 8(a0)
-    csrr t0, sepc
-    sd t0, 2 * 8(a0)
-    csrr t0, sstatus
-    sd t0, 3 * 8(a0)
+    #csrr t0, sepc
+    #sd t0, 2 * 8(a0)
+    #csrr t0, sstatus
+    #sd t0, 3 * 8(a0)
 
     ld ra, 0 * 8(a1)
     ld sp, 1 * 8(a1)

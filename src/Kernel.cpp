@@ -180,9 +180,9 @@ void Kernel::interruptHandler()
 
             Machine::bc_sip(Machine::SSIP);
 
-            //uint64 sepc = Machine::readSepc() + 4;
-            //uint64 sstatus = Machine::readSstatus();
-            Machine::incrementSepc();
+            volatile uint64 sepc = Machine::readSepc() + 4;
+            volatile uint64 sstatus = Machine::readSstatus();
+
             uint64 numberOfEntry;
             __asm__ volatile ("ld %[rd], 80(%[rs])": [rd]"=r"(numberOfEntry):[rs]"r"(basePointer));
 
@@ -194,8 +194,8 @@ void Kernel::interruptHandler()
 
             TCB::dispatch();
 
-            //Machine::writeSepc(sepc);
-            //Machine::writeSstatus(sstatus);
+            Machine::writeSepc(sepc);
+            Machine::writeSstatus(sstatus);
             break;
         }
         case 0x8000000000000001UL:
@@ -207,13 +207,13 @@ void Kernel::interruptHandler()
             if (TCB::getNumOfTicks() >= TCB::getRunningThread()->getTimeSlice()) {
                 TCB::resetNumOfTicks();
 
-                //uint64 sepc = Machine::readSepc();
-                //uint64 sstatus = Machine::readSstatus();
+                volatile uint64 sepc = Machine::readSepc();
+                volatile uint64 sstatus = Machine::readSstatus();
 
                 TCB::dispatch();
 
-                //Machine::writeSepc(sepc);
-                //Machine::writeSstatus(sstatus);
+                Machine::writeSepc(sepc);
+                Machine::writeSstatus(sstatus);
 
             }
             wakeUpThreads();
@@ -224,8 +224,8 @@ void Kernel::interruptHandler()
             // hardware interrupt from console
 
 
-            //uint64 sepc = Machine::readSepc();
-            //uint64 sstatus = Machine::readSstatus();
+            volatile uint64 sepc = Machine::readSepc();
+            volatile uint64 sstatus = Machine::readSstatus();
 
             //int numOfDevice = plic_claim();
 //            uint8 statusReg;
@@ -267,8 +267,8 @@ void Kernel::interruptHandler()
 //            plic_complete(plic_claim());
             TCB::dispatch();
 
-            //Machine::writeSepc(sepc);
-            //Machine::writeSstatus(sstatus);
+            Machine::writeSepc(sepc);
+            Machine::writeSstatus(sstatus);
             break;
         }
     }

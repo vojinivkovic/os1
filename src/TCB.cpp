@@ -24,7 +24,7 @@ void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, v
     stateOfThread = state;
     timeToSleep = 0;
     sourcePool = pool;
-    queueOfWaitThreads = nullptr;
+    queueOfWaitThreads = new Queue<TCB>();
     queueOfWhichIsPart = nullptr;
     mode = mmode;
 
@@ -92,6 +92,10 @@ void TCB::start(TCB* readyThread)
 void TCB::freeWaitThreads()
 {
     TCB* temp;
+    if(!queueOfWaitThreads)
+    {
+        return;
+    }
     while(!queueOfWaitThreads->isQueueEmpty())
     {
 
