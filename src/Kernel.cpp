@@ -7,6 +7,7 @@
 #include "../h/TCB.hpp"
 #include "../h/KSemaphore.hpp"
 #include "../h/KConsole.hpp"
+#include "../lib/console.h"
 
 extern "C" void interrupt_trap(void);
 extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
@@ -111,8 +112,7 @@ void Kernel::initializeKernel()
     initializeKernelSemaphores();
     initializeKernelThreads();
     initializeSystemCalls();
-    outputBufferReady = false;
-    inputBufferReady = false;
+
 
 }
 void Kernel::destroy()
@@ -164,8 +164,9 @@ void Kernel::wakeUpThreads()
 }
 void Kernel::interruptHandler()
 {
-    volatile uint64 basePointer;
-    __asm__ volatile ("addi %[reg], s0, 0x0": [reg]"=r"(basePointer)); // Problem: da li mozemo biti 100% sigurni da ce s0 biti nepromenjen; resenje inline f-ja
+     // Problem: da li mozemo biti 100% sigurni da ce s0 biti nepromenjen; resenje inline f-ja
+    uint64 basePointer;
+    __asm__ volatile ("addi %0, s0, 0": "=r"(basePointer)::);
     uint64 scause = Machine::readScause();
     switch (scause)
     {
@@ -176,24 +177,25 @@ void Kernel::interruptHandler()
             // scause == 0x0000000000000008UL; software interrupt(ecall) from user mode
             // scause == 0x0000000000000009UL; software interrupt(ecall) from kernel(supervised) mode
 
+
             Machine::bc_sip(Machine::SSIP);
 
-            uint64 sepc = Machine::readSepc() + 4;
-            uint64 sstatus = Machine::readSstatus();
-
+            //uint64 sepc = Machine::readSepc() + 4;
+            //uint64 sstatus = Machine::readSstatus();
+            Machine::incrementSepc();
             uint64 numberOfEntry;
-            __asm__ volatile ("ld %[rd], -176(%[rs])": [rd]"=r"(numberOfEntry):[rs]"r"(basePointer));
+            __asm__ volatile ("ld %[rd], 80(%[rs])": [rd]"=r"(numberOfEntry):[rs]"r"(basePointer));
 
             ArgumentsOfSystemCall arg;
             initializeArguments(&arg, basePointer);
             systemCallsTable[numberOfEntry](&arg);
 
-            __asm__ volatile("sd a0, -176(%[rs])"::[rs]"r"(basePointer));
+            __asm__ volatile("sd a0, 80(%[rs])"::[rs]"r"(basePointer));
 
             TCB::dispatch();
 
-            Machine::writeSepc(sepc);
-            Machine::writeSstatus(sstatus);
+            //Machine::writeSepc(sepc);
+            //Machine::writeSstatus(sstatus);
             break;
         }
         case 0x8000000000000001UL:
@@ -205,13 +207,13 @@ void Kernel::interruptHandler()
             if (TCB::getNumOfTicks() >= TCB::getRunningThread()->getTimeSlice()) {
                 TCB::resetNumOfTicks();
 
-                uint64 sepc = Machine::readSepc();
-                uint64 sstatus = Machine::readSstatus();
+                //uint64 sepc = Machine::readSepc();
+                //uint64 sstatus = Machine::readSstatus();
 
                 TCB::dispatch();
 
-                Machine::writeSepc(sepc);
-                Machine::writeSstatus(sstatus);
+                //Machine::writeSepc(sepc);
+                //Machine::writeSstatus(sstatus);
 
             }
             wakeUpThreads();
@@ -222,47 +224,51 @@ void Kernel::interruptHandler()
             // hardware interrupt from console
 
 
-            uint64 sepc = Machine::readSepc();
-            uint64 sstatus = Machine::readSstatus();
+            //uint64 sepc = Machine::readSepc();
+            //uint64 sstatus = Machine::readSstatus();
 
-            int numOfDevice = plic_claim();
-            uint8 statusReg;
-            __asm__ volatile("lbu %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS):"memory");
-
-            if (statusReg & CONSOLE_TX_STATUS_BIT)
-            {
-                //KConsole::setOutputBufferReady();
-                //if (!KConsole::isOutputBufferEmpty())
-                //{
-                if(KConsole::getConsumerThread()->getStateOfThread() == KernelConfig::BLOCKED)
-                {
-                    KConsole::getConsumerThread()->setStateOfThread(KernelConfig::READY);
-                    Scheduler::put(KConsole::getConsumerThread());
-                }
-
-                //}
-            }
-
-            if(statusReg & CONSOLE_RX_STATUS_BIT)
-            {
-//               KConsole::setInputBufferReady();
-//                if (!KConsole::isInputBufferFull())
+            //int numOfDevice = plic_claim();
+//            uint8 statusReg;
+//            __asm__ volatile("lbu %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS):"memory");
+//
+//            if (statusReg & CONSOLE_TX_STATUS_BIT)
+//            {
+//                //KConsole::setOutputBufferReady();
+//                //if (!KConsole::isOutputBufferEmpty())
+//                //{
+//                if(KConsole::getConsumerThread()->getStateOfThread() == KernelConfig::BLOCKED)
 //                {
-                if(KConsole::getProducerThread()->getStateOfThread() == KernelConfig::BLOCKED)
-                {
-                    KConsole::getProducerThread()->setStateOfThread(KernelConfig::READY);
-                    Scheduler::put(KConsole::getProducerThread());
-                }
-
-                //}
-            }
-            plic_complete(numOfDevice);
-            Machine::bc_sie(Machine::SEIE);
+//                    KConsole::getConsumerThread()->setStateOfThread(KernelConfig::READY);
+//                    Scheduler::put(KConsole::getConsumerThread());
+//                }
+//
+//                //}
+//            }
+//
+//            if(statusReg & CONSOLE_RX_STATUS_BIT)
+//            {
+////               KConsole::setInputBufferReady();
+////                if (!KConsole::isInputBufferFull())
+////                {
+//                if(KConsole::getProducerThread()->getStateOfThread() == KernelConfig::BLOCKED)
+//                {
+//                    KConsole::getProducerThread()->setStateOfThread(KernelConfig::READY);
+//                    Scheduler::put(KConsole::getProducerThread());
+//                }
+//
+//                //}
+//            }
+//
+//            Machine::bc_sie(Machine::SEIE);
+//
+//
+//
+            console_handler();
+//            plic_complete(plic_claim());
             TCB::dispatch();
 
-            Machine::writeSepc(sepc);
-            Machine::writeSstatus(sstatus);
-
+            //Machine::writeSepc(sepc);
+            //Machine::writeSstatus(sstatus);
             break;
         }
     }
@@ -491,33 +497,34 @@ uint64 Kernel::sysTimeSleep(ArgumentsOfSystemCall *arg)
 }
 uint64 Kernel::sysGetc(ArgumentsOfSystemCall *arg)
 {
-    if(KConsole::isInputBufferEmpty())
-    {
-        TCB* oldThread = TCB::getRunningThread();
-        TCB::setRunningThread(Scheduler::get());
-        oldThread->resetNextThreadInQueue();
-        KConsole::addThreadToInputWaitQueue(oldThread);
-        context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
-    }
-    semaphoreInputBuffer->wait();
-    semaphoreInputBuffer->signal();
-    return (uint64)KConsole::getCharFromInputBuffer();
+//    if(KConsole::isInputBufferEmpty())
+//    {
+//        TCB* oldThread = TCB::getRunningThread();
+//        TCB::setRunningThread(Scheduler::get());
+//        oldThread->resetNextThreadInQueue();
+//        KConsole::addThreadToInputWaitQueue(oldThread);
+//        context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
+//    }
+//    semaphoreInputBuffer->wait();
+//    semaphoreInputBuffer->signal();
+//    return (uint64)KConsole::getCharFromInputBuffer();
+    return (uint64)__getc();
 }
 uint64 Kernel::sysPutc(ArgumentsOfSystemCall *arg)
 {
 
-    if(KConsole::isOutputBufferFull())
-    {
-        TCB* oldThread = TCB::getRunningThread();
-        TCB::setRunningThread(Scheduler::get());
-        oldThread->resetNextThreadInQueue();
-        KConsole::addThreadToOutputWaitQueue(oldThread);
-        context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
-    }
-    semaphoreOutputBuffer->wait();
-    KConsole::addCharToOutputBuffer(arg->a0);
-    semaphoreOutputBuffer->signal();
-
+//    if(KConsole::isOutputBufferFull())
+//    {
+//        TCB* oldThread = TCB::getRunningThread();
+//        TCB::setRunningThread(Scheduler::get());
+//        oldThread->resetNextThreadInQueue();
+//        KConsole::addThreadToOutputWaitQueue(oldThread);
+//        context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
+//    }
+//    semaphoreOutputBuffer->wait();
+//    KConsole::addCharToOutputBuffer(arg->a0);
+//    semaphoreOutputBuffer->signal();
+    __putc((char)arg->a0);
     return 0;
 }
 

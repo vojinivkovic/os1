@@ -35,7 +35,7 @@ public:
 private:
     static void writeStvec(uint64 interruptAddress);
     static uint64 readScause(void);
-    //static void incrementSepc(void);
+    static void incrementSepc(void);
     static void writeSepc(uint64 address);
     static uint64 readSepc();
     static void writeSstatus(uint64 oldStatus);
@@ -92,7 +92,7 @@ inline void Machine::writeSepc(uint64 address)
 inline uint64 Machine::readSepc()
 {
     uint64 returnAddress;
-    __asm__ volatile ("csrr %[reg], sepc": [reg] "=r"(returnAddress));
+    __asm__ volatile ("csrr %[reg], sepc": [reg] "=r"(returnAddress)::"memory");
     return returnAddress;
 }
 inline void Machine::writeSstatus(uint64 oldStatus)
@@ -102,7 +102,7 @@ inline void Machine::writeSstatus(uint64 oldStatus)
 inline uint64 Machine::readSstatus()
 {
     uint64 returnStatus;
-    __asm__ volatile ("csrr %[reg], sstatus": [reg] "=r"(returnStatus));
+    __asm__ volatile ("csrr %[reg], sstatus": [reg] "=r"(returnStatus)::"memory");
     return returnStatus;
 }
 inline void Machine::writeRa(uint64 newRa)
@@ -123,5 +123,12 @@ inline void Machine::bs_sie(uint64 mask)
 inline void Machine::bc_sie(uint64 mask)
 {
     __asm__ volatile ("csrc sie, %[reg]":: [reg] "r"(mask));
+}
+
+inline void Machine::incrementSepc()
+{
+    __asm__ volatile("csrr t0, sepc");
+    __asm__ volatile("addi t0, t0, 4");
+    __asm__ volatile("csrw sepc, t0");
 }
 #endif //PROJECT_BASE_V1_1_MACHINE_H

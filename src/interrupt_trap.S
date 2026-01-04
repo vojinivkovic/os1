@@ -27,17 +27,17 @@ system_mode: ld t1, 0(t0)
     ld t0, 8(t0)
     sd t0, 5 * 8(sp)
 
-    addi s0, sp, 256
+    addi s0, sp, 0
 
     call _ZN6Kernel16interruptHandlerEv
 
-first_born:    ld x0, 0 * 8(sp)
+    ld x0, 0 * 8(sp)
     ld x1, 1 * 8(sp)
-    ld t0, 2 * 8(sp)
     .irp index,  3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
     ld x\index, \index * 8(sp)
     .endr
 
+first_born: ld t0, 2 * 8(sp)
     addi sp, sp, 256
 
     csrw sscratch, sp

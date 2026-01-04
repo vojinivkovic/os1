@@ -61,7 +61,7 @@ void TCB::yield(TCB *oldThread, TCB *newThread)
 void TCB::dispatch()
 {
     TCB* oldThread = running;
-    if(!oldThread->isFinished() && oldThread != Scheduler::getIdleThread())
+    if(!oldThread->isFinished() && oldThread != Scheduler::getIdleThread() && oldThread->getStateOfThread() != KernelConfig::BLOCKED)
     {
         oldThread->setStateOfThread(KernelConfig::READY);
         Scheduler::put(oldThread);

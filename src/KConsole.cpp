@@ -88,7 +88,7 @@ void KConsole::consumeOutputBuffer(void*)
 {
     volatile uint8 data;
     volatile uint8 statusReg;
-
+    volatile uint64 sstatus;
     while(1)
     {
         __asm__ volatile("lbu %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS):"memory");
@@ -105,11 +105,14 @@ void KConsole::consumeOutputBuffer(void*)
         {
             Machine::bs_sie(Machine::SEIE);
         }
-        TCB *oldThread = TCB::getRunningThread();
-        TCB::setRunningThread(Scheduler::get());
-        oldThread->resetNextThreadInQueue();
-        oldThread->setStateOfThread(KernelConfig::BLOCKED);
-        context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
+        sstatus = Machine::readSstatus();
+        //TCB *oldThread = TCB::getRunningThread();
+        //TCB::setRunningThread(Scheduler::get());
+        consumerThread->setStateOfThread(KernelConfig::BLOCKED);
+        //oldThread->resetNextThreadInQueue();
+        //oldThread->setStateOfThread(KernelConfig::BLOCKED);
+        TCB::dispatch();
+        Machine::writeSstatus(sstatus);
     }
 }
 
@@ -117,7 +120,7 @@ void KConsole::produceInputBuffer(void*)
 {
     volatile uint8 statusReg;
     volatile uint8 data;
-
+    volatile uint64 sstatus;
     while(1) {
         while ((statusReg & CONSOLE_RX_STATUS_BIT) && !inputBuffer->isBufferFull())
         {
@@ -134,11 +137,15 @@ void KConsole::produceInputBuffer(void*)
         {
             Machine::bs_sie(Machine::SEIE);
         }
-        TCB *oldThread = TCB::getRunningThread();
-        TCB::setRunningThread(Scheduler::get());
-        oldThread->resetNextThreadInQueue();
-        oldThread->setStateOfThread(KernelConfig::BLOCKED);
-        context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
+        //TCB *oldThread = TCB::getRunningThread();
+        //TCB::setRunningThread(Scheduler::get());
+        producerThread->setStateOfThread(KernelConfig::BLOCKED);
+        //oldThread->resetNextThreadInQueue();
+        //oldThread->setStateOfThread(KernelConfig::BLOCKED);
+        TCB::dispatch();
+        Machine::writeSstatus(sstatus);
+
+
     }
 
 }
