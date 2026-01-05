@@ -154,12 +154,20 @@ void Kernel::wakeUpThreads()
     }
     queueOfAsleepThreads->top()->decrementTimeToSleep();
 
-    while(!queueOfAsleepThreads->top()->getTimeToSleep())
+    while(queueOfAsleepThreads->top())
     {
-        TCB* curr = queueOfAsleepThreads->take();
-        curr->resetNextThreadInQueue();
-        curr->setStateOfThread(KernelConfig::READY);
-        Scheduler::put(curr);
+        if(!queueOfAsleepThreads->top()->getTimeToSleep())
+        {
+            TCB* curr = queueOfAsleepThreads->take();
+            curr->resetNextThreadInQueue();
+            curr->setStateOfThread(KernelConfig::READY);
+            Scheduler::put(curr);
+        }
+        else
+        {
+            return;
+        }
+
     }
 }
 void Kernel::interruptHandler()
