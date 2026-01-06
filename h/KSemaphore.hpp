@@ -27,7 +27,7 @@ public:
 	uint64 getID() const { return semId; }
 private:
     void blockThread(TCB* threadToBlock);
-    int unblockThread(KernelConfig::WakeUpReason reason);
+    void unblockThread(KernelConfig::WakeUpReason reason);
 	static uint64 countOfSemaphores;
     long semaphoreVal;
 	KSemaphore* nextSemaphoreInQueue;

@@ -7,7 +7,9 @@
 #include "../h/Scheduler.hpp"
 
 
-extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
+extern "C"
+__attribute__((returns_twice, noinline))
+void context_switch(TCB::Context* oldContext, TCB::Context* newContext) ;
 extern "C" uint64 copy_and_swap(uint64* lock, uint64 expected, uint64 desired);
 uint64 KSemaphore::countOfSemaphores = 0;
 
@@ -29,7 +31,7 @@ void KSemaphore::blockThread(TCB* threadToBlock)
     queueBlockedThreads->append(threadToBlock);
 }
 
-int KSemaphore::unblockThread(KernelConfig::WakeUpReason reason)
+void KSemaphore::unblockThread(KernelConfig::WakeUpReason reason)
 {
 
    TCB* oldThread = queueBlockedThreads->take();
@@ -40,9 +42,9 @@ int KSemaphore::unblockThread(KernelConfig::WakeUpReason reason)
         oldThread->resetSemaphoreOnWait();
         oldThread->setStateOfThread(KernelConfig::READY);
         Scheduler::put(oldThread);
-        return 0;
+        return;
     }
-    return -1;
+    return;
 
 }
 
@@ -54,17 +56,21 @@ int KSemaphore::wait()
     {
 
         TCB* oldThread = TCB::getRunningThread();
-        TCB::setRunningThread(Scheduler::get());
+        TCB* newRunning = Scheduler::get();
+        TCB::setRunningThread(newRunning);
         oldThread->resetNextThreadInQueue();
         oldThread->setQueueOfWhichIsPart(queueBlockedThreads);
         blockThread(oldThread);
         lck = 0;
-        context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
-        if(TCB::getRunningThread()->getWakeUpReason() == KernelConfig::WAKE_UP_SEMAPHORE_SIGNAL)
+        context_switch(oldThread->getContext(), newRunning->getContext());
+        __asm__ volatile("":::"memory");
+
+        TCB* tempThread = TCB::getRunningThread();
+        if(tempThread->getWakeUpReason() == KernelConfig::WAKE_UP_SEMAPHORE_SIGNAL)
         {
             return 0;
         }
-        if(TCB::getRunningThread()->getWakeUpReason() == KernelConfig::WAKE_UP_SEMAPHORE_CLOSE)
+        if(tempThread->getWakeUpReason() == KernelConfig::WAKE_UP_SEMAPHORE_CLOSE)
         {
             return -1;
         }
@@ -77,14 +83,14 @@ int KSemaphore::wait()
 int KSemaphore::signal()
 {
     while(copy_and_swap(&lck, 0, 1));
-    if(semaphoreVal == cap)
-    {
-        return 0;
-    }
+//    if(semaphoreVal == cap)
+//    {
+//        return 0;
+//    }
     semaphoreVal++;
     if(semaphoreVal <= 0)
     {
-        return unblockThread(KernelConfig::WAKE_UP_SEMAPHORE_SIGNAL);
+        unblockThread(KernelConfig::WAKE_UP_SEMAPHORE_SIGNAL);
     }
     lck = 0;
     return 0;

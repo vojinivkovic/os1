@@ -466,7 +466,7 @@ uint64 Kernel::sysSemaphoreClose(ArgumentsOfSystemCall *arg)
     returnValue = (uint64)tempSemaphore->close();
     queueOfOpenedSemaphores->removeElement(tempSemaphore);
     tempSemaphore->resetNextSemaphoreInQueue();
-    delete tempSemaphore;
+    tempSemaphore->~KSemaphore();
     Kernel::poolOfSemaphores->freeObject(tempSemaphore);
 
     return returnValue;
