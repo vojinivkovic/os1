@@ -65,7 +65,7 @@ public:
 
     static void dispatch();
     static void start(TCB* readyElement);
-
+    static void initializeGlobalId() { globalId = 0; }
     static TCB* getRunningThread() { return running; }
     static void setRunningThread(TCB* newRunningThread) { running = newRunningThread; }
 

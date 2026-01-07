@@ -114,7 +114,8 @@ void Kernel::initializeKernel()
     initializeKernelSemaphores();
     initializeKernelThreads();
     initializeSystemCalls();
-
+    TCB::initializeGlobalId();
+    KSemaphore::initializeGlobalId();
 
 }
 void Kernel::destroy()
@@ -196,19 +197,20 @@ void Kernel::removeThreadFromList(TCB *thread)
     if(!prev)
     {
         headLiveThreads = headLiveThreads->getNextLiveThread();
-        if(!headLiveThreads)
+        if (!headLiveThreads)
         {
             tailLiveThreads = nullptr;
         }
-        else
+    }
+    else
+    {
+        prev->addNewLiveThread(thread->getNextLiveThread());
+        if(tailLiveThreads == thread)
         {
-            prev->addNewLiveThread(thread->getNextLiveThread());
-            if(tailLiveThreads == thread)
-            {
-                tailLiveThreads = prev;
-            }
+            tailLiveThreads = prev;
         }
     }
+
 }
 
 TCB* Kernel::findThread(uint64 threadId)
@@ -429,7 +431,6 @@ uint64 Kernel::sysThreadFinish(ArgumentsOfSystemCall *arg)
     oldThread->setIsFinished();
     oldThread->setStateOfThread(KernelConfig::FINISHED);
     oldThread->freeWaitThreads();
-
     return 0;
 }
 uint64 Kernel::sysThreadExit(Kernel::ArgumentsOfSystemCall *arg)
@@ -512,7 +513,7 @@ uint64 Kernel::sysThreadJoin(ArgumentsOfSystemCall *arg)
 
         TCB* newRunning = Scheduler::get();
         TCB::setRunningThread(newRunning);
-        context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
+        context_switch(oldThread->getContext(), newRunning->getContext());
 
     }
     __asm__ volatile ("":::"memory");
@@ -584,11 +585,17 @@ uint64 Kernel::sysTimeSleep(ArgumentsOfSystemCall *arg)
 {
     TCB* oldThread = TCB::getRunningThread();
     oldThread->resetNextThreadInQueue();
+    size_t time = (size_t)arg->a0;
+    if(time == 0)
+    {
+        return 0;
+    }
     oldThread->setTimeToSleep((size_t)arg->a0);
     oldThread->setStateOfThread(KernelConfig::ASLEEP);
     queueOfAsleepThreads->append(oldThread);
-    TCB::setRunningThread(Scheduler::get());
-    context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
+    TCB* newRunning = Scheduler::get();
+    TCB::setRunningThread(newRunning);
+    context_switch(oldThread->getContext(), newRunning->getContext());
     return 0;
 }
 uint64 Kernel::sysGetc(ArgumentsOfSystemCall *arg)

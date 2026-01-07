@@ -34,7 +34,7 @@ Thread::Thread(void (*body)(void *), void *arg): myHandle(0), body(body), arg(ar
 {
     if(thread_create(&myHandle, this->body, this->arg))
     {
-       myHandle = -1;
+       myHandle = 0;
     }
 }
 
@@ -58,7 +58,7 @@ Thread::Thread(): myHandle(0), body(nullptr), arg(nullptr)
 {
     if(thread_create(&myHandle, &(Thread::wrapperRun), this))
     {
-        myHandle = -1;
+        myHandle = 0;
     }
 }
 void PeriodicThread::wrapperPeriodicThread(void * thread)

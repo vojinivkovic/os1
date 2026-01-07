@@ -25,6 +25,7 @@ public:
 	KSemaphore* getNextElementInQueue() const { return nextSemaphoreInQueue; }
 	void resetNextSemaphoreInQueue() { nextSemaphoreInQueue = nullptr; }
 	uint64 getID() const { return semId; }
+	static void initializeGlobalId() { globalId = 0; }
 private:
     void blockThread(TCB* threadToBlock);
     void unblockThread(KernelConfig::WakeUpReason reason);
