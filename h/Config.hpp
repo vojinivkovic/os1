@@ -18,12 +18,12 @@ namespace KernelConfig
 
     enum StateOfThread
     {
+        EXIT,
         READY,
         BLOCKED,
         FINISHED,
         RUNNING,
-        ASLEEP,
-        TERMINATED
+        ASLEEP
     };
 
     enum Mode
@@ -48,8 +48,10 @@ namespace KernelConfig
         THREAD_EXIT = 0x12,
         THREAD_DISPATCH = 0x13,
         THREAD_START = 0x14,
-        THREAD_JOIN = 0x15,
-        THREAD_TERMINATE = 0x16,
+        THREAD_ID = 0x15,
+        THREAD_FINISH = 0x16,
+        THREAD_KILL = 0x17,
+        THREAD_JOIN = 0x18,
         SEMAPHORE_OPEN = 0X21,
         SEMAPHORE_CLOSE = 0x22,
         SEMAPHORE_WAIT = 0x23,

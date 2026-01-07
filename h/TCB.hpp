@@ -41,6 +41,10 @@ public:
     void addElementToQueue(TCB* newThread) { nextThreadInQueue = newThread; }
     TCB* getNextElementInQueue() const { return nextThreadInQueue; }
     void resetNextThreadInQueue() { nextThreadInQueue = nullptr; }
+    void addNewLiveThread(TCB* newThread) { nextLiveThread = newThread; }
+    TCB* getNextLiveThread() { return nextLiveThread; }
+    void resetNextLiveThread() { nextLiveThread = nullptr; }
+    uint64 getId() { return threadId; }
     Context* getContext() { return &context; }
     //KernelConfig::Mode getMode() { return context.mode; }
     void* getUserStack() const { return userStack; }
@@ -83,6 +87,8 @@ private:
     void* arguments;
     KSemaphore* waitOnSemaphore;
     TCB* nextThreadInQueue;
+    TCB* nextLiveThread;
+    uint64 threadId;
     KernelConfig::StateOfThread stateOfThread;
     bool finished;
     KernelConfig::WakeUpReason wakeUpReason;
@@ -94,7 +100,7 @@ private:
 
 
     static TCB* running;
-
+    static uint64 globalId;
     static size_t numOfTicks;
     static void threadWrapper();// ova f-ja ce sluziti kako bismo mogli da zavrsimo nit, a i da od nje pocne izvrsavanje svake niti
 

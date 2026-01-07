@@ -11,6 +11,7 @@ extern "C" char first_born;
 
 size_t TCB::numOfTicks = 0;
 TCB* TCB::running = nullptr;
+uint64 TCB::globalId = 1;
 void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, void* allocatedSystemStack, ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool,
                            KernelConfig::StateOfThread state, KernelConfig::Mode mmode, bool enableInterrupts)
 {
@@ -24,6 +25,7 @@ void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, v
     stateOfThread = state;
     timeToSleep = 0;
     sourcePool = pool;
+    threadId = ++globalId;
     queueOfWaitThreads = new Queue<TCB>();
     queueOfWhichIsPart = nullptr;
     mode = mmode;
@@ -50,7 +52,7 @@ void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, v
 void TCB::threadWrapper()
 {
     running->body(running->arguments);
-    thread_exit();
+    thread_finish();
 
 }
 void TCB::yield(TCB *oldThread, TCB *newThread)
@@ -83,7 +85,6 @@ TCB::~TCB()
         MemoryAllocator::freeMemory(userStack);
     }
 
-    stateOfThread = KernelConfig::TERMINATED;
 }
 void TCB::start(TCB* readyThread)
 {

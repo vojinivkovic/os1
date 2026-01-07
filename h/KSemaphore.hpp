@@ -28,7 +28,7 @@ public:
 private:
     void blockThread(TCB* threadToBlock);
     void unblockThread(KernelConfig::WakeUpReason reason);
-	static uint64 countOfSemaphores;
+	static uint64 globalId;
     long semaphoreVal;
 	KSemaphore* nextSemaphoreInQueue;
 	Queue<TCB>* queueBlockedThreads;

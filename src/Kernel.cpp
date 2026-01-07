@@ -21,6 +21,8 @@ Queue<KSemaphore>* Kernel::queueOfOpenedSemaphores = nullptr;
 TCB* Kernel::demonThread = nullptr;
 KSemaphore* Kernel::semaphoreInputBuffer = nullptr;
 KSemaphore* Kernel::semaphoreOutputBuffer = nullptr;
+TCB* Kernel::headLiveThreads = nullptr;
+TCB* Kernel::tailLiveThreads = nullptr;
 
 
 void Kernel::makeConsumerThread()
@@ -169,6 +171,58 @@ void Kernel::wakeUpThreads()
         }
 
     }
+}
+void Kernel::addThreadToList(TCB *thread)
+{
+    if(!headLiveThreads)
+    {
+        headLiveThreads = thread;
+    }
+    else
+    {
+        tailLiveThreads->addNewLiveThread(thread);
+    }
+    tailLiveThreads = thread;
+}
+
+void Kernel::removeThreadFromList(TCB *thread)
+{
+    TCB* prev = nullptr, *curr = headLiveThreads;
+    while(curr != thread && curr)
+    {
+        prev = curr;
+        curr = curr->getNextLiveThread();
+    }
+    if(!prev)
+    {
+        headLiveThreads = headLiveThreads->getNextLiveThread();
+        if(!headLiveThreads)
+        {
+            tailLiveThreads = nullptr;
+        }
+        else
+        {
+            prev->addNewLiveThread(thread->getNextLiveThread());
+            if(tailLiveThreads == thread)
+            {
+                tailLiveThreads = prev;
+            }
+        }
+    }
+}
+
+TCB* Kernel::findThread(uint64 threadId)
+{
+    TCB* curr = headLiveThreads;
+    while(curr)
+    {
+        if(curr->getId() == threadId)
+        {
+            return curr;
+        }
+        curr = curr->getNextLiveThread();
+    }
+    return nullptr;
 }
 void Kernel::interruptHandler()
 {
@@ -355,9 +409,9 @@ uint64 Kernel::sysThreadCreate(Kernel::ArgumentsOfSystemCall *arg)
     {
         return -1;
     }
-    __asm__ volatile("sd %[ptrThread], 0(%[handle])"::[ptrThread]"r"(newThread), [handle]"r"(arg->a0));
-
     newThread->initializeThread((TCB::Body) arg->a1, (void*)arg->a2, (void*)arg->a3, kernelSystemStack, sourcePool);
+    addThreadToList(newThread);
+    __asm__ volatile("sd %[threadHandle], 0(%[handle])"::[threadHandle]"r"(newThread->getId()), [handle]"r"(arg->a0));
     return 0;
 }
 uint64 Kernel::sysThreadDispatch(Kernel::ArgumentsOfSystemCall *arg)
@@ -365,33 +419,41 @@ uint64 Kernel::sysThreadDispatch(Kernel::ArgumentsOfSystemCall *arg)
     TCB::dispatch();
     return 0;
 }
-uint64 Kernel::sysThreadExit(Kernel::ArgumentsOfSystemCall *arg)
+uint64 Kernel::sysThreadFinish(ArgumentsOfSystemCall *arg)
 {
     TCB* oldThread = TCB::getRunningThread();
+    if(oldThread->getStateOfThread() == KernelConfig::FINISHED)
+    {
+        return 0;
+    }
     oldThread->setIsFinished();
     oldThread->setStateOfThread(KernelConfig::FINISHED);
-
-    // da li ce ovaj uslov biti ikada ispunjen??
-//    if(!TCB::getRunningThread()->getSemaphoreOnWait())
-//    {
-//        KSemaphore* tempSemaphore = TCB::getRunningThread()->getSemaphoreOnWait();
-//        tempSemaphore->removeThreadFromBlockedQueue(TCB::getRunningThread());
-//    }
-
     oldThread->freeWaitThreads();
-//    oldThread->resetQueueOfWhichIsPart();
-//    oldThread->resetNextThreadInQueue();
+
     return 0;
+}
+uint64 Kernel::sysThreadExit(Kernel::ArgumentsOfSystemCall *arg)
+{
+
+    TCB* oldThread = TCB::getRunningThread();
+    oldThread->setStateOfThread(KernelConfig::EXIT);
+    oldThread->~TCB();
+    oldThread->resetNextThreadInQueue();
+
+    removeThreadFromList(oldThread);
+    oldThread->resetNextLiveThread();
+    poolOfThreads->freeObject(oldThread);
+    return 0;
+
 }
 uint64 Kernel::sysThreadStart(ArgumentsOfSystemCall *arg)
 {
-    TCB* tempThread = (TCB*)(arg->a0);
+    TCB* tempThread = findThread((uint64)(arg->a0));
     if(!tempThread)
     {
         return -1;
     }
-
-    if(tempThread->getStateOfThread() == KernelConfig::TERMINATED)
+    if(tempThread->getStateOfThread() == KernelConfig::ASLEEP || tempThread->getQueueOfWhichIsPart())
     {
         return -1;
     }
@@ -399,9 +461,47 @@ uint64 Kernel::sysThreadStart(ArgumentsOfSystemCall *arg)
     Scheduler::put(tempThread);
     return 0;
 }
+
+uint64 Kernel::sysThreadKill(ArgumentsOfSystemCall *arg)
+{
+    TCB* tempThread = findThread((uint64)(arg->a0));
+    if(!tempThread)
+    {
+        return -1;
+    }
+
+    if(tempThread->getStateOfThread() == KernelConfig::ASLEEP)
+    {
+        queueOfAsleepThreads->removeElement(tempThread);
+    }
+    else
+    {
+        Queue<TCB>* queue = tempThread->getQueueOfWhichIsPart();
+        if(queue)
+        {
+            queue->removeElement(tempThread);
+        }
+    }
+
+    tempThread->setIsFinished();
+    tempThread->freeWaitThreads();
+    tempThread->~TCB();
+    tempThread->setStateOfThread(KernelConfig::EXIT);
+    tempThread->resetNextThreadInQueue();
+    tempThread->resetQueueOfWhichIsPart();
+    removeThreadFromList(tempThread);
+    tempThread->resetNextLiveThread();
+    poolOfThreads->freeObject(tempThread);
+    return 0;
+}
 uint64 Kernel::sysThreadJoin(ArgumentsOfSystemCall *arg)
 {
-    TCB* tempThread = (TCB*)(arg->a0);
+    TCB* tempThread = findThread((uint64)(arg->a0));
+    if(!tempThread)
+    {
+        return -1;
+    }
+
     if(!tempThread->isFinished())
     {
         TCB* oldThread = TCB::getRunningThread();
@@ -409,37 +509,25 @@ uint64 Kernel::sysThreadJoin(ArgumentsOfSystemCall *arg)
         oldThread->setStateOfThread(KernelConfig::BLOCKED);
         oldThread->setQueueOfWhichIsPart(tempThread->getWaitQueue());
         tempThread->addThreadToWaitQueue(oldThread);
-        TCB::setRunningThread(Scheduler::get());
+
+        TCB* newRunning = Scheduler::get();
+        TCB::setRunningThread(newRunning);
         context_switch(oldThread->getContext(), TCB::getRunningThread()->getContext());
 
     }
-
-    if(tempThread->getStateOfThread() == KernelConfig::TERMINATED)
-    {
-        return 0;
-    }
-    delete tempThread;
+    __asm__ volatile ("":::"memory");
+    tempThread->~TCB();
+    tempThread->setStateOfThread(KernelConfig::EXIT);
+    tempThread->resetNextThreadInQueue();
+    removeThreadFromList(tempThread);
+    tempThread->resetNextLiveThread();
     poolOfThreads->freeObject(tempThread);
     return 0;
 }
-uint64 Kernel::sysThreadTerminate(ArgumentsOfSystemCall *arg)
+uint64 Kernel::sysThreadId(ArgumentsOfSystemCall *arg)
 {
-    TCB* tempThread = (TCB*)(arg->a0);
-    tempThread->setIsFinished();
-    tempThread->setStateOfThread(KernelConfig::FINISHED);
-    tempThread->freeWaitThreads();
-    if(tempThread->getStateOfThread() == KernelConfig::BLOCKED)
-    {
-        tempThread->getQueueOfWhichIsPart()->removeElement(tempThread);
-    }
-    else if (tempThread->getStateOfThread() == KernelConfig::ASLEEP)
-    {
-        queueOfAsleepThreads->removeElement(tempThread);
-    }
-
-    tempThread->resetQueueOfWhichIsPart();
-    tempThread->resetNextThreadInQueue();
-    return 0;
+    TCB* tempThread = TCB::getRunningThread();
+    return tempThread->getId();
 }
 uint64 Kernel::sysSemaphoreOpen(ArgumentsOfSystemCall *arg)
 {
@@ -546,8 +634,10 @@ void Kernel::initializeSystemCalls(void)
     systemCallsTable[KernelConfig::THREAD_DISPATCH] = &sysThreadDispatch;
     systemCallsTable[KernelConfig::THREAD_EXIT] = &sysThreadExit;
     systemCallsTable[KernelConfig::THREAD_START] = &sysThreadStart;
+    systemCallsTable[KernelConfig::THREAD_ID] = &sysThreadId;
+    systemCallsTable[KernelConfig::THREAD_FINISH] = &sysThreadFinish;
+    systemCallsTable[KernelConfig::THREAD_KILL] = &sysThreadKill;
     systemCallsTable[KernelConfig::THREAD_JOIN] = &sysThreadJoin;
-    systemCallsTable[KernelConfig::THREAD_TERMINATE] = &sysThreadTerminate;
     systemCallsTable[KernelConfig::SEMAPHORE_OPEN] = &sysSemaphoreOpen;
     systemCallsTable[KernelConfig::SEMAPHORE_CLOSE] = &sysSemaphoreClose;
     systemCallsTable[KernelConfig::SEMAPHORE_SIGNAL] = &sysSemaphoreSignal;

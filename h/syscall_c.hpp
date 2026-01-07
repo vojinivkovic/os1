@@ -9,8 +9,10 @@
 #include "_semaphore.hpp"
 
 
-typedef _thread* thread_t;
-typedef _sem* sem_t;
+//typedef _thread* thread_t;
+//typedef _sem* sem_t;
+typedef uint64 thread_t;
+typedef uint64 sem_t;
 typedef unsigned long time_t;
 
 
@@ -28,11 +30,15 @@ int thread_exit();
 
 void thread_dispatch();
 
+thread_t thread_id();
+
 int thread_start(thread_t handle);
 
-void thread_join(thread_t handle);
+void thread_finish();
 
-void thread_terminate(thread_t handle);
+int thread_kill(thread_t handle);
+
+int thread_join(thread_t handle);
 
 int sem_open(sem_t* handle, unsigned init);
 

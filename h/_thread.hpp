@@ -4,6 +4,6 @@
 
 #ifndef PROJECT_BASE_V1_1__THREAD_H
 #define PROJECT_BASE_V1_1__THREAD_H
-class TCB;
-using _thread = TCB;
+#include "../lib/hw.h"
+using _thread = uint64;
 #endif //PROJECT_BASE_V1_1__THREAD_H

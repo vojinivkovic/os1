@@ -45,10 +45,12 @@ private:
     static uint64 sysLargestFreeBlock(ArgumentsOfSystemCall* arg);
     static uint64 sysThreadCreate(ArgumentsOfSystemCall* arg);
     static uint64 sysThreadDispatch(ArgumentsOfSystemCall* arg);
+    static uint64 sysThreadId(ArgumentsOfSystemCall* arg);
     static uint64 sysThreadExit(ArgumentsOfSystemCall* arg);
     static uint64 sysThreadStart(ArgumentsOfSystemCall*arg);
+    static uint64 sysThreadFinish(ArgumentsOfSystemCall* arg);
+    static uint64 sysThreadKill(ArgumentsOfSystemCall* arg);
     static uint64 sysThreadJoin(ArgumentsOfSystemCall* arg);
-    static uint64 sysThreadTerminate(ArgumentsOfSystemCall* arg);
 	static uint64 sysSemaphoreOpen(ArgumentsOfSystemCall* arg);
 	static uint64 sysSemaphoreClose(ArgumentsOfSystemCall* arg);
     static uint64 sysSemaphoreWait(ArgumentsOfSystemCall* arg);
@@ -65,7 +67,9 @@ private:
     static void makeProducerThread(void);
     static void kernelWorker(void*);
     static void userWorker(void*);
-
+    static void addThreadToList(TCB* thread);
+    static void removeThreadFromList(TCB* thread);
+    static TCB* findThread(uint64 threadId);
 
     static void destroy();
     static uint64 (*systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(ArgumentsOfSystemCall* arg);
@@ -83,6 +87,8 @@ private:
 
     static KSemaphore* semaphoreOutputBuffer;
     static KSemaphore* semaphoreInputBuffer;
+    static TCB* headLiveThreads;
+    static TCB* tailLiveThreads;
 
 
 };

@@ -62,8 +62,19 @@ void thread_dispatch()
 
 int thread_exit()
 {
+    thread_finish();
     Arguments arg = {KernelConfig::THREAD_EXIT, 0, 0, 0, 0, 0, 0, 0};
     return (int) system_call(&arg);
+}
+int thread_kill(thread_t handle)
+{
+    Arguments arg = {KernelConfig::THREAD_KILL,(uint64)handle, 0, 0, 0, 0, 0, 0};
+    return (uint64)system_call(&arg);
+}
+int thread_join(thread_t handle)
+{
+    Arguments arg = {KernelConfig::THREAD_JOIN,(uint64)handle, 0, 0, 0, 0, 0, 0};
+    return (uint64)system_call(&arg);
 }
 int thread_start(thread_t handle)
 {
@@ -71,15 +82,15 @@ int thread_start(thread_t handle)
     return (uint64)system_call(&arg);
 }
 
-void thread_join(thread_t handle)
+thread_t thread_id()
 {
-    Arguments arg = {KernelConfig::THREAD_JOIN,(uint64)handle, 0, 0, 0, 0, 0, 0};
-    system_call(&arg);
+    Arguments arg = {KernelConfig::THREAD_ID,0, 0, 0, 0, 0, 0, 0};
+    return (thread_t)system_call(&arg);
 }
 
-void thread_terminate(thread_t handle)
+void thread_finish()
 {
-    Arguments arg = {KernelConfig::THREAD_TERMINATE,(uint64)handle, 0, 0, 0, 0, 0, 0};
+    Arguments arg = {KernelConfig::THREAD_FINISH,0, 0, 0, 0, 0, 0, 0};
     system_call(&arg);
 }
 int sem_open(sem_t* handle, unsigned init)

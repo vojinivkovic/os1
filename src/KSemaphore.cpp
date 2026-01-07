@@ -11,14 +11,14 @@ extern "C"
 __attribute__((returns_twice, noinline))
 void context_switch(TCB::Context* oldContext, TCB::Context* newContext) ;
 extern "C" uint64 copy_and_swap(uint64* lock, uint64 expected, uint64 desired);
-uint64 KSemaphore::countOfSemaphores = 0;
+uint64 KSemaphore::globalId = 0;
 
 void KSemaphore::initializeSemaphore(unsigned value, ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>* pool)
 {
     semaphoreVal = value;
     queueBlockedThreads = new Queue<TCB>();
     sourcePool = pool;
-    semId = countOfSemaphores++;
+    semId = globalId++;
     nextSemaphoreInQueue = nullptr;
     cap = value;
     lck = 0;

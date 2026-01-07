@@ -2,7 +2,7 @@
 // Created by os on 12/20/25.
 //
 #include "../h/syscall_cpp.hpp"
-
+#include "../h/printing.hpp"
 void* operator new(size_t size)
 {
     return mem_alloc(size);
@@ -14,6 +14,11 @@ void operator delete(void* obj)
 
 Thread::~Thread()
 {
+    if(myHandle == thread_id())
+    {
+        printString("Thread tried to kill itself");
+        return;
+    }
     thread_join(myHandle);
 }
 void Thread::dispatch()
@@ -25,11 +30,11 @@ int Thread::sleep(time_t time)
     return time_sleep(time);
 }
 
-Thread::Thread(void (*body)(void *), void *arg): myHandle(nullptr), body(body), arg(arg)
+Thread::Thread(void (*body)(void *), void *arg): myHandle(0), body(body), arg(arg)
 {
     if(thread_create(&myHandle, this->body, this->arg))
     {
-       myHandle = nullptr;
+       myHandle = -1;
     }
 }
 
@@ -40,7 +45,7 @@ void Thread::wrapperRun(void* thread)
 }
 int Thread::start()
 {
-    if(myHandle == nullptr)
+    if(myHandle == 0)
     {
         return -1;
     }
@@ -49,11 +54,11 @@ int Thread::start()
 
 }
 
-Thread::Thread(): myHandle(nullptr), body(nullptr), arg(nullptr)
+Thread::Thread(): myHandle(0), body(nullptr), arg(nullptr)
 {
     if(thread_create(&myHandle, &(Thread::wrapperRun), this))
     {
-        myHandle = nullptr;
+        myHandle = -1;
     }
 }
 void PeriodicThread::wrapperPeriodicThread(void * thread)
@@ -72,7 +77,11 @@ period(period)
 }
 void PeriodicThread::terminate()
 {
-    thread_terminate(myHandle);
+    if(myHandle == 0)
+    {
+        return;
+    }
+    thread_kill(myHandle);
 }
 Semaphore::Semaphore(unsigned int init)
 {
