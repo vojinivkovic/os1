@@ -4,7 +4,7 @@
 
 #ifndef PROJECT_BASE_V1_1_KCONSOLE_H
 #define PROJECT_BASE_V1_1_KCONSOLE_H
-#include "Buffer.hpp"
+#include "KBuffer.hpp"
 #include "Config.hpp"
 #include "Queue.hpp"
 
@@ -27,14 +27,15 @@ public:
     static TCB* getProducerThread() { return producerThread; }
     static void setProducerThread(TCB* thread) { producerThread = thread; }
 
-    static bool isInputBufferEmpty() { return inputBuffer->isBufferEmpty(); }
-    static bool isInputBufferFull() { return inputBuffer->isBufferFull(); }
+    static bool isInputBufferEmpty();
+    static bool isInputBufferFull();
 
-    static bool isOutputBufferFull() { return outputBuffer->isBufferFull(); }
-    static bool isOutputBufferEmpty() { return outputBuffer->isBufferEmpty(); }
+    static bool isOutputBufferFull();
+    static bool isOutputBufferEmpty();
 
     static void addThreadToInputWaitQueue(TCB* thread);
     static void removeThreadFromInputWaitQueue();
+    //static TCB* getInputWaitQueue() { return }
 
     static void addThreadToOutputWaitQueue(TCB* thread);
     static void removeThreadFromOutputWaitQueue();
@@ -44,15 +45,17 @@ public:
 
     static void setOutputBufferReady() { outputBufferReady = true; }
     static void resetOutputBufferReady() { outputBufferReady = false; }
+    static bool getOutputBufferReady() { return outputBufferReady; }
 
     static void setInputBufferReady() { inputBufferReady = true; }
     static void resetInputBufferReady() { outputBufferReady = false; }
+    static bool getInputBufferReady() { return inputBufferReady; }
 private:
     static TCB* consumerThread, *producerThread;
     static Queue<TCB>* inputWaitQueue, *outputWaitQueue;
 
-    static Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>* inputBuffer;
-    static Buffer<char, KernelConfig::SIZE_OUTPUT_BUFFER>* outputBuffer;
+    static KBuffer* inputBuffer;
+    static KBuffer* outputBuffer;
     static bool outputBufferReady;
     static bool inputBufferReady;
 };

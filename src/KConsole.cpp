@@ -11,8 +11,8 @@
 extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
 
 
-Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>* KConsole::inputBuffer = nullptr;
-Buffer<char, KernelConfig::SIZE_OUTPUT_BUFFER>* KConsole::outputBuffer = nullptr;
+KBuffer* KConsole::inputBuffer = nullptr;
+KBuffer* KConsole::outputBuffer = nullptr;
 Queue<TCB>* KConsole::inputWaitQueue = nullptr;
 Queue<TCB>* KConsole::outputWaitQueue = nullptr;
 TCB* KConsole::consumerThread = nullptr;
@@ -23,8 +23,8 @@ bool KConsole::inputBufferReady = false;
 void KConsole::initialize()
 {
 
-    inputBuffer = new Buffer<char, KernelConfig::SIZE_INPUT_BUFFER>();
-    outputBuffer = new Buffer<char, KernelConfig::SIZE_OUTPUT_BUFFER>();
+    inputBuffer = new KBuffer();
+    outputBuffer = new KBuffer();
     inputWaitQueue = new Queue<TCB>();
     outputWaitQueue = new Queue<TCB>();
 }
@@ -67,26 +67,26 @@ void KConsole::removeThreadFromOutputWaitQueue()
 }
 char KConsole::getCharFromInputBuffer()
 {
-    if(inputBuffer->isBufferFull())
-    {
-        producerThread->setStateOfThread(KernelConfig::READY);
-        Scheduler::put(producerThread);
-    }
-    return *(inputBuffer->take());
+//    if(inputBuffer->isBufferFull())
+//    {
+//        producerThread->setStateOfThread(KernelConfig::READY);
+//        Scheduler::put(producerThread);
+//    }
+    return (inputBuffer->take());
 }
 void KConsole::addCharToOutputBuffer(char c)
 {
-    if(outputBuffer->isBufferEmpty())
-    {
-        consumerThread->setStateOfThread(KernelConfig::READY);
-        Scheduler::put(consumerThread);
-    }
-    outputBuffer->append(&c);
+//    if(outputBuffer->isBufferEmpty())
+//    {
+//        consumerThread->setStateOfThread(KernelConfig::READY);
+//        Scheduler::put(consumerThread);
+//    }
+    outputBuffer->append(c);
 }
 
 void KConsole::consumeOutputBuffer(void*)
 {
-    volatile uint8 data;
+    volatile char data;
     volatile uint8 statusReg;
     volatile uint64 sstatus;
     while(1)
@@ -95,7 +95,7 @@ void KConsole::consumeOutputBuffer(void*)
         while ((statusReg & CONSOLE_TX_STATUS_BIT) && !outputBuffer->isBufferEmpty())
         {
             Kernel::getSemaphoreOutput()->wait();
-            data = *(outputBuffer->take());
+            data = (outputBuffer->take());
             __asm__ volatile("sb %[regData], 0(%[address])":: [regData]"r"(data), [address]"r"(CONSOLE_TX_DATA):"memory");
             __asm__ volatile("lbu %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS):"memory");
             removeThreadFromOutputWaitQueue();
@@ -109,9 +109,10 @@ void KConsole::consumeOutputBuffer(void*)
         //TCB *oldThread = TCB::getRunningThread();
         //TCB::setRunningThread(Scheduler::get());
         consumerThread->setStateOfThread(KernelConfig::BLOCKED);
+        consumerThread->resetQueueOfWhichIsPart();
         //oldThread->resetNextThreadInQueue();
         //oldThread->setStateOfThread(KernelConfig::BLOCKED);
-        TCB::dispatch();
+        //TCB::dispatch();
         Machine::writeSstatus(sstatus);
     }
 }
@@ -119,7 +120,7 @@ void KConsole::consumeOutputBuffer(void*)
 void KConsole::produceInputBuffer(void*)
 {
     volatile uint8 statusReg;
-    volatile uint8 data;
+    volatile char data;
     volatile uint64 sstatus;
     while(1) {
         while ((statusReg & CONSOLE_RX_STATUS_BIT) && !inputBuffer->isBufferFull())
@@ -128,7 +129,7 @@ void KConsole::produceInputBuffer(void*)
             Kernel::getSemaphoreInput()->wait();
             __asm__ volatile("lbu %[regData], 0(%[address])" : [regData]"=r"(data): [address]"r"(CONSOLE_RX_DATA):"memory");
             char c = data;
-            inputBuffer->append(&c);
+            inputBuffer->append(c);
             __asm__ volatile("lbu %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS):"memory");
             removeThreadFromInputWaitQueue();
             Kernel::getSemaphoreInput()->signal();
@@ -140,9 +141,10 @@ void KConsole::produceInputBuffer(void*)
         //TCB *oldThread = TCB::getRunningThread();
         //TCB::setRunningThread(Scheduler::get());
         producerThread->setStateOfThread(KernelConfig::BLOCKED);
+        producerThread->resetQueueOfWhichIsPart();
         //oldThread->resetNextThreadInQueue();
         //oldThread->setStateOfThread(KernelConfig::BLOCKED);
-        TCB::dispatch();
+        //TCB::dispatch();
         Machine::writeSstatus(sstatus);
 
 
@@ -156,4 +158,20 @@ void KConsole::destroy()
     delete inputWaitQueue;
     delete outputWaitQueue;
 }
+bool KConsole::isInputBufferEmpty()
+{
+    return inputBuffer->isBufferEmpty();
+}
+bool KConsole::isInputBufferFull()
+{
+    return inputBuffer->isBufferFull();
+}
 
+bool KConsole::isOutputBufferFull()
+{
+    return outputBuffer->isBufferFull();
+}
+bool KConsole::isOutputBufferEmpty()
+{
+    return outputBuffer->isBufferEmpty();
+}
