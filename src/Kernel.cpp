@@ -7,6 +7,7 @@
 #include "../h/TCB.hpp"
 #include "../h/KSemaphore.hpp"
 #include "../h/KConsole.hpp"
+//#include "../lib/console.h"
 
 extern "C" void interrupt_trap(void);
 extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
@@ -94,7 +95,7 @@ void Kernel::initializeKernelSemaphores(void)
 void Kernel::initializeKernel()
 {
     MemoryAllocator::initialize();
-
+    TCB::initializeGlobalId();
     Kernel::setInterruptRoutine(&interrupt_trap);
     poolOfThreads = new ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>();
     poolOfSemaphores = new ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>();
@@ -116,7 +117,7 @@ void Kernel::initializeKernel()
     initializeKernelSemaphores();
     initializeKernelThreads();
     initializeSystemCalls();
-    TCB::initializeGlobalId();
+
     KSemaphore::initializeGlobalId();
 
 }
@@ -289,10 +290,9 @@ void Kernel::interruptHandler()
         {
             // hardware interrupt from console
 
-
+       //     Machine::bc_sip(Machine::SEIP);
             volatile uint64 sepc = Machine::readSepc();
             volatile uint64 sstatus = Machine::readSstatus();
-
 
             uint8 statusReg;
             __asm__ volatile("lbu %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS):"memory");
@@ -301,7 +301,7 @@ void Kernel::interruptHandler()
             if (statusReg & CONSOLE_TX_STATUS_BIT)
             {
                 KConsole::setOutputBufferReady();
-                if(!consumer->getQueueOfWhichIsPart() && !KConsole::isInputBufferEmpty())
+                if(!consumer->getQueueOfWhichIsPart() && !KConsole::isOutputBufferEmpty() && consumer->getStateOfThread() != KernelConfig::READY)
                 {
                     consumer->setStateOfThread(KernelConfig::READY);
                     Scheduler::put(consumer);
@@ -312,21 +312,28 @@ void Kernel::interruptHandler()
             if(statusReg & CONSOLE_RX_STATUS_BIT)
             {
                 KConsole::setInputBufferReady();
-                if(!producer->getQueueOfWhichIsPart() && !KConsole::isOutputBufferFull())
+                if(!producer->getQueueOfWhichIsPart() && !KConsole::isInputBufferFull() && producer->getStateOfThread() != KernelConfig::READY)
                 {
                     producer->setStateOfThread(KernelConfig::READY);
                     Scheduler::put(producer);
                 }
             }
 
-            Machine::bc_sie(Machine::SEIE);
 
-            plic_complete(plic_claim());
+            uint64 irq = plic_claim();
+            plic_complete(irq);
             TCB::dispatch();
 
             Machine::writeSepc(sepc);
             Machine::writeSstatus(sstatus);
             break;
+//            console_handler();
+////            plic_complete(plic_claim());
+//            TCB::dispatch();
+//
+//            Machine::writeSepc(sepc);
+//            Machine::writeSstatus(sstatus);
+//            break;
         }
     }
 
@@ -613,6 +620,7 @@ uint64 Kernel::sysGetc(ArgumentsOfSystemCall *arg) {
     c = KConsole::getCharFromInputBuffer();
     semaphoreInputBuffer->signal();
     return (uint64) c;
+//    return (uint64)__getc();
 }
 uint64 Kernel::sysPutc(ArgumentsOfSystemCall *arg)
 {
@@ -635,8 +643,9 @@ uint64 Kernel::sysPutc(ArgumentsOfSystemCall *arg)
     }
     KConsole::addCharToOutputBuffer(arg->a0);
     semaphoreOutputBuffer->signal();
-
+//    __putc((char)arg->a0);
     return 0;
+
 }
 
 void Kernel::initializeSystemCalls(void)
