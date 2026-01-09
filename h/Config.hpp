@@ -10,10 +10,13 @@ namespace KernelConfig
 {
     constexpr size_t NUM_OF_THREADS_IN_POOL = 20;
     constexpr size_t NUM_OF_SEMAPHORES_IN_POOL = 10;
-    constexpr size_t SIZE_INPUT_BUFFER = 100;
-    constexpr size_t SIZE_OUTPUT_BUFFER = 100;
+    constexpr size_t BUFFER_SIZE = 100;
     constexpr size_t NUM_OF_SYSTEM_CALLS = 0x43;
     constexpr size_t DEFAULT_SYSTEM_STACK_SIZE = 1024;
+    constexpr size_t USER_WORKER_ID = 4;
+    constexpr uint64 SYSTEM_CALL = 0x0000000000000008UL;
+    constexpr uint64 TIMER_INTERRUPT = 0x8000000000000001UL;
+    constexpr uint64 CONSOLE_INTERRUPT = 0x8000000000000009UL;
     const int EOF = -1;
 
     enum StateOfThread

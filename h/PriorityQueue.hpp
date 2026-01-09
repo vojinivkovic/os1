@@ -40,22 +40,12 @@ void PriorityQueue<T, Compare>::removeElement(T *element)
         {
             head = head->getNextElementInQueue();
         }
-
-//        if(!head)
-//        {
-//            tail = nullptr;
-//        }
     }
     else
     {
         T* tempElement = element->getNextElementInQueue();
         prev->addElementToQueue(tempElement);
         tempElement->setTimeToSleep(tempElement->getTimeToSleep() + element->getTimeToSleep());
-
-//        if(element == tail)
-//        {
-//            tail = prev;
-//        }
     }
 }
 template<typename T, typename Compare>
@@ -64,7 +54,6 @@ void PriorityQueue<T, Compare>::append(T *newElement)
     if(head == nullptr)
     {
         head = newElement;
-        //tail = newElement;
         return;
     }
 
@@ -99,16 +88,11 @@ T* PriorityQueue<T, Compare>::take()
 {
     T* oldElement = head;
     head = head->getNextElementInQueue();
-//    if(!head)
-//    {
-//        tail = nullptr;
-//    }
     return oldElement;
 }
 template<typename T, typename Compare>
 void* PriorityQueue<T, Compare>::operator new(size_t size)
 {
-    //size_t correctedSize = size + MemoryAllocator::getSizeOfMetaData();
     size_t correctedSize = size + getSizeOfMetaData();
     size_t numOfBlocks = correctedSize / MEM_BLOCK_SIZE;
     numOfBlocks += correctedSize % MEM_BLOCK_SIZE ? 1 : 0;

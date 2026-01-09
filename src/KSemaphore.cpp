@@ -83,10 +83,6 @@ int KSemaphore::wait()
 int KSemaphore::signal()
 {
     while(copy_and_swap(&lck, 0, 1));
-//    if(semaphoreVal == cap)
-//    {
-//        return 0;
-//    }
     semaphoreVal++;
     if(semaphoreVal <= 0)
     {

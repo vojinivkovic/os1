@@ -21,17 +21,12 @@ void MemoryAllocator::initialize()
     firstFreeBlock->numOfBlocks = NUM_OF_BLOCKS;
     firstFreeBlock->nextBlock = nullptr;
     firstFreeBlock->previousBlock = nullptr;
-    //flagSystemInitialize = 1;
 }
 
 void* MemoryAllocator::allocateMemory(size_t blocksToAllocate)
 {
 
 
-//    if(!flagSystemInitialize)
-//    {
-//        initializeMemory();
-//    }
     if(numOfFreeBlocks < blocksToAllocate)
     {
         return nullptr;
@@ -62,9 +57,6 @@ void* MemoryAllocator::findBestFit(FreeBlock **head, size_t blocksToAllocate)
     numOfFreeBlocks -= blocksToAllocate;
     bestBlock->numOfBlocks -= blocksToAllocate;
     remapMemory(head, bestBlock, blocksToAllocate);
-
-    //bestBlock->nextBlock = nullptr;
-    //bestBlock->previousBlock = nullptr;
 
     OccupiedBlock* occupiedBlock = (OccupiedBlock*)bestBlock;
     occupiedBlock->flagFree = false;
@@ -189,7 +181,6 @@ void MemoryAllocator::connectAdjacentBlocks(FreeBlock* previousBlock, FreeBlock*
             previousBlock->previousBlock = adjacentBlock->previousBlock;
             adjacentBlock->previousBlock->nextBlock = previousBlock;
         }
-        //previousBlock->previousBlock = (previousBlock != adjacentBlock->previousBlock ? adjacentBlock->previousBlock : previousBlock->previousBlock);
 
         adjacentBlock->flagFree = false;
         adjacentBlock->numOfBlocks = 0;
@@ -224,8 +215,3 @@ size_t MemoryAllocator::getFreeSpace()
 {
     return numOfFreeBlocks * MEM_BLOCK_SIZE;
 }
-
-//size_t MemoryAllocator::getSizeOfMetaData()
-//{
-//    return sizeof(OccupiedBlock);
-//}

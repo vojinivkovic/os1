@@ -11,7 +11,7 @@ extern "C" char first_born;
 
 size_t TCB::numOfTicks = 0;
 TCB* TCB::running = nullptr;
-uint64 TCB::globalId = 1;
+uint64 TCB::globalId = 0;
 void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, void* allocatedSystemStack, ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* pool,
                            KernelConfig::StateOfThread state, KernelConfig::Mode mmode, bool enableInterrupts)
 {
@@ -34,20 +34,9 @@ void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, v
     systemStack = (void*)((uint8*)allocatedSystemStack - KernelConfig::DEFAULT_SYSTEM_STACK_SIZE);
     userStack = mode == KernelConfig::KERNEL_MODE ? systemStack : (void*)((uint8*)allocatedStack - DEFAULT_STACK_SIZE);
     *((uint64*)allocatedSystemStack - 30) = (uint64)((uint64*)allocatedStack - 2);
-//    if(mode == KernelConfig::USER_MODE)
-//    {
     uint64 status = mode | (enableInterrupts ? 0x1 << 5 : 0);
     context = {(uint64)&first_born, (uint64) ((uint64 *) allocatedSystemStack - 32), (uint64) &threadWrapper, status};
-    //Machine::writeSepc((uint64) &threadWrapper);
 
-
-
-//    }
-//    else
-//    {
-//        context = {(uint64)&threadWrapper, (uint64) ((uint64 *) allocatedSystemStack - 32), mode};
-//    }
-    //Machine::bs_sstatus(Machine::SPIE);
 }
 void TCB::threadWrapper()
 {

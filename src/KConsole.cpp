@@ -67,20 +67,10 @@ void KConsole::removeThreadFromOutputWaitQueue()
 }
 char KConsole::getCharFromInputBuffer()
 {
-//    if(inputBuffer->isBufferFull())
-//    {
-//        producerThread->setStateOfThread(KernelConfig::READY);
-//        Scheduler::put(producerThread);
-//    }
     return (inputBuffer->take());
 }
 void KConsole::addCharToOutputBuffer(char c)
 {
-//    if(outputBuffer->isBufferEmpty())
-//    {
-//        consumerThread->setStateOfThread(KernelConfig::READY);
-//        Scheduler::put(consumerThread);
-//    }
     outputBuffer->append(c);
 }
 
@@ -89,7 +79,6 @@ void KConsole::consumeOutputBuffer(void*)
     volatile char data;
     volatile uint8 statusReg;
     volatile uint64 sstatus = Machine::readSstatus();
-//    const uint64 SEIE = 1ULL << 9;
     while(1)
     {
         __asm__ volatile("lbu %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS):"memory");
@@ -102,22 +91,12 @@ void KConsole::consumeOutputBuffer(void*)
             removeThreadFromOutputWaitQueue();
             Kernel::getSemaphoreOutput()->signal();
         }
-//        if(!(statusReg & CONSOLE_TX_STATUS_BIT))
-//        {
-        //Machine::bs_sie(Machine::SEIE);
-//        __asm__ volatile ("csrs sie, %[reg]":: [reg] "r"(SEIE));
-////        }
-        //sstatus = Machine::readSstatus();
-        //TCB *oldThread = TCB::getRunningThread();
-        //TCB::setRunningThread(Scheduler::get());
         consumerThread->setStateOfThread(KernelConfig::BLOCKED);
         consumerThread->resetQueueOfWhichIsPart();
         consumerThread->resetNextThreadInQueue();
         TCB* newRunning = Scheduler::get();
         TCB::setRunningThread(newRunning);
         context_switch(consumerThread->getContext(), newRunning->getContext());
-        //oldThread->resetNextThreadInQueue();
-        //oldThread->setStateOfThread(KernelConfig::BLOCKED);
         Machine::writeSstatus(sstatus);
     }
 }
@@ -127,7 +106,6 @@ void KConsole::produceInputBuffer(void*)
     volatile uint8 statusReg;
     volatile char data;
     volatile uint64 sstatus = Machine::readSstatus();
-//    const uint64 SEIE = 1ULL << 9;
     while(1) {
         __asm__ volatile("lbu %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS):"memory");
         while ((statusReg & CONSOLE_RX_STATUS_BIT) && !inputBuffer->isBufferFull())
@@ -141,23 +119,12 @@ void KConsole::produceInputBuffer(void*)
             removeThreadFromInputWaitQueue();
             Kernel::getSemaphoreInput()->signal();
         }
-//        if(!(statusReg & CONSOLE_RX_STATUS_BIT))
-//        {
-        //Machine::bs_sie(Machine::SEIE);
-//        sstatus = Machine::readSstatus();
-//        __asm__ volatile ("csrs sie, %[reg]":: [reg] "r"(SEIE));
-        //}
-        //TCB *oldThread = TCB::getRunningThread();
-        //TCB::setRunningThread(Scheduler::get());
         producerThread->setStateOfThread(KernelConfig::BLOCKED);
         producerThread->resetQueueOfWhichIsPart();
         producerThread->resetNextThreadInQueue();
         TCB* newRunning = Scheduler::get();
         TCB::setRunningThread(newRunning);
         context_switch(producerThread->getContext(), newRunning->getContext());
-        //oldThread->resetNextThreadInQueue();
-        //oldThread->setStateOfThread(KernelConfig::BLOCKED);
-        //TCB::dispatch();
         Machine::writeSstatus(sstatus);
 
 

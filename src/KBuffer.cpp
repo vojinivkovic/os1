@@ -24,13 +24,13 @@ void KBuffer::operator delete(void* obj)
 
 int KBuffer::append(char element)
 {
-    if(count == 100)
+    if(count == KernelConfig::BUFFER_SIZE)
     {
         return -1;
     }
     count++;
     array[tail] = element;
-    tail = (tail + 1) % 100;
+    tail = (tail + 1) % KernelConfig::BUFFER_SIZE;
 
     return 0;
 }
@@ -44,7 +44,7 @@ char KBuffer::take()
 
     count--;
     char tempElem = array[head];
-    head = (head + 1) % 100;
+    head = (head + 1) % KernelConfig::BUFFER_SIZE;
     return tempElem;
 
 }
@@ -62,7 +62,7 @@ bool KBuffer::isBufferEmpty() const
 bool KBuffer::isBufferFull() const
 {
 
-    if(count == 100)
+    if(count == KernelConfig::BUFFER_SIZE)
     {
         return 1;
     }

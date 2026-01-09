@@ -70,6 +70,9 @@ private:
     static void addThreadToList(TCB* thread);
     static void removeThreadFromList(TCB* thread);
     static TCB* findThread(uint64 threadId);
+    static void shutdown();
+    static void freeOpenedThreads();
+    static void freeOpenedSemaphores();
 
     static void destroy();
     static uint64 (*systemCallsTable[KernelConfig::NUM_OF_SYSTEM_CALLS])(ArgumentsOfSystemCall* arg);

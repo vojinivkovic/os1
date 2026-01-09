@@ -8,9 +8,6 @@
 #include "_thread.hpp"
 #include "_semaphore.hpp"
 
-
-//typedef _thread* thread_t;
-//typedef _sem* sem_t;
 typedef uint64 thread_t;
 typedef uint64 sem_t;
 typedef unsigned long time_t;

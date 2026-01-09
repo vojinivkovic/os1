@@ -35,7 +35,7 @@ public:
 
     static void addThreadToInputWaitQueue(TCB* thread);
     static void removeThreadFromInputWaitQueue();
-    //static TCB* getInputWaitQueue() { return }
+
 
     static void addThreadToOutputWaitQueue(TCB* thread);
     static void removeThreadFromOutputWaitQueue();

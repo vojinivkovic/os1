@@ -95,8 +95,12 @@ void Kernel::initializeKernelSemaphores(void)
 void Kernel::initializeKernel()
 {
     MemoryAllocator::initialize();
+
     TCB::initializeGlobalId();
+    KSemaphore::initializeGlobalId();
+
     Kernel::setInterruptRoutine(&interrupt_trap);
+
     poolOfThreads = new ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>();
     poolOfSemaphores = new ObjectPool<KSemaphore, KernelConfig::NUM_OF_SEMAPHORES_IN_POOL>();
     queueOfAsleepThreads = new PriorityQueue<TCB, decltype(cmp)>(cmp);
@@ -118,8 +122,41 @@ void Kernel::initializeKernel()
     initializeKernelThreads();
     initializeSystemCalls();
 
-    KSemaphore::initializeGlobalId();
+}
+void Kernel::shutdown()
+{
+    freeOpenedSemaphores();
+    freeOpenedThreads();
+    destroy();
+    __asm__ volatile("li t0, 0x5555");
+    __asm__ volatile("li t1, 0x100000");
+    __asm__ volatile("sw t0, 0(t1)");
+}
 
+void Kernel::freeOpenedThreads()
+{
+    TCB* curr = headLiveThreads, *next;
+    while(curr)
+    {
+        next = curr->getNextLiveThread();
+        removeThreadFromList(curr);
+        curr->setStateOfThread(KernelConfig::EXIT);
+        curr->~TCB();
+        curr->resetNextThreadInQueue();
+        curr->resetNextLiveThread();
+        poolOfThreads->freeObject(curr);
+        curr = next;
+    }
+}
+void Kernel::freeOpenedSemaphores()
+{
+    for(KSemaphore* curr = queueOfOpenedSemaphores->take(); curr; curr = queueOfOpenedSemaphores->take())
+    {
+        curr->close();
+        curr->resetNextSemaphoreInQueue();
+        curr->~KSemaphore();
+        poolOfSemaphores->freeObject(curr);
+    }
 }
 void Kernel::destroy()
 {
@@ -127,8 +164,8 @@ void Kernel::destroy()
     delete poolOfSemaphores;
     delete queueOfAsleepThreads;
     delete queueOfOpenedSemaphores;
-    delete KConsole::getProducerThread();
-    delete KConsole::getConsumerThread();
+    KConsole::destroy();
+    Scheduler::destroy();
 }
 
 void Kernel::initializeArguments(Kernel::ArgumentsOfSystemCall* arg, uint64 basePointer)
@@ -231,19 +268,13 @@ TCB* Kernel::findThread(uint64 threadId)
 }
 void Kernel::interruptHandler()
 {
-     // Problem: da li mozemo biti 100% sigurni da ce s0 biti nepromenjen; resenje inline f-ja
-    uint64 basePointer;
+   uint64 basePointer;
     __asm__ volatile ("addi %0, s0, 0": "=r"(basePointer)::);
     uint64 scause = Machine::readScause();
     switch (scause)
     {
-        case 0x0000000000000008UL:
-        case 0x0000000000000009UL:
+        case KernelConfig::SYSTEM_CALL:
         {
-
-            // scause == 0x0000000000000008UL; software interrupt(ecall) from user mode
-            // scause == 0x0000000000000009UL; software interrupt(ecall) from kernel(supervised) mode
-
 
             Machine::bc_sip(Machine::SSIP);
 
@@ -265,9 +296,8 @@ void Kernel::interruptHandler()
             Machine::writeSstatus(sstatus);
             break;
         }
-        case 0x8000000000000001UL:
+        case KernelConfig::TIMER_INTERRUPT:
         {
-            // interrupt from timer
 
             Machine::bc_sip(Machine::SSIP);
             TCB::incrementNumOfTicks();
@@ -286,11 +316,8 @@ void Kernel::interruptHandler()
             wakeUpThreads();
             break;
         }
-        case 0x8000000000000009UL:
+        case KernelConfig::CONSOLE_INTERRUPT:
         {
-            // hardware interrupt from console
-
-       //     Machine::bc_sip(Machine::SEIP);
             volatile uint64 sepc = Machine::readSepc();
             volatile uint64 sstatus = Machine::readSstatus();
 
@@ -327,13 +354,6 @@ void Kernel::interruptHandler()
             Machine::writeSepc(sepc);
             Machine::writeSstatus(sstatus);
             break;
-//            console_handler();
-////            plic_complete(plic_claim());
-//            TCB::dispatch();
-//
-//            Machine::writeSepc(sepc);
-//            Machine::writeSstatus(sstatus);
-//            break;
         }
     }
 
@@ -351,7 +371,6 @@ void Kernel::kernelWorker(void*)
     numOfBlocks += correctedSize % MEM_BLOCK_SIZE ? 1 : 0;
     uint8* userStack = (uint8*)MemoryAllocator::allocateMemory(numOfBlocks);
 
-    //return (void*)(&systemStack[KernelConfig::DEFAULT_SYSTEM_STACK_SIZE]);
     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* sourcePool;
     TCB* userThread = poolOfThreads->mallocObject(&sourcePool);
 
@@ -361,8 +380,6 @@ void Kernel::kernelWorker(void*)
     }
     userThread->initializeThread(&userWorker, nullptr, &(userStack[DEFAULT_STACK_SIZE]), systemStack, sourcePool, KernelConfig::BLOCKED, KernelConfig::USER_MODE);
     addThreadToList(userThread);
-    //Scheduler::setIdleThread(demonThread);
-    //postaviti odgovarajucu vrednost za prekide, odnosno dozvoliti prekide
     TCB::start(userThread);
     TCB::dispatch();
     Machine::bs_sstatus(Machine::SPIE);
@@ -375,7 +392,6 @@ void Kernel::kernelWorker(void*)
 void Kernel::startExecution()
 {
     TCB::setRunningThread(demonThread);
-    //TCB::dispatch();
     Machine::writeRa(demonThread->getContext()->ra);
     Machine::writeSp(demonThread->getContext()->sp);
     Machine::writeSepc(demonThread->getContext()->sepc);
@@ -432,6 +448,10 @@ uint64 Kernel::sysThreadFinish(ArgumentsOfSystemCall *arg)
     oldThread->setIsFinished();
     oldThread->setStateOfThread(KernelConfig::FINISHED);
     oldThread->freeWaitThreads();
+    if(oldThread->getId() == KernelConfig::USER_WORKER_ID)
+    {
+        shutdown();
+    }
     return 0;
 }
 uint64 Kernel::sysThreadExit(Kernel::ArgumentsOfSystemCall *arg)
@@ -557,7 +577,7 @@ uint64 Kernel::sysSemaphoreClose(ArgumentsOfSystemCall *arg)
     queueOfOpenedSemaphores->removeElement(tempSemaphore);
     tempSemaphore->resetNextSemaphoreInQueue();
     tempSemaphore->~KSemaphore();
-    Kernel::poolOfSemaphores->freeObject(tempSemaphore);
+    poolOfSemaphores->freeObject(tempSemaphore);
 
     return returnValue;
 }
@@ -620,7 +640,7 @@ uint64 Kernel::sysGetc(ArgumentsOfSystemCall *arg) {
     c = KConsole::getCharFromInputBuffer();
     semaphoreInputBuffer->signal();
     return (uint64) c;
-//    return (uint64)__getc();
+
 }
 uint64 Kernel::sysPutc(ArgumentsOfSystemCall *arg)
 {
@@ -643,7 +663,6 @@ uint64 Kernel::sysPutc(ArgumentsOfSystemCall *arg)
     }
     KConsole::addCharToOutputBuffer(arg->a0);
     semaphoreOutputBuffer->signal();
-//    __putc((char)arg->a0);
     return 0;
 
 }

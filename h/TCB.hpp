@@ -46,7 +46,6 @@ public:
     void resetNextLiveThread() { nextLiveThread = nullptr; }
     uint64 getId() { return threadId; }
     Context* getContext() { return &context; }
-    //KernelConfig::Mode getMode() { return context.mode; }
     void* getUserStack() const { return userStack; }
     void* getSystemStack() const { return systemStack; }
     ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* getSourcePool() { return sourcePool; }
@@ -102,8 +101,7 @@ private:
     static TCB* running;
     static uint64 globalId;
     static size_t numOfTicks;
-    static void threadWrapper();// ova f-ja ce sluziti kako bismo mogli da zavrsimo nit, a i da od nje pocne izvrsavanje svake niti
-
+    static void threadWrapper();
     static void yield(TCB* oldThread, TCB* newThread);
 
 

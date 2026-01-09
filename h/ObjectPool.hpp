@@ -43,7 +43,6 @@ private:
         return headFreeObject;
     }
     ObjectPool<T, numOfObjects>* findFreePool(void);
-    //static size_t countOfPools;
     PoolObject pool[numOfObjects];
     PoolObject* headFreeObject;
     ObjectPool<T, numOfObjects>* nextObjectPool;

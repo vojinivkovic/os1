@@ -8,10 +8,6 @@
 #include "../lib/hw.h"
 #include "MetaData.hpp"
 
-
-
-
-
 class MemoryAllocator
 {
 public:
@@ -25,25 +21,8 @@ public:
     static size_t getLargestFreeBlock();
     static size_t getFreeSpace();
     static void initialize();
-    //static size_t getSizeOfMetaData();
+
 private:
-//    typedef struct FreeBlock
-//    {
-//        bool flagFree;
-//        size_t numOfBlocks;
-//        FreeBlock *nextBlock;
-//        FreeBlock *previousBlock;
-//    } FreeBlock;
-//
-//    typedef struct OccupiedBlock
-//    {
-//        bool flagFree;
-//        size_t numOfBlocks;
-//    } OccupiedBlock;
-
-
-
-    //static uint8 flagSystemInitialize;
     static FreeBlock* firstFreeBlock;
     static size_t numOfFreeBlocks;
     static size_t NUM_OF_BLOCKS;
@@ -52,7 +31,6 @@ private:
     static FreeBlock* findNextFreeBlock(FreeBlock* memoryToFree);
     static FreeBlock* findPreviousFreeBlock(FreeBlock* head, FreeBlock* memoryToFree);
     static void connectAdjacentBlocks(FreeBlock* previousBlock, FreeBlock* nextBlock);
-    //static void initializeMemory();
 
 
 };
