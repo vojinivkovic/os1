@@ -48,7 +48,7 @@ public:
     Context* getContext() { return &context; }
     void* getUserStack() const { return userStack; }
     void* getSystemStack() const { return systemStack; }
-    ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* getSourcePool() { return sourcePool; }
+    ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* getSourcePool();
 
     Queue<TCB>* getWaitQueue() { return queueOfWaitThreads; }
     Queue<TCB>* getQueueOfWhichIsPart() const { return queueOfWhichIsPart; }

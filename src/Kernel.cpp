@@ -160,8 +160,8 @@ void Kernel::freeOpenedSemaphores()
 }
 void Kernel::destroy()
 {
-    delete poolOfThreads;
-    delete poolOfSemaphores;
+    poolOfThreads->destroy();
+    poolOfSemaphores->destroy();
     delete queueOfAsleepThreads;
     delete queueOfOpenedSemaphores;
     KConsole::destroy();

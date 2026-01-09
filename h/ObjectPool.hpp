@@ -13,7 +13,7 @@ template <typename T, size_t numOfObjects>
 class ObjectPool
 {
 public:
-    ObjectPool(): headFreeObject(pool), nextObjectPool(nullptr), prevObjectPool(nullptr)
+    ObjectPool(): headFreeObject(pool), nextObjectPool(nullptr), prevObjectPool(nullptr), numOfFreeObject(numOfObjects)
     {
 
         for(size_t i = 0; i < numOfObjects - 1; i++)
@@ -27,6 +27,7 @@ public:
     static void operator delete(void* obj);
     T* mallocObject(ObjectPool<T, numOfObjects>** pool);
     int freeObject(T* obj);
+    void destroy();
 
 
 private:
@@ -34,6 +35,7 @@ private:
     typedef struct PoolObject
     {
         T object;
+        //alignas(T) unsigned char mem[sizeof(T)];
         PoolObject* nextFree;
 
     } PoolObject;
@@ -47,7 +49,7 @@ private:
     PoolObject* headFreeObject;
     ObjectPool<T, numOfObjects>* nextObjectPool;
     ObjectPool<T, numOfObjects>* prevObjectPool;
-    //size_t id;
+    size_t numOfFreeObject;
 
 };
 
@@ -55,7 +57,7 @@ private:
 template<typename T, size_t numOfObjects>
 void* ObjectPool<T, numOfObjects>::operator new(size_t size)
 {
-    //size_t correctedSize = (size + MemoryAllocator::getSizeOfMetaData());
+
     size_t correctedSize = size + getSizeOfMetaData();
     size_t numOfBlocks = correctedSize / MEM_BLOCK_SIZE;
     numOfBlocks += correctedSize % MEM_BLOCK_SIZE ? 1 : 0;
@@ -71,7 +73,7 @@ template<typename T, size_t numOfObjects>
 ObjectPool<T, numOfObjects>* ObjectPool<T, numOfObjects>::findFreePool(void)
 {
     ObjectPool<T, numOfObjects>* curr = this;
-    for(; !curr->nextObjectPool && !curr->headFreeObject; curr = curr->nextObjectPool);
+    for(; curr->nextObjectPool && !curr->headFreeObject; curr = curr->nextObjectPool);
     return curr;
 }
 
@@ -84,6 +86,7 @@ T* ObjectPool<T, numOfObjects>::mallocObject(ObjectPool<T, numOfObjects>** addre
         PoolObject* temp = currentPool->headFreeObject;
         currentPool->headFreeObject = currentPool->headFreeObject->nextFree;
         *addressOfPool = currentPool;
+        currentPool->numOfFreeObject--;
         return &(temp->object);
     }
     else
@@ -98,6 +101,7 @@ T* ObjectPool<T, numOfObjects>::mallocObject(ObjectPool<T, numOfObjects>** addre
 
         PoolObject* temp = newPool->headFreeObject;
         newPool->headFreeObject = newPool->headFreeObject->nextFree;
+        newPool->numOfFreeObject--;
         *addressOfPool = newPool;
         return &(temp->object);
     }
@@ -106,11 +110,33 @@ T* ObjectPool<T, numOfObjects>::mallocObject(ObjectPool<T, numOfObjects>** addre
 template<typename T, size_t numOfObjects>
 int ObjectPool<T, numOfObjects>::freeObject(T *obj) {
 
-    ObjectPool<T, numOfObjects>* curr = obj->getSourcePool();
+    ObjectPool<T, numOfObjects>* curr = (ObjectPool<T, numOfObjects>*)obj->getSourcePool();
     PoolObject* tempObj = (PoolObject*)obj;
     tempObj->nextFree = curr->headFreeObject;
     curr->headFreeObject = tempObj;
-
+    curr->numOfFreeObject++;
+    if(curr->numOfFreeObject == numOfObjects && curr->prevObjectPool)
+    {
+        ObjectPool<T, numOfObjects>* prev = curr->prevObjectPool;
+        ObjectPool<T, numOfObjects>* next = curr->nextObjectPool;
+        prev->nextObjectPool = next;
+        if(next)
+        {
+            next->prevObjectPool = prev;
+        }
+        MemoryAllocator::freeMemory(curr);
+    }
     return 0;
+}
+template<typename T, size_t numOfObjects>
+void ObjectPool<T, numOfObjects>::destroy()
+{
+    ObjectPool<T, numOfObjects>* curr = this, *next;
+    while(curr)
+    {
+        next = curr->nextObjectPool;
+        MemoryAllocator::freeMemory(curr);
+        curr = next;
+    }
 }
 #endif //PROJECT_BASE_V1_1_OBJECTPOOL_H

@@ -19,6 +19,7 @@ void TCB::initializeThread(TCB::Body function, void*arg, void *allocatedStack, v
     body = function;
     timeSlice = DEFAULT_TIME_SLICE;
     nextThreadInQueue = nullptr;
+    nextLiveThread = nullptr;
     finished = false;
     arguments = arg;
     waitOnSemaphore = nullptr;
@@ -73,7 +74,12 @@ TCB::~TCB()
     {
         MemoryAllocator::freeMemory(userStack);
     }
+    delete queueOfWaitThreads;
 
+}
+ObjectPool<TCB, KernelConfig::NUM_OF_THREADS_IN_POOL>* TCB::getSourcePool()
+{
+    return sourcePool;
 }
 void TCB::start(TCB* readyThread)
 {
