@@ -13,8 +13,8 @@ class MemoryAllocator
 public:
 
     MemoryAllocator() = delete;
-    MemoryAllocator(const MemoryAllocator& memAlloc) = delete; // copy-constructor is deleted; singleton pattern
-    MemoryAllocator& operator=(const MemoryAllocator& memAlloc) = delete; // assignment operator is also deleted
+    MemoryAllocator(const MemoryAllocator& memAlloc) = delete;
+    MemoryAllocator& operator=(const MemoryAllocator& memAlloc) = delete;
 
     static void* allocateMemory(size_t blocksToAllocate);
     static int freeMemory(void* addressToFree);

@@ -79,6 +79,7 @@ void KConsole::consumeOutputBuffer(void*)
     volatile char data;
     volatile uint8 statusReg;
     volatile uint64 sstatus = Machine::readSstatus();
+
     while(1)
     {
         __asm__ volatile("lbu %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS):"memory");
@@ -106,6 +107,7 @@ void KConsole::produceInputBuffer(void*)
     volatile uint8 statusReg;
     volatile char data;
     volatile uint64 sstatus = Machine::readSstatus();
+
     while(1) {
         __asm__ volatile("lbu %[status], 0(%[address])": [status] "=r"(statusReg): [address] "r"(CONSOLE_STATUS):"memory");
         while ((statusReg & CONSOLE_RX_STATUS_BIT) && !inputBuffer->isBufferFull())

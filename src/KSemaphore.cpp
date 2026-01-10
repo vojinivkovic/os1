@@ -9,7 +9,8 @@
 
 extern "C"
 __attribute__((returns_twice, noinline))
-void context_switch(TCB::Context* oldContext, TCB::Context* newContext) ;
+void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
+
 extern "C" uint64 copy_and_swap(uint64* lock, uint64 expected, uint64 desired);
 uint64 KSemaphore::globalId = 0;
 
@@ -18,9 +19,8 @@ void KSemaphore::initializeSemaphore(unsigned value, ObjectPool<KSemaphore, Kern
     semaphoreVal = value;
     queueBlockedThreads = new Queue<TCB>();
     sourcePool = pool;
-    semId = globalId++;
+    semId = ++globalId;
     nextSemaphoreInQueue = nullptr;
-    cap = value;
     lck = 0;
 }
 

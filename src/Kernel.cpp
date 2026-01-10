@@ -7,7 +7,6 @@
 #include "../h/TCB.hpp"
 #include "../h/KSemaphore.hpp"
 #include "../h/KConsole.hpp"
-//#include "../lib/console.h"
 
 extern "C" void interrupt_trap(void);
 extern "C" void context_switch(TCB::Context* oldContext, TCB::Context* newContext);
@@ -83,6 +82,7 @@ void Kernel::initializeKernelSemaphores(void)
         semaphoreOutputBuffer = poolOfSemaphores->mallocObject(&sourcePoolOutput);
     }
     semaphoreOutputBuffer->initializeSemaphore(1, sourcePoolOutput);
+    queueOfOpenedSemaphores->append(semaphoreOutputBuffer);
 
     semaphoreInputBuffer = poolOfSemaphores->mallocObject(&sourcePoolInput);
     while(!semaphoreInputBuffer)
@@ -90,7 +90,7 @@ void Kernel::initializeKernelSemaphores(void)
         semaphoreInputBuffer =  poolOfSemaphores->mallocObject(&sourcePoolInput);
     }
     semaphoreInputBuffer->initializeSemaphore(1, sourcePoolInput);
-
+    queueOfOpenedSemaphores->append(semaphoreInputBuffer);
 }
 void Kernel::initializeKernel()
 {
@@ -234,6 +234,7 @@ void Kernel::removeThreadFromList(TCB *thread)
         prev = curr;
         curr = curr->getNextLiveThread();
     }
+
     if(!prev)
     {
         headLiveThreads = headLiveThreads->getNextLiveThread();

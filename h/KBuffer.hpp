@@ -8,7 +8,7 @@
 #include "../h/MemoryAllocator.hpp"
 #include "../h/Config.hpp"
 
-//template<typename T, size_t numOfElements>
+
 class KBuffer
 {
 public:

@@ -35,7 +35,6 @@ private:
     typedef struct PoolObject
     {
         T object;
-        //alignas(T) unsigned char mem[sizeof(T)];
         PoolObject* nextFree;
 
     } PoolObject;
